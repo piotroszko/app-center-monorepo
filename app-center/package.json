@@ -1,23 +1,23 @@
 {
   "name": "app-center",
+  "version": "1.4.2",
   "private": true,
   "scripts": {
     "build": "turbo build",
     "dev": "turbo dev",
     "lint": "turbo lint",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "ui": "npm run -w @repo/ui ui --"
   },
   "devDependencies": {
-    "prettier": "^3.2.5",
-    "turbo": "^2.1.2",
-    "typescript": "^5.4.5"
-  },
-  "engines": {
-    "node": ">=18"
+    "@repo/eslint-config": "*",
+    "@repo/typescript-config": "*",
+    "prettier": "^3.3.3",
+    "turbo": "2.1.1"
   },
   "packageManager": "yarn@1.22.22",
   "workspaces": [
-    "apps/*",
-    "packages/*"
+    "./apps/*",
+    "./packages/*"
   ]
 }
