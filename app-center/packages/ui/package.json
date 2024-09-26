@@ -27,7 +27,8 @@
     "lucide-react": "^0.395.0",
     "tailwind-merge": "^2.3.0",
     "tailwindcss-animate": "^1.0.7",
-    "framer-motion": "11.7.0"
+    "framer-motion": "11.7.0",
+    "@tabler/icons-react": "3.17.0"
   },
   "exports": {
     "./globals.css": "./src/globals.css",

@@ -1,9 +1,10 @@
-import { Button } from "@repo/ui/components/ui/button";
+import React from "react";
+import { SidebarDemo } from "./_test";
 
 export default function Page() {
   return (
     <main>
-      <Button className="test">Click me</Button>
+      <SidebarDemo />
     </main>
   );
 }
