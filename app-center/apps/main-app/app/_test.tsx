@@ -9,7 +9,11 @@ import {
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { cn } from "@repo/ui/lib/utils";
-import { Sidebar, SidebarBody, SidebarLink } from "@repo/ui/components/ui/sidebar";
+import {
+  Sidebar,
+  SidebarBody,
+  SidebarLink,
+} from "@repo/ui/components/ui/sidebar";
 
 export function SidebarDemo() {
   const links = [
@@ -47,7 +51,7 @@ export function SidebarDemo() {
     <div
       className={cn(
         "rounded-md flex flex-col md:flex-row bg-gray-100 dark:bg-neutral-800 w-full flex-1 mx-auto border border-neutral-200 dark:border-neutral-700 overflow-hidden",
-        "h-screen"
+        "h-screen",
       )}
     >
       <Sidebar open={open} setOpen={setOpen}>
