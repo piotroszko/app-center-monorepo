@@ -1,7 +1,7 @@
 import React from "react";
 import { SidebarDemo } from "./_test";
 
-export default function Page() {
+export default async function Page() {
   return (
     <main>
       <SidebarDemo />
