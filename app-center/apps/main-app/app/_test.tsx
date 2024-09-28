@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   IconArrowLeft,
   IconBrandTabler,
@@ -14,6 +14,33 @@ import {
   SidebarBody,
   SidebarLink,
 } from "@repo/ui/components/ui/sidebar";
+
+export const TestChat = () => {
+  const websocketRef = React.useRef<WebSocket | null>(null);
+  useEffect(() => {
+    if (websocketRef.current) {
+      websocketRef.current.close();
+    }
+    websocketRef.current = new WebSocket("ws://localhost:4000/connect");
+
+    websocketRef.current.onopen = function () {
+      this.send("ping");
+      console.log("connected");
+    };
+    websocketRef.current.onmessage = function (event) {
+      console.log(event.data);
+    };
+    websocketRef.current.onclose = function () {
+      console.log("disconnected");
+    };
+
+    return () => {
+      console.log("closing");
+      websocketRef.current?.close();
+    };
+  }, []);
+  return <div>Test chat</div>;
+};
 
 export function SidebarDemo() {
   const links = [

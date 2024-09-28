@@ -1,10 +1,10 @@
 import React from "react";
-import { SidebarDemo } from "./_test";
+import { SidebarDemo, TestChat } from "./_test";
 
 export default async function Page() {
   return (
     <main>
-      <SidebarDemo />
+      <TestChat />
     </main>
   );
 }
