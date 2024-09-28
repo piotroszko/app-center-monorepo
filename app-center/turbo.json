@@ -21,6 +21,9 @@
     },
     "db:push": {
       "cache": false
+    },
+    "tidy": {
+      "cache": false
     }
   }
 }

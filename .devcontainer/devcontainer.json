@@ -6,7 +6,8 @@
 	"service": "app",
 	"workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}/app-center",
 	"features": {
-		"ghcr.io/devcontainers-community/npm-features/typescript:1": {}
+		"ghcr.io/devcontainers-community/npm-features/typescript:1": {},
+		"ghcr.io/devcontainers/features/go:1": {}
 	},
 
 	// Features to add to the dev container. More info: https://containers.dev/features.
@@ -17,7 +18,15 @@
 	"forwardPorts": [3000, 5432],
 
 	// Use 'postCreateCommand' to run commands after the container is created.
-	"postCreateCommand": "cd ./app-center && yarn"
+	"postCreateCommand": "bash ./start.sh",
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"golang.go",
+				"tamasfe.even-better-toml"
+			]
+		}
+	}
 
 	// Configure tool-specific properties.
 	// "customizations": {},

@@ -1,5 +1,6 @@
 {
   "name": "@repo/db",
+  "license": "MIT",
   "version": "0.0.0",
   "scripts": {
     "db:generate": "prisma generate",
