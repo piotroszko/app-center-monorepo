@@ -14,43 +14,17 @@ import {
   SidebarBody,
   SidebarLink,
 } from "@repo/ui/components/ui/sidebar";
+import { Chat } from "../backend/chat/chat.class";
 
 export const TestChat = () => {
-  const websocketRef = React.useRef<WebSocket | null>(null);
+  const websocketRef = React.useRef<Chat | null>(null);
   useEffect(() => {
     if (websocketRef.current) {
       websocketRef.current.close();
     }
-    websocketRef.current = new WebSocket(
-      "ws://localhost:4000/connect?channel=1",
-    );
-
-    websocketRef.current.onopen = function () {
-      this.send(
-        JSON.stringify({
-          type: "init",
-          token: "test2",
-          last_message_id: "test1",
-        }),
-      );
-      this.send(
-        JSON.stringify({
-          type: "message",
-          token: "test2",
-          content: "Hello",
-        }),
-      );
-      console.log("connected");
-    };
-    websocketRef.current.onmessage = function (event) {
-      console.log(event.data);
-    };
-    websocketRef.current.onclose = function () {
-      console.log("disconnected");
-    };
+    websocketRef.current = new Chat("localhost:4000");
 
     return () => {
-      console.log("closing");
       websocketRef.current?.close();
     };
   }, []);
