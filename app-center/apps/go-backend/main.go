@@ -1,35 +1,55 @@
 package main
 
 import (
-	"fmt"
-	"net/http"
+	"go-backend/chat/io"
+	redis_chat "go-backend/chat/redis"
+	"go-backend/config"
+	"log"
 
-	"go-backend/services/messanger"
-
+	"github.com/gofiber/contrib/websocket"
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/google/uuid"
-	"github.com/lxzan/gws"
 )
 
 func main() {
-	upgrader := gws.NewUpgrader(&messanger.Handler{}, &gws.ServerOption{
-		ParallelEnabled: true,
-		Recovery:        gws.Recovery,
-	})
-	http.HandleFunc("/connect", func(writer http.ResponseWriter, request *http.Request) {
-		channel := request.URL.Query().Get("channel")
+	app := fiber.New()
+	redis_chat.InitRedis()
 
-		writer.Header().Set("Access-Control-Allow-Origin", "*")
-		fmt.Println("New connection on channel:", channel)
-		socket, err := upgrader.Upgrade(writer, request)
+	app.Use(cors.New(cors.Config{
+		AllowOrigins: "*",
+		AllowMethods: "POST, OPTIONS",
+		AllowHeaders: "Origin, Content-Type, Accept, Authorization",
+	}))
 
-		socket.Session().Store("channel", channel)
-		socket.Session().Store("id", uuid.New().String())
-		if err != nil {
-			return
-		}
-		go func() {
-			socket.ReadLoop()
-		}()
+	app.Get("/api/health", func(ctx *fiber.Ctx) error {
+		return ctx.Status(fiber.StatusOK).JSON(fiber.Map{"status": "healthy"})
 	})
-	http.ListenAndServe(":4000", nil)
+
+	// Secure websocket connection
+	app.Use("/ws", upgradeToWebSocket)
+	app.Get("/ws/chat", websocket.New(io.WebsocketHandler))
+
+	port := ":" + config.Config.ServerPort
+	log.Fatal(app.Listen(port))
 }
+
+// Authorize and Upgrate to websocket
+func upgradeToWebSocket(context *fiber.Ctx) error {
+	token := context.Query("token")
+	if token == "" {
+		log.Println("No token provided")
+		return fiber.ErrUnauthorized
+	}
+
+	if websocket.IsWebSocketUpgrade(context) {
+		context.Locals("userID", uuid.New().String()) // TODO: Implement user authentication
+		context.Locals("userName", "User")
+		return context.Next()
+	}
+	return fiber.ErrUpgradeRequired
+}
+
+// TODO: Dodac autoryzacje
+// TODO: Dodac db
+// TODO: Obsługe wiadomości
