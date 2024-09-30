@@ -1,6 +1,9 @@
-package io
+package models
+
+import "encoding/json"
 
 type Message struct {
+	ID          string      `json:"id"`
 	Type        MessageType `json:"type"`
 	ChannelType string      `json:"channelType"` // type of channel: private message, group message, public room
 
@@ -16,6 +19,11 @@ type Message struct {
 
 	TargetMessageId string `json:"targetMessageId"`
 	Content         string `json:"content"`
+	Timestamp       int64  `json:"timestamp"`
+}
+
+func (m *Message) FromJSON(data []byte) error {
+	return json.Unmarshal(data, m)
 }
 
 type MessageType string

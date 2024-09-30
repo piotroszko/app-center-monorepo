@@ -18,7 +18,6 @@ func InitRedis() {
 		DB:       0,  // use default DB
 	})
 
-	// ping redis
 	_, err := RedisClient.Ping(context.Background()).Result()
 	if err != nil {
 		log.Fatal(err)

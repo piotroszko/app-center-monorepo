@@ -2,6 +2,7 @@ package io
 
 import (
 	"fmt"
+	"go-backend/chat/models"
 	"log"
 
 	"github.com/gofiber/contrib/websocket"
@@ -11,7 +12,7 @@ func WebsocketHandler(conn *websocket.Conn) {
 	userID := conn.Locals("userID").(string)
 	userName := conn.Locals("userName").(string)
 
-	user := &User{
+	user := &models.User{
 		ID:         userID,
 		Name:       userName,
 		Connection: conn,
@@ -21,7 +22,7 @@ func WebsocketHandler(conn *websocket.Conn) {
 	AddConnection(userID, conn)
 
 	for {
-		var message Message
+		var message models.Message
 		if err := conn.ReadJSON(&message); err != nil {
 			log.Println("Error reading message from websocket:", err)
 			break
@@ -31,8 +32,8 @@ func WebsocketHandler(conn *websocket.Conn) {
 		message.SenderID = userID
 		message.SenderName = userName
 
-		switch MessageType(message.Type) {
-		case ChatMessageType:
+		switch models.MessageType(message.Type) {
+		case models.ChatMessageType:
 			{
 			}
 		}

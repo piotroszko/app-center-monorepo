@@ -24,7 +24,7 @@ func AddConnection(userID string, conn *websocket.Conn) {
 			msg, err := sub.ReceiveMessage(context.Background())
 			if err != nil {
 				log.Println("Error receiving message from redis:", err)
-				break
+				continue
 			}
 			connectionMutex.RLock()
 			err = conn.WriteJSON(msg.Payload)

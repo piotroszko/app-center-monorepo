@@ -1,4 +1,4 @@
-package io
+package models
 
 import (
 	"github.com/gofiber/contrib/websocket"
