@@ -6,6 +6,7 @@ import (
 
 	"go-backend/services/messanger"
 
+	"github.com/google/uuid"
 	"github.com/lxzan/gws"
 )
 
@@ -22,6 +23,7 @@ func main() {
 		socket, err := upgrader.Upgrade(writer, request)
 
 		socket.Session().Store("channel", channel)
+		socket.Session().Store("id", uuid.New().String())
 		if err != nil {
 			return
 		}

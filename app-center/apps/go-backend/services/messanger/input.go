@@ -23,6 +23,13 @@ func GetChannel(socket *gws.Conn) (string, error) {
 	}
 	return channel.(string), nil
 }
+func GetId(socket *gws.Conn) (string, error) {
+	id, exist := socket.Session().Load("id")
+	if !exist {
+		return "", errors.New("id not found")
+	}
+	return id.(string), nil
+}
 
 func SendInvalidRequest(socket *gws.Conn, message *gws.Message) {
 	errorMsg := OutputError{Code: 400, Error: "Invalid request"}

@@ -13,7 +13,7 @@ type InputMessage struct {
 	Content string `json:"content"`
 }
 
-func IsInputMessageType(message string) bool {
+func IsMessageType(message string) bool {
 	return strings.Contains(message, "\"type\":\"message\"")
 }
 

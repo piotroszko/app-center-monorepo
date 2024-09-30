@@ -14,21 +14,35 @@ import {
   SidebarBody,
   SidebarLink,
 } from "@repo/ui/components/ui/sidebar";
-import { Chat } from "../backend/chat/chat.class";
+import { useChat } from "../backend/chat/chat.class";
 
 export const TestChat = () => {
-  const websocketRef = React.useRef<Chat | null>(null);
-  useEffect(() => {
-    if (websocketRef.current) {
-      websocketRef.current.close();
-    }
-    websocketRef.current = new Chat("localhost:4000");
-
-    return () => {
-      websocketRef.current?.close();
-    };
-  }, []);
-  return <div>Test chat</div>;
+  const [message, setMessage] = useState("");
+  const { isTyping, messages, sendMessage } = useChat();
+  return (
+    <div className="flex flex-col">
+      {messages.map((msg) => (
+        <div>
+          <div>{msg.id}</div>
+          <div>{msg.content}</div>
+        </div>
+      ))}
+      {isTyping && <div>Typing...</div>}
+      <input
+        type="text"
+        onChange={(e) => setMessage(e.target.value)}
+        value={message}
+      />
+      <button
+        onClick={() => {
+          sendMessage?.(message);
+          setMessage("");
+        }}
+      >
+        Send
+      </button>
+    </div>
+  );
 };
 
 export function SidebarDemo() {

@@ -1,11 +1,11 @@
-import { useEffect, useRef, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 
 export class Chat {
-  websocket: WebSocket;
-  token: string;
-  setMessages: (messages: Message[]) => void;
-  addMessage: (message: Message) => void;
-  setIsTyping: (isTyping: boolean, user: string) => void;
+  private websocket: WebSocket;
+  private token: string;
+  private setMessages: Dispatch<SetStateAction<Message[]>>;
+  private addMessage: (message: Message) => void;
+  private setIsTyping: (isTyping: boolean, user: string) => void;
 
   constructor({
     address = "localhost:4000",
@@ -18,15 +18,15 @@ export class Chat {
     address?: string;
     channel?: string;
     token?: string;
-    setMessages?: (messages: Message[]) => void;
-    addMessage?: (message: Message) => void;
-    setIsTyping?: (isTyping: boolean, user: string) => void;
+    setMessages: Dispatch<SetStateAction<Message[]>>;
+    addMessage: (message: Message) => void;
+    setIsTyping: (isTyping: boolean, user: string) => void;
   }) {
     this.websocket = new WebSocket(
       "ws://" + address + "/connect?channel=" + channel,
     );
 
-    this.setMessages = setMessages || (() => {});
+    this.setMessages = setMessages;
     this.addMessage = addMessage || (() => {});
     this.setIsTyping = setIsTyping || (() => {});
     this.token = token;
@@ -35,11 +35,37 @@ export class Chat {
     this.websocket.onclose = () => this.onClose();
   }
   private onOpen() {
-    this.sendInit("0");
+    this.sendGet();
   }
 
   private onMessage(event: MessageEvent) {
-    console.log(event.data);
+    const data = JSON.parse(event.data);
+    const type = data?.type;
+    switch (type) {
+      case "message":
+        this.addMessage(data);
+        break;
+      case "messages":
+        this.setMessages((msg) => {
+          let tmpMsg = [...data.messages, ...msg];
+          tmpMsg.sort((a, b) => {
+            return (
+              new Date(a.created_at).getTime() -
+              new Date(b.created_at).getTime()
+            );
+          });
+          return tmpMsg;
+        });
+        break;
+      case "typing":
+        this.setIsTyping(true, data.user);
+        break;
+      case "stop_typing":
+        this.setIsTyping(false, data.user);
+        break;
+      default:
+        console.log("Unknown message type", type);
+    }
   }
 
   private onClose() {
@@ -50,12 +76,13 @@ export class Chat {
     this.websocket.close();
   }
 
-  sendInit(lastMessageId: string) {
+  sendGet(amount: number = 20, lastMessageId?: string) {
     this.websocket.send(
       JSON.stringify({
-        type: "init",
+        type: "get",
         token: this.token,
         last_message_id: lastMessageId,
+        amount,
       }),
     );
   }
@@ -88,26 +115,8 @@ interface Typing {
   user: string;
 }
 
-export const useChat = (address: string, channel: string, token: string) => {
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [isTyping, setIsTyping] = useState<Typing | null>(null);
-
-  const websocketRef = useRef<Chat | null>(null);
-
-  useEffect(() => {
-    if (websocketRef.current) {
-      websocketRef.current.close();
-    }
-    websocketRef.current = new Chat({
-      address: "localhost:4000",
-      channel: "1",
-      token: "test",
-    });
-
-    return () => {
-      websocketRef.current?.close();
-    };
-  }, []);
-
-  return { messages, sendMessage: websocketRef.current?.sendMessage };
-};
+export const useChat = (
+  address: string = "localhost:4000",
+  channel: string = "1",
+  token: string = "test",
+) => {};

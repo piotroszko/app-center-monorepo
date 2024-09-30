@@ -11,7 +11,7 @@ type InputTyping struct {
 	Token string
 }
 
-func IsInputTypingType(message string) bool {
+func IsTypingType(message string) bool {
 	return strings.Contains(message, "\"type\":\"typing\"")
 }
 
