@@ -25,6 +25,8 @@ model User {
   messages Message[]
   channels Channel[]
   privateChannels PrivateChannel[]
+
+  channelsOwned Channel[] @relation(name: "owner")
 }
 
 model Role {
@@ -74,6 +76,8 @@ model Channel {
 
   messages Message[]
   users User[]
+  owner User @relation(fields: [ownerId], references: [id], name: "owner")
+  ownerId String
 }
 
 model Message {
