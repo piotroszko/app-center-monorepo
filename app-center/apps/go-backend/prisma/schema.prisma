@@ -34,47 +34,35 @@ model Settings {
 }
 
 model User {
-  id                            String           @id
-  email                         String           @unique
-  name                          String
-  password                      String
-  createdAt                     DateTime         @default(now())
-  updatedAt                     DateTime
-  Channel_Channel_ownerIdToUser Channel[]        @relation("Channel_ownerIdToUser")
-  Message                       Message[]
-  Channel                       Channel[]        @relation("ChannelToUser")
-  PrivateChannel                PrivateChannel[] @relation("PrivateChannelToUser")
-  Role                          Role[]           @relation("RoleToUser")
+  id             String    @id
+  email          String    @unique
+  name           String
+  password       String
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime
+  Message        Message[]
+  Channel        Channel[] @relation("ChannelToUser")
+  Role           Role[]    @relation("RoleToUser")
+  Channel_owners Channel[] @relation("owners")
 }
 
 model Channel {
-  id                         String    @id
-  name                       String
-  createdAt                  DateTime  @default(now())
-  updatedAt                  DateTime
-  ownerId                    String
-  User_Channel_ownerIdToUser User      @relation("Channel_ownerIdToUser", fields: [ownerId], references: [id])
-  Message                    Message[]
-  User                       User[]    @relation("ChannelToUser")
+  id          String    @id
+  name        String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime
+  type        String
+  Message     Message[]
+  User        User[]    @relation("ChannelToUser")
+  User_owners User[]    @relation("owners")
 }
 
 model Message {
-  id               String         @id
-  content          String
-  createdAt        DateTime       @default(now())
-  userId           String
-  channelId        String
-  privateChannelId String
-  Channel          Channel        @relation(fields: [channelId], references: [id])
-  PrivateChannel   PrivateChannel @relation(fields: [privateChannelId], references: [id])
-  User             User           @relation(fields: [userId], references: [id])
-}
-
-model PrivateChannel {
-  id        String    @id
-  name      String
-  createdAt DateTime  @default(now())
-  updatedAt DateTime
-  Message   Message[]
-  User      User[]    @relation("PrivateChannelToUser")
+  id        String   @id
+  content   String
+  createdAt DateTime @default(now())
+  userId    String
+  channelId String
+  Channel   Channel  @relation(fields: [channelId], references: [id])
+  User      User     @relation(fields: [userId], references: [id])
 }

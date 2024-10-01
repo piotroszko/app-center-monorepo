@@ -5,7 +5,11 @@ import (
 	"go-backend/prisma/db"
 )
 
-func GetUserById(id string) (*db.UserModel, error) {
+type userFuncs struct{}
+
+var User = userFuncs{}
+
+func (userFuncs) GetUserById(id string) (*db.UserModel, error) {
 	user, err := DbConnection.User.FindUnique(
 		db.User.ID.Equals(id),
 	).Exec(context.Background())

@@ -3,27 +3,30 @@ package models
 import "encoding/json"
 
 type Message struct {
-	ID          string      `json:"id"`
-	Type        MessageType `json:"type"`
-	ChannelType string      `json:"channelType"` // type of channel: private message, group message, public room
+	ID   string      `json:"id"`
+	Type MessageType `json:"type"`
 
 	SenderID   string `json:"senderID"`
 	SenderName string `json:"senderName"`
 
-	ReceiverID   string `json:"receiverID"`
-	ReceiverName string `json:"receiverName"`
-	GroupID      string `json:"groupID"`
-	GroupName    string `json:"groupName"`
-	RoomID       string `json:"roomID"`
-	RoomName     string `json:"roomName"`
+	ChannelID   string `json:"receiverID"`
+	ChannelName string `json:"receiverName"`
 
 	TargetMessageId string `json:"targetMessageId"`
+	Amount          int    `json:"amount"`
 	Content         string `json:"content"`
 	Timestamp       int64  `json:"timestamp"`
 }
 
 func (m *Message) FromJSON(data []byte) error {
 	return json.Unmarshal(data, m)
+}
+func (m *Message) ToString() (string, error) {
+	data, err := json.Marshal(m)
+	if err != nil {
+		return "", err
+	}
+	return string(data), nil
 }
 
 type MessageType string
