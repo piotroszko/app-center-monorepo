@@ -22,6 +22,9 @@ model User {
   updatedAt DateTime @updatedAt
 
   roles Role[]
+  messages Message[]
+  channels Channel[]
+  privateChannels PrivateChannel[]
 }
 
 model Role {
@@ -49,4 +52,41 @@ model Settings {
   value     String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+// private channel are direct messages between two users with id of "user1-user2Id" sorted aplhabetically
+model PrivateChannel {
+  id        String   @id
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  messages Message[]
+  users User[] // only two users
+}
+
+// channel is either a group or a room
+model Channel {
+  id        String   @id @default(cuid())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  messages Message[]
+  users User[]
+}
+
+model Message {
+  id        String   @id @default(cuid())
+  content   String
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+  userId String
+  
+  channel Channel @relation(fields: [channelId], references: [id])
+  channelId String
+
+  privateChannel PrivateChannel @relation(fields: [privateChannelId], references: [id])
+  privateChannelId String
 }

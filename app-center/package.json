@@ -9,7 +9,8 @@
     "lint": "turbo lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "ui": "npm run -w @repo/ui ui --",
-    "tidy": "turbo tidy"
+    "tidy": "turbo tidy",
+    "front:push": "turbo front:push"
   },
   "devDependencies": {
     "@repo/eslint-config": "*",

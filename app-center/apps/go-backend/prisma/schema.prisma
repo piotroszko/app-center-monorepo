@@ -1,0 +1,77 @@
+generator client {
+  provider        = "go run github.com/steebchen/prisma-client-go"
+  previewFeatures = ["prismaSchemaFolder"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("PRISMA_DATABASE_URL")
+}
+
+model Permission {
+  id        String   @id
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+  Role      Role[]   @relation("PermissionToRole")
+}
+
+model Role {
+  id         String       @id
+  name       String
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime
+  Permission Permission[] @relation("PermissionToRole")
+  User       User[]       @relation("RoleToUser")
+}
+
+model Settings {
+  id        String   @id
+  key       String
+  value     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+}
+
+model User {
+  id             String           @id
+  email          String           @unique
+  name           String
+  password       String
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime
+  Message        Message[]
+  Channel        Channel[]
+  PrivateChannel PrivateChannel[]
+  Role           Role[]           @relation("RoleToUser")
+}
+
+model Channel {
+  id        String    @id
+  name      String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime
+  Message   Message[]
+  User      User[]
+}
+
+model Message {
+  id               String         @id
+  content          String
+  createdAt        DateTime       @default(now())
+  userId           String
+  channelId        String
+  privateChannelId String
+  Channel          Channel        @relation(fields: [channelId], references: [id])
+  PrivateChannel   PrivateChannel @relation(fields: [privateChannelId], references: [id])
+  User             User           @relation(fields: [userId], references: [id])
+}
+
+model PrivateChannel {
+  id        String    @id
+  name      String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime
+  Message   Message[]
+  User      User[]
+}

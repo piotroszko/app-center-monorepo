@@ -11,12 +11,6 @@ type AppConfig struct {
 	RedisHost string
 	RedisPort string
 
-	PostgresHost     string
-	PostgresPort     string
-	PostgresUser     string
-	PostgresPassword string
-	PostgresDatabase string
-
 	JwtSecret  string
 	ServerPort string
 }
@@ -29,18 +23,13 @@ func init() {
 		log.Fatal("Error loading .env file")
 	}
 	Config = AppConfig{
-		JwtSecret:        os.Getenv("JWT_SECRET"),
-		ServerPort:       os.Getenv("SERVER_PORT"),
-		RedisHost:        os.Getenv("REDIS_HOST"),
-		RedisPort:        os.Getenv("REDIS_PORT"),
-		PostgresHost:     os.Getenv("POSTGRES_HOST"),
-		PostgresPort:     os.Getenv("POSTGRES_PORT"),
-		PostgresUser:     os.Getenv("POSTGRES_USER"),
-		PostgresPassword: os.Getenv("POSTGRES_PASSWORD"),
-		PostgresDatabase: os.Getenv("POSTGRES_DATABASE"),
+		JwtSecret:  os.Getenv("JWT_SECRET"),
+		ServerPort: os.Getenv("SERVER_PORT"),
+		RedisHost:  os.Getenv("REDIS_HOST"),
+		RedisPort:  os.Getenv("REDIS_PORT"),
 	}
 
-	if Config.RedisHost == "" || Config.PostgresHost == "" {
+	if Config.RedisHost == "" {
 		log.Fatal("Environment variables not set")
 	}
 }

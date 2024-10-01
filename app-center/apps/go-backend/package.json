@@ -1,10 +1,15 @@
 {
   "name": "go-backend",
   "license": "MIT",
-  "version": "1.0.0",  
+  "version": "1.0.0",
   "scripts": {
     "dev": "air",
     "build": "go build -o bin/go-backend",
-    "tidy": "go mod tidy"
+    "tidy": "go mod tidy",
+    "go:update": "go run github.com/steebchen/prisma-client-go db pull",
+    "go:generate": "go run github.com/steebchen/prisma-client-go generate"
+  },
+  "dependencies": {
+    "@repo/db": "*"
   }
 }

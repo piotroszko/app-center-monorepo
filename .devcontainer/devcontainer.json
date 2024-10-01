@@ -26,7 +26,8 @@
         "golang.go",
         "tamasfe.even-better-toml",
         "esbenp.prettier-vscode",
-        "cweijan.vscode-redis-client"
+        "cweijan.vscode-redis-client",
+        "Prisma.prisma"
       ]
     }
   }
