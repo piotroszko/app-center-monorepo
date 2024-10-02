@@ -31,3 +31,42 @@ func (messageFuncs) AddMessage(msg models.Message) (*db.MessageModel, error) {
 
 	return msgDb, nil
 }
+
+func (messageFuncs) GetMessages(channelID string, amount int) ([]db.MessageModel, error) {
+	ctx := context.Background()
+	msgs, err := DbConnection.Message.FindMany(
+		db.Message.ChannelID.Equals(channelID),
+	).OrderBy(
+		db.Message.CreatedAt.Order(db.SortOrderAsc),
+	).Take(amount).Exec(ctx)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return msgs, nil
+}
+
+func (messageFuncs) GetMessagesAfter(channelID string, messageID string, amount int) ([]db.MessageModel, error) {
+	ctx := context.Background()
+
+	messageWithId, err := DbConnection.Message.FindFirst(
+		db.Message.ID.Equals(messageID),
+	).Exec(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	msgs, err := DbConnection.Message.FindMany(
+		db.Message.ChannelID.Equals(channelID),
+		db.Message.CreatedAt.Gt(messageWithId.CreatedAt),
+	).OrderBy(
+		db.Message.CreatedAt.Order(db.SortOrderAsc),
+	).Take(amount).Exec(ctx)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return msgs, nil
+}

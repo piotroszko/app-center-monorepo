@@ -1,6 +1,7 @@
 package main
 
 import (
+	db_chat "go-backend/chat/db"
 	"go-backend/chat/io"
 	redis_chat "go-backend/chat/redis"
 	"go-backend/config"
@@ -9,12 +10,12 @@ import (
 	"github.com/gofiber/contrib/websocket"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
-	"github.com/google/uuid"
 )
 
 func main() {
 	app := fiber.New()
 	redis_chat.InitRedis()
+	db_chat.InitDb()
 
 	app.Use(cors.New(cors.Config{
 		AllowOrigins: "*",
@@ -43,8 +44,8 @@ func upgradeToWebSocket(context *fiber.Ctx) error {
 	}
 
 	if websocket.IsWebSocketUpgrade(context) {
-		context.Locals("userID", uuid.New().String()) // TODO: Implement user authentication
-		context.Locals("userName", "User")
+		context.Locals("userID", token)
+		context.Locals("userName", token)
 		return context.Next()
 	}
 	return fiber.ErrUpgradeRequired

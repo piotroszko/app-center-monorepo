@@ -9,5 +9,6 @@ func InitDb() error {
 	if err := client.Prisma.Connect(); err != nil {
 		return err
 	}
+	DbConnection = client
 	return nil
 }

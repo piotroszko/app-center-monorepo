@@ -9,8 +9,7 @@ type Message struct {
 	SenderID   string `json:"senderID"`
 	SenderName string `json:"senderName"`
 
-	ChannelID   string `json:"receiverID"`
-	ChannelName string `json:"receiverName"`
+	ChannelID string `json:"receiverID"`
 
 	TargetMessageId string `json:"targetMessageId"`
 	Amount          int    `json:"amount"`
@@ -32,11 +31,15 @@ func (m *Message) ToString() (string, error) {
 type MessageType string
 
 const (
-	JoinRoomType      MessageType = "join"
-	LeaveRoomType     MessageType = "leave"
-	ChatMessageType   MessageType = "message"
-	GetNewestType     MessageType = "get-newest"
-	GetHistoryType    MessageType = "get-history"
-	DeleteMessageType MessageType = "delete"
-	DeleteRoomType    MessageType = "delete-room"
+	JoinRoomType       MessageType = "join"
+	LeaveRoomType      MessageType = "leave"
+	ChatMessageType    MessageType = "message"
+	GetNewestType      MessageType = "get-newest"
+	GetHistoryType     MessageType = "get-history"
+	GetChannelsType    MessageType = "get-channels"
+	DeleteMessageType  MessageType = "delete"
+	DeleteRoomType     MessageType = "delete-room"
+	CreateRoomType     MessageType = "create-room"
+	CreateGroupType    MessageType = "create-group"
+	PrivateMessageType MessageType = "create-private"
 )

@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/steebchen/prisma-client-go/runtime/transaction"
 )
 
 type channelFuncs struct{}
@@ -31,45 +32,77 @@ func (channelFuncs) CreateRoomChannel(name string, creatorUserId string, usersId
 // channelType = "room", usersIds will be the users in the room (not owners)
 func (channelFuncs) createChannel(name string, creatorUserId string, channelType string, usersIds ...string) (*db.ChannelModel, error) {
 	ctx := context.Background()
-	owners := make([]db.UserWhereParam, len(usersIds)+1)
-	users := make([]db.UserWhereParam, len(usersIds)+1)
 
-	switch channelType {
-	case string(models.PrivateType):
+	if channelType == string(models.PrivateType) {
 		if len(usersIds) != 2 {
 			return &db.ChannelModel{}, errors.New("private channel should have 2 users")
 		}
-		for _, userId := range usersIds {
-			if userId != creatorUserId {
-				owners = append(owners, db.User.ID.Equals(userId))
-				users = append(users, db.User.ID.Equals(userId))
-			}
-		}
-	case string(models.GroupType), string(models.RoomType):
-		owners = append(owners, db.User.ID.Equals(creatorUserId))
-		users = append(users, db.User.ID.Equals(creatorUserId))
-		for _, userId := range usersIds {
-			if userId != creatorUserId {
-				users = append(users, db.User.ID.Equals(userId))
-			}
-		}
 	}
+
 	channel, err := DbConnection.Channel.CreateOne(
 		db.Channel.ID.Set(uuid.New().String()),
 		db.Channel.Name.Set(name),
 		db.Channel.UpdatedAt.Set(time.Now()),
 		db.Channel.Type.Set(channelType),
-		db.Channel.UserOwners.Link(
-			owners...,
-		),
-		db.Channel.User.Link(
-			users...,
-		),
 	).Exec(ctx)
-
 	if err != nil {
 		return &db.ChannelModel{}, err
 	}
+
+	switch channelType {
+	case string(models.PrivateType):
+		users := DbConnection.Channel.FindUnique(
+			db.Channel.ID.Equals(channel.ID),
+		).Update(
+			db.Channel.User.Link(
+				db.User.ID.Equals(usersIds[0]),
+				db.User.ID.Equals(usersIds[1]),
+			),
+		).Tx()
+		owners := DbConnection.Channel.FindUnique(
+			db.Channel.ID.Equals(channel.ID),
+		).Update(
+			db.Channel.UserOwners.Link(
+				db.User.ID.Equals(usersIds[0]),
+				db.User.ID.Equals(usersIds[1]),
+			),
+		).Tx()
+		if err := DbConnection.Prisma.Transaction(users, owners).Exec(ctx); err != nil {
+			return &db.ChannelModel{}, err
+		}
+	case string(models.GroupType), string(models.RoomType):
+		var tx []transaction.Transaction
+
+		tx = append(tx, DbConnection.Channel.FindUnique(
+			db.Channel.ID.Equals(channel.ID),
+		).Update(
+			db.Channel.UserOwners.Link(
+				db.User.ID.Equals(creatorUserId),
+			),
+		).Tx())
+
+		tx = append(tx, DbConnection.Channel.FindUnique(
+			db.Channel.ID.Equals(channel.ID),
+		).Update(
+			db.Channel.User.Link(
+				db.User.ID.Equals(creatorUserId),
+			),
+		).Tx())
+
+		for _, userId := range usersIds {
+			tx = append(tx, DbConnection.Channel.FindUnique(
+				db.Channel.ID.Equals(channel.ID),
+			).Update(
+				db.Channel.User.Link(
+					db.User.ID.Equals(userId),
+				),
+			).Tx())
+		}
+		if err := DbConnection.Prisma.Transaction(tx...).Exec(ctx); err != nil {
+			return &db.ChannelModel{}, err
+		}
+	}
+
 	return channel, nil
 }
 
@@ -128,4 +161,18 @@ func (channelFuncs) GetUsersForChannel(channelId string) ([]db.UserModel, error)
 		return []db.UserModel{}, err
 	}
 	return users, nil
+}
+
+func (channelFuncs) GetChannelsForUser(userId string) ([]db.ChannelModel, error) {
+	ctx := context.Background()
+	channels, err := DbConnection.Channel.FindMany(
+		db.Channel.User.Some(
+			db.User.ID.Equals(userId),
+		),
+	).Exec(ctx)
+
+	if err != nil {
+		return []db.ChannelModel{}, err
+	}
+	return channels, nil
 }
