@@ -14,33 +14,32 @@ import {
   SidebarBody,
   SidebarLink,
 } from "@repo/ui/components/ui/sidebar";
-import { useChat } from "../backend/chat/chat.class";
+import { trpc } from "@repo/trpc/clients/client";
+import { Button } from "@repo/ui/components/ui/button";
 
 export const TestChat = () => {
-  const [message, setMessage] = useState("");
-  const { isTyping, messages, sendMessage } = useChat();
+  const register = trpc.auth.firstRegister.useMutation();
+  const login = trpc.auth.login.useMutation();
+
+  const testRegister = () => {
+    console.log("register");
+    register.mutate({
+      email: "test2@test.com",
+      login: "piotroszko",
+      password: "password",
+      repeatPassword: "password",
+    });
+  };
   return (
     <div className="flex flex-col">
-      {messages.map((msg) => (
-        <div>
-          <div>{msg.id}</div>
-          <div>{msg.content}</div>
-        </div>
-      ))}
-      {isTyping && <div>Typing...</div>}
-      <input
-        type="text"
-        onChange={(e) => setMessage(e.target.value)}
-        value={message}
-      />
-      <button
-        onClick={() => {
-          sendMessage?.(message);
-          setMessage("");
-        }}
+      <Button onClick={testRegister}>Register</Button>
+      <Button
+        onClick={() =>
+          login.mutate({ login: "piotroszko", password: "password" })
+        }
       >
-        Send
-      </button>
+        Login
+      </Button>
     </div>
   );
 };

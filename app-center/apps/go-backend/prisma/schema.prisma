@@ -66,3 +66,12 @@ model Message {
   Channel   Channel  @relation(fields: [channelId], references: [id])
   User      User     @relation(fields: [userId], references: [id])
 }
+
+model Log {
+  id        String   @id
+  server    String
+  level     String
+  category  String
+  message   String
+  createdAt DateTime @default(now())
+}

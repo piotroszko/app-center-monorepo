@@ -1,10 +1,15 @@
 import { prisma } from "@repo/db";
+import { User } from "@prisma/client";
 import { z } from "zod";
 import { hash } from "argon2";
 import { isNil } from "lodash";
 import { generateKeyPairSync } from "crypto";
 import { publicProcedure, router } from "../../server/trpc";
 import { checkToken, createToken } from "../../libs/jwt";
+
+const buf = Buffer.from(
+  "secretsecretsecretsecretsecretsecretsecretsecretsecretsecretsecretsecret",
+);
 
 export const authRouter = router({
   isAnyUser: publicProcedure.query(async () => {
@@ -32,7 +37,7 @@ export const authRouter = router({
           }),
       }),
     )
-    .query(async (opts) => {
+    .mutation(async (opts) => {
       const data = await prisma.user.findFirst({
         where: {
           OR: [
@@ -45,9 +50,11 @@ export const authRouter = router({
           ],
         },
       });
-      const isPasswordValid = await hash(opts.input.password);
-      if (data && isPasswordValid === data.password) {
-        return data;
+      const hashedPassword = await hash(opts.input.password, {
+        salt: buf,
+      });
+      if (data && hashedPassword === data.password) {
+        return getToken(data);
       }
       return null;
     }),
@@ -95,10 +102,12 @@ export const authRouter = router({
           path: ["repeatPassword"],
         }),
     )
-    .query(async (opts) => {
+    .mutation(async (opts) => {
       const data = await prisma.user.findMany();
       if (data.length === 0) {
-        const hashedPassword = await hash(opts.input.password);
+        const hashedPassword = await hash(opts.input.password, {
+          salt: buf,
+        });
         const user = await prisma.user.create({
           data: {
             name: opts.input.login,
@@ -106,55 +115,11 @@ export const authRouter = router({
             password: hashedPassword,
           },
         });
+
         return user;
       }
-      return data;
-    }),
-  createToken: publicProcedure.input(z.string()).query(async (opts) => {
-    const privateKeyName = "privateKey";
-    const publicKeyName = "publicKey";
-
-    const data = await prisma.user.findFirst({
-      where: {
-        id: opts.input,
-      },
-    });
-    if (isNil(data)) {
       return null;
-    }
-    const token = await prisma.settings.findFirst({
-      where: {
-        key: privateKeyName,
-      },
-    });
-    if (isNil(token)) {
-      const { privateKey, publicKey } = generateKeyPairSync("rsa", {
-        modulusLength: 2048,
-        publicKeyEncoding: {
-          type: "spki",
-          format: "pem",
-        },
-        privateKeyEncoding: {
-          type: "pkcs8",
-          format: "pem",
-        },
-      });
-      await prisma.settings.create({
-        data: {
-          key: privateKeyName,
-          value: privateKey,
-        },
-      });
-      await prisma.settings.create({
-        data: {
-          key: publicKeyName,
-          value: publicKey,
-        },
-      });
-      return createToken(data, privateKey);
-    }
-    return createToken(data, token.value);
-  }),
+    }),
   checkToken: publicProcedure.input(z.string()).query(async (opts) => {
     const publicKeyName = "publicKey";
     const token = await prisma.settings.findFirst({
@@ -172,3 +137,44 @@ export const authRouter = router({
     return result;
   }),
 });
+
+const getToken = async (user: User) => {
+  const privateKeyName = "privateKey";
+  const publicKeyName = "publicKey";
+
+  if (isNil(user)) {
+    return null;
+  }
+  const token = await prisma.settings.findFirst({
+    where: {
+      key: privateKeyName,
+    },
+  });
+  if (isNil(token)) {
+    const { privateKey, publicKey } = generateKeyPairSync("rsa", {
+      modulusLength: 2048,
+      publicKeyEncoding: {
+        type: "spki",
+        format: "pem",
+      },
+      privateKeyEncoding: {
+        type: "pkcs8",
+        format: "pem",
+      },
+    });
+    await prisma.settings.create({
+      data: {
+        key: privateKeyName,
+        value: privateKey,
+      },
+    });
+    await prisma.settings.create({
+      data: {
+        key: publicKeyName,
+        value: publicKey,
+      },
+    });
+    return createToken(user, privateKey);
+  }
+  return createToken(user, token.value);
+};

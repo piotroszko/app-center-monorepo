@@ -1,10 +1,12 @@
 package main
 
 import (
+	"go-backend/auth"
 	db_chat "go-backend/chat/db"
 	"go-backend/chat/io"
 	redis_chat "go-backend/chat/redis"
 	"go-backend/config"
+	"go-backend/logs"
 	"log"
 
 	"github.com/gofiber/contrib/websocket"
@@ -37,20 +39,22 @@ func main() {
 
 // Authorize and Upgrate to websocket
 func upgradeToWebSocket(context *fiber.Ctx) error {
-	token := context.Query("token")
+	token := string(context.Request().Header.Peek("Authorization"))
 	if token == "" {
-		log.Println("No token provided")
+		logs.SendLogWarning("No token provided, connection ip:"+context.IP(), "ws-upgrader")
+		return fiber.ErrUnauthorized
+	}
+	user, err := auth.VerifyToken(token)
+	if err != nil || user.ID == "" || user.Name == "" || user.Email == "" {
+		logs.SendLogWarning("Invalid token provided, connection ip:"+context.IP()+", token:"+token, "ws-upgrader")
 		return fiber.ErrUnauthorized
 	}
 
 	if websocket.IsWebSocketUpgrade(context) {
-		context.Locals("userID", token)
-		context.Locals("userName", token)
+		context.Locals("userID", user.ID)
+		context.Locals("userName", user.Name)
+		context.Locals("userEmail", user.Email)
 		return context.Next()
 	}
 	return fiber.ErrUpgradeRequired
 }
-
-// TODO: Dodac autoryzacje
-// TODO: Dodac db
-// TODO: Obsługe wiadomości

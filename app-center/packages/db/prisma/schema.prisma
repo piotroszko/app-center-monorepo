@@ -78,3 +78,12 @@ model Message {
   channel Channel @relation(fields: [channelId], references: [id])
   channelId String
 }
+
+model Log {
+  id        String   @id @default(cuid())
+  server    String  // go, nextjs, or module name
+  level     String // info, warn, error
+  category  String // auth, db, api, etc.
+  message   String // log message
+  createdAt DateTime @default(now())
+}

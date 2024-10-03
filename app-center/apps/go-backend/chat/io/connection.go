@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	redis_chat "go-backend/chat/redis"
-	"log"
+	"go-backend/logs"
 	"sync"
 
 	"github.com/gofiber/contrib/websocket"
@@ -31,19 +31,19 @@ func (c *ConnectionsType) AddConnection(userID string, conn *websocket.Conn) {
 		for {
 			msg, err := sub.ReceiveMessage(context.Background())
 			if err != nil {
-				log.Println("Error receiving message from redis:", err)
+				logs.SendLogError("Error receiving message from redis", "go-redis")
 				continue
 			}
 			c.Mutex.RLock()
 			_, ok := c.UserConnections[userID]
 			if !ok {
-				log.Println("User not connected")
+				logs.SendLogWarning("User not connected", "go-redis")
 				break
 			}
 			err = c.UserConnections[userID].WriteJSON(msg.Payload)
 			c.Mutex.RUnlock()
 			if err != nil {
-				log.Println("Error sending message to user:", err)
+				logs.SendLogError("Error sending message to user", "go-redis")
 				break
 			}
 
@@ -63,7 +63,7 @@ func (c *ConnectionsType) SendMessage(userID string, message interface{}) error 
 	c.Mutex.RLock()
 	_, ok := c.UserConnections[userID]
 	if !ok {
-		log.Println("User not connected")
+		logs.SendLogError("User not connected, ID:"+userID, "go-redis")
 		return errors.New("user not connected")
 	}
 	err := c.UserConnections[userID].WriteJSON(message)
