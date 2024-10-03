@@ -1,4 +1,4 @@
-import { prisma } from "@repo/db";
+import { prisma, redis } from "@repo/db";
 import { User } from "@prisma/client";
 import { z } from "zod";
 import { hash, compare } from "bcryptjs";
@@ -114,15 +114,11 @@ export const authRouter = router({
     }),
   checkToken: publicProcedure.input(z.string()).query(async (opts) => {
     const publicKeyName = "publicKey";
-    const token = await prisma.settings.findFirst({
-      where: {
-        key: publicKeyName,
-      },
-    });
+    const token = await await getSecretFromRedisOrDb(publicKeyName);
     if (isNil(token)) {
       return null;
     }
-    const result = await checkToken(opts.input, token.value);
+    const result = await checkToken(opts.input, token);
     if (isNil(result)) {
       return null;
     }
@@ -137,12 +133,9 @@ const getToken = async (user: User) => {
   if (isNil(user)) {
     return null;
   }
-  const token = await prisma.settings.findFirst({
-    where: {
-      key: privateKeyName,
-    },
-  });
-  if (isNil(token)) {
+  let privateSecret = await getSecretFromRedisOrDb(privateKeyName);
+
+  if (isNil(privateSecret)) {
     const { privateKey, publicKey } = generateKeyPairSync("rsa", {
       modulusLength: 2048,
       publicKeyEncoding: {
@@ -154,6 +147,8 @@ const getToken = async (user: User) => {
         format: "pem",
       },
     });
+    redis.set(privateKeyName, privateKey);
+    redis.set(publicKeyName, publicKey);
     await prisma.settings.create({
       data: {
         key: privateKeyName,
@@ -168,5 +163,23 @@ const getToken = async (user: User) => {
     });
     return createToken(user, privateKey);
   }
-  return createToken(user, token.value);
+  return createToken(user, privateSecret);
+};
+
+const getSecretFromRedisOrDb = async (key: string) => {
+  const redisSecret = await redis.get(key);
+  if (isNil(redisSecret)) {
+    const token = await prisma.settings.findFirst({
+      where: {
+        key,
+      },
+    });
+    if (!isNil(token)) {
+      redis.set(key, token.value);
+      return token.value;
+    }
+  } else {
+    return redisSecret;
+  }
+  return null;
 };
