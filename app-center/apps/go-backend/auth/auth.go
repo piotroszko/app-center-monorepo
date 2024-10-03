@@ -30,6 +30,7 @@ func VerifyToken(token string) (UserClaims, error) {
 		if err != nil {
 			return UserClaims{}, err
 		}
+
 		_, err = redis_chat.RedisClient.Set(ctx, jwtKeyName, secretDb.Value, 0).Result()
 		if err != nil {
 			return UserClaims{}, err
@@ -51,6 +52,7 @@ func VerifyToken(token string) (UserClaims, error) {
 	if !tokenDecoded.Valid {
 		return UserClaims{}, fmt.Errorf("invalid token")
 	}
+
 	return UserClaims{
 		ID:    tokenDecoded.Claims.(jwt.MapClaims)["id"].(string),
 		Name:  tokenDecoded.Claims.(jwt.MapClaims)["name"].(string),

@@ -18,7 +18,7 @@ import { trpc } from "@repo/trpc/clients/client";
 import { Button } from "@repo/ui/components/ui/button";
 
 export const TestChat = () => {
-  const register = trpc.auth.firstRegister.useMutation();
+  const register = trpc.auth.register.useMutation();
   const login = trpc.auth.login.useMutation();
 
   const testRegister = () => {

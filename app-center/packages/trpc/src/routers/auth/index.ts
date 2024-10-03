@@ -1,15 +1,14 @@
 import { prisma } from "@repo/db";
 import { User } from "@prisma/client";
 import { z } from "zod";
-import { hash } from "argon2";
+import { hash, compare } from "bcryptjs";
 import { isNil } from "lodash";
 import { generateKeyPairSync } from "crypto";
 import { publicProcedure, router } from "../../server/trpc";
 import { checkToken, createToken } from "../../libs/jwt";
 
-const buf = Buffer.from(
-  "secretsecretsecretsecretsecretsecretsecretsecretsecretsecretsecretsecret",
-);
+const secretHash =
+  "secretsecretsecretsecretsecretsecretsecretsecretsecretsecretsecretsecret";
 
 export const authRouter = router({
   isAnyUser: publicProcedure.query(async () => {
@@ -50,16 +49,14 @@ export const authRouter = router({
           ],
         },
       });
-      const hashedPassword = await hash(opts.input.password, {
-        salt: buf,
-      });
-      if (data && hashedPassword === data.password) {
+      const isPasswordCorrect = await compare(opts.input.password, secretHash);
+
+      if (data && isPasswordCorrect) {
         return getToken(data);
       }
       return null;
     }),
-  // register if there 0 users in the database
-  firstRegister: publicProcedure
+  register: publicProcedure
     .input(
       z
         .object({
@@ -103,22 +100,17 @@ export const authRouter = router({
         }),
     )
     .mutation(async (opts) => {
-      const data = await prisma.user.findMany();
-      if (data.length === 0) {
-        const hashedPassword = await hash(opts.input.password, {
-          salt: buf,
-        });
-        const user = await prisma.user.create({
-          data: {
-            name: opts.input.login,
-            email: opts.input.email,
-            password: hashedPassword,
-          },
-        });
+      const hashedPassword = await hash(opts.input.password, secretHash);
 
-        return user;
-      }
-      return null;
+      const user = await prisma.user.create({
+        data: {
+          name: opts.input.login,
+          email: opts.input.email,
+          password: hashedPassword,
+        },
+      });
+
+      return user;
     }),
   checkToken: publicProcedure.input(z.string()).query(async (opts) => {
     const publicKeyName = "publicKey";
@@ -128,11 +120,11 @@ export const authRouter = router({
       },
     });
     if (isNil(token)) {
-      return false;
+      return null;
     }
     const result = await checkToken(opts.input, token.value);
     if (isNil(result)) {
-      return false;
+      return null;
     }
     return result;
   }),
