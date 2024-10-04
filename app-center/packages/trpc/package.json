@@ -18,7 +18,8 @@
     "./clients/*": "./src/clients/*.ts",
     "./providers/*": "./src/clients/*.tsx",
     "./passthrough/*": "./src/passthrough/*.ts",
-    "./server/*": "./src/server/*.tsx"
+    "./server/*": "./src/server/*.tsx",
+    "./libs/*": "./src/libs/*.ts"
   },
   "devDependencies": {
     "typescript": "^5.6.2",

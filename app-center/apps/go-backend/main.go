@@ -15,6 +15,7 @@ import (
 )
 
 func main() {
+	config.Init()
 	app := fiber.New()
 	redis_chat.InitRedis()
 	db_chat.InitDb()

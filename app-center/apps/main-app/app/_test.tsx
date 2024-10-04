@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   IconArrowLeft,
   IconBrandTabler,
@@ -35,7 +35,14 @@ export const TestChat = () => {
       <Button onClick={testRegister}>Register</Button>
       <Button
         onClick={() =>
-          login.mutate({ login: "piotroszko", password: "password" })
+          login.mutate(
+            { login: "piotroszko", password: "password" },
+            {
+              onSuccess: (data) => {
+                console.log(data);
+              },
+            },
+          )
         }
       >
         Login

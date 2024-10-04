@@ -1,14 +1,12 @@
-import { prisma, redis } from "@repo/db";
-import { User } from "@prisma/client";
+import { prisma } from "@repo/db";
 import { z } from "zod";
 import { hash, compare } from "bcryptjs";
-import { isNil } from "lodash";
-import { generateKeyPairSync } from "crypto";
+import { isNil, omit } from "lodash";
 import { publicProcedure, router } from "../../server/trpc";
-import { checkToken, createToken } from "../../libs/jwt";
+import { createToken } from "../../libs/jwt";
+import { getPrivateKey } from "../../libs/env";
 
-const secretHash =
-  "secretsecretsecretsecretsecretsecretsecretsecretsecretsecretsecretsecret";
+const secretHash = "$2a$10$fJnYjccrjmw47juTG7680u";
 
 export const authRouter = router({
   isAnyUser: publicProcedure.query(async () => {
@@ -50,9 +48,11 @@ export const authRouter = router({
         },
       });
       const isPasswordCorrect = await compare(opts.input.password, secretHash);
+      const secret = getPrivateKey();
+      console.log(secret, data, isPasswordCorrect);
 
-      if (data && isPasswordCorrect) {
-        return getToken(data);
+      if (data && isPasswordCorrect && secret) {
+        return createToken(data, secret);
       }
       return null;
     }),
@@ -109,77 +109,12 @@ export const authRouter = router({
           password: hashedPassword,
         },
       });
+      const secret = getPrivateKey();
 
-      return user;
+      if (isNil(secret)) {
+        return { ...omit(user, "password") };
+      }
+
+      return { ...omit(user, "password"), token: createToken(user, secret) };
     }),
-  checkToken: publicProcedure.input(z.string()).query(async (opts) => {
-    const publicKeyName = "publicKey";
-    const token = await await getSecretFromRedisOrDb(publicKeyName);
-    if (isNil(token)) {
-      return null;
-    }
-    const result = await checkToken(opts.input, token);
-    if (isNil(result)) {
-      return null;
-    }
-    return result;
-  }),
 });
-
-const getToken = async (user: User) => {
-  const privateKeyName = "privateKey";
-  const publicKeyName = "publicKey";
-
-  if (isNil(user)) {
-    return null;
-  }
-  let privateSecret = await getSecretFromRedisOrDb(privateKeyName);
-
-  if (isNil(privateSecret)) {
-    const { privateKey, publicKey } = generateKeyPairSync("rsa", {
-      modulusLength: 2048,
-      publicKeyEncoding: {
-        type: "spki",
-        format: "pem",
-      },
-      privateKeyEncoding: {
-        type: "pkcs8",
-        format: "pem",
-      },
-    });
-    redis.set(privateKeyName, privateKey);
-    redis.set(publicKeyName, publicKey);
-    await prisma.settings.create({
-      data: {
-        key: privateKeyName,
-        value: privateKey,
-      },
-    });
-    await prisma.settings.create({
-      data: {
-        key: publicKeyName,
-        value: publicKey,
-      },
-    });
-    return createToken(user, privateKey);
-  }
-  return createToken(user, privateSecret);
-};
-
-const getSecretFromRedisOrDb = async (key: string) => {
-  const redisSecret = await redis.get(key);
-  if (isNil(redisSecret)) {
-    const token = await prisma.settings.findFirst({
-      where: {
-        key,
-      },
-    });
-    if (!isNil(token)) {
-      redis.set(key, token.value);
-      return token.value;
-    }
-  } else {
-    return redisSecret;
-  }
-  return null;
-};

@@ -1,13 +1,10 @@
 package auth
 
 import (
-	"context"
 	"crypto/x509"
 	"encoding/pem"
 	"fmt"
-	db_chat "go-backend/chat/db"
-	redis_chat "go-backend/chat/redis"
-	"go-backend/prisma/db"
+	"go-backend/config"
 
 	"github.com/golang-jwt/jwt/v5"
 )
@@ -19,23 +16,9 @@ type UserClaims struct {
 }
 
 func VerifyToken(token string) (UserClaims, error) {
-	jwtKeyName := "publicKey"
-	ctx := context.Background()
-	secret, err := redis_chat.RedisClient.Get(ctx, jwtKeyName).Result()
-
-	if err != nil || secret == "" {
-		secretDb, err := db_chat.DbConnection.Settings.FindFirst(
-			db.Settings.Key.Equals(jwtKeyName),
-		).Exec(ctx)
-		if err != nil {
-			return UserClaims{}, err
-		}
-
-		_, err = redis_chat.RedisClient.Set(ctx, jwtKeyName, secretDb.Value, 0).Result()
-		if err != nil {
-			return UserClaims{}, err
-		}
-		secret = secretDb.Value
+	secret := config.Config.JwtPublicKey
+	if secret == "" {
+		return UserClaims{}, fmt.Errorf("jwt public key not found")
 	}
 
 	block, _ := pem.Decode([]byte(secret))
