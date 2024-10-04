@@ -43,6 +43,7 @@
     "./hooks/*": "./src/hooks/*.ts",
     "./components/*": "./src/components/*.tsx",
     "./theme/*": "./src/theme/*.tsx",
-    "./icons": "./src/icons.ts"
+    "./icons": "./src/icons.ts",
+    "./custom/*": "./src/custom/*.tsx"
   }
 }
