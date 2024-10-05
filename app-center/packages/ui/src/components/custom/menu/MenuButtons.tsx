@@ -10,8 +10,9 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
   navigationMenuTriggerStyle,
-} from "../ui/navigation-menu";
+} from "../../ui/navigation-menu";
 import { cn } from "@ui/lib/utils";
+import { text } from "stream/consumers";
 
 interface ButtonWithDropdown {
   key: string;
@@ -30,7 +31,11 @@ interface ButtonWithoutDropdown {
   title: string;
   icon?: React.ReactNode;
   href: string;
+  customColors?: Record<keyof typeof additionalSetOfColors, boolean>;
 }
+const additionalSetOfColors = {
+  github: "#6e5494",
+};
 
 interface MenuButtonsProps {
   buttons: (ButtonWithDropdown | ButtonWithoutDropdown)[];
@@ -49,12 +54,19 @@ const ButtonWithoutDropdown = ({
   href,
   title,
   icon,
+  customColors,
 }: ButtonWithoutDropdown) => {
   return (
     <NavigationMenuItem>
       <Link href={href} legacyBehavior passHref>
         <NavigationMenuLink
-          className={cn(navigationMenuTriggerStyle(), "flex gap-1")}
+          className={cn(
+            navigationMenuTriggerStyle(),
+            `flex gap-1`,
+            customColors?.github
+              ? `bg-[${additionalSetOfColors["github"]}] text-white dark:text-white`
+              : "",
+          )}
         >
           {icon}
           {title}
@@ -105,6 +117,7 @@ export function NavButtonWrapper({ buttons }: MenuButtonsProps) {
                 title={button.title}
                 icon={button.icon}
                 href={button.href}
+                customColors={button?.customColors}
               />
             );
           }

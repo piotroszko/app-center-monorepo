@@ -44,6 +44,6 @@
     "./components/*": "./src/components/*.tsx",
     "./theme/*": "./src/theme/*.tsx",
     "./icons": "./src/icons.ts",
-    "./custom/*": "./src/custom/*.tsx"
+    "./custom": "./src/components/custom/index.ts"
   }
 }
