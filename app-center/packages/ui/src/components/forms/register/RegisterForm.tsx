@@ -56,12 +56,8 @@ export function RegisterForm({ onRegister, error }: RegisterFormProps) {
 
   return (
     <div className="max-w-md w-full mx-auto rounded-none md:rounded-2xl p-4 md:p-8 shadow-input bg-white dark:bg-black">
-      <div className="flex justify-center mb-8 w-1/2 mx-auto">
-        <Logo
-          onClick={() => {
-            window.location.href = "/";
-          }}
-        />
+      <div className="flex justify-center items-center mb-8 w-full h-auto">
+        <Logo href={"/"} className="w-3/4" />
       </div>
       <h2 className="font-bold text-xl text-neutral-800 dark:text-neutral-200 text-center">
         Registration

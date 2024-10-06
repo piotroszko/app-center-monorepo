@@ -1,20 +1,19 @@
 import { cn } from "@ui/lib/utils";
+import Link from "next/link";
+import { ComponentProps } from "react";
 
 interface LogoProps {
-  onClick?: () => void;
+  href: ComponentProps<typeof Link>["href"];
+  className?: string;
 }
 
-export function Logo({ onClick }: LogoProps) {
+export function Logo({ href, className }: LogoProps) {
   return (
-    <div className={cn(`w-full max-h-10`)}>
+    <Link href={href} className={cn(`hover:cursor-pointer`, className)}>
       <svg
-        className={cn(
-          onClick ? `hover:cursor-pointer` : ``,
-          `max-w-full max-h-10 w-auto h-auto fill-secondary-foreground block`,
-        )}
+        className={cn(`fill-secondary-foreground w-full h-full`)}
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 890 215"
-        onClick={onClick}
       >
         <path
           fill="transparent"
@@ -33,6 +32,6 @@ export function Logo({ onClick }: LogoProps) {
           d="M333 94.6a3683 3683 0 0 1 3.4-25.5c.3-2.3.7-4.7 2-7.2l1.6 8 5.2 30.5c.5 2.7 1.3 5.4 1.8 8 .4 3-.4 4.8-4 4.7-4.1-.3-8.3-.1-13.7-.1l3.7-18.4zm82 37.9c-1 2.1-2 5-3.2 5.2-3.7.6-7.6.2-11.4-.2-.6 0-1.3-2.1-1.4-3.3l.1-51.4c0-1.1 1.1-3 2-3.2 3.7-.4 7.7-1 11.2-.1 1.4.4 2.5 4.6 2.6 7.1.2 15.2.1 30.3 0 46zm48.6-50.6c2.5-2.6 12.4-4.1 14.3-2.4.7.7 1 2 1 3.1l.1 51.5c0 2.7-.7 4-3.7 4-3.6-.3-7.2-.1-12-.1 0-18.8 0-37.3.3-56.1zM804 93v7.7h-18c0-6-.2-12 .2-18.1 0-1.3 2-3.3 3.4-3.5 4.7-.6 9.4-.5 14.4-.7V93zM622.4 78c2.3 0 4.2-.2 6 0 1.7.3 3.4.9 5.9 1.6l.7 17.6c.2 2.7-.9 4-3.7 3.8-4-.1-8 .2-12-.1-1 0-3.1-1.3-3.1-2-.2-5.3 0-10.6.3-15.9.1-3.5 3-4 6-5z"
         />
       </svg>
-    </div>
+    </Link>
   );
 }

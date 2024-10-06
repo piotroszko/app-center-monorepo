@@ -1,9 +1,8 @@
 "use client";
 
 import * as React from "react";
-import { Logo, NavButtonWrapper } from "@repo/ui/custom";
+import { NavButtonWrapper } from "@repo/ui/custom";
 import { IconBrandGithub } from "@repo/ui/icons";
-import { useRouter } from "next/navigation";
 
 export function NavigationMenu() {
   return (
@@ -34,16 +33,8 @@ export function NavigationMenu() {
           title: "Github repository",
           href: "https://github.com/piotroszko/app-center-monorepo",
           icon: <IconBrandGithub />,
-          customColors: {
-            github: true,
-          },
         },
       ]}
     />
   );
 }
-
-export const LogoWithRedirect = () => {
-  const { push } = useRouter();
-  return <Logo onClick={() => push("/")} />;
-};
