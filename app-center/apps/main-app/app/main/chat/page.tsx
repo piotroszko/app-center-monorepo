@@ -1,7 +1,8 @@
 import React from "react";
+import ChatUI from "./_chat";
 
 const ChatPage = () => {
-  return <div>Chat</div>;
+  return <ChatUI />;
 };
 
 export default ChatPage;

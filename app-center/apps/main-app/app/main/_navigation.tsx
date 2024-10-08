@@ -106,7 +106,7 @@ export function Sidebar({ children }: PropsWithChildren) {
                 key="logo-icon"
                 href={"/main/dashboard"}
                 size={"icon"}
-                className={cn("transition-all", "w-8")}
+                className={cn("transition-all", "w-7")}
               />
             )}
 
@@ -119,7 +119,7 @@ export function Sidebar({ children }: PropsWithChildren) {
         </SidebarBody>
       </SidebarComponent>
       <div className="flex flex-1">
-        <div className="p-2 md:p-10 rounded-tl-2xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 flex flex-col gap-2 flex-1 w-full h-full">
+        <div className="rounded-tl-2xl border border-neutral-200 dark:border-neutral-700  w-full h-full bg-gray-100 dark:bg-neutral-800">
           {children}
         </div>
       </div>
