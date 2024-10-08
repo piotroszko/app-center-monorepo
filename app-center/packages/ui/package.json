@@ -38,7 +38,8 @@
     "zod": "3.23.8",
     "lodash": "4.17.21",
     "react-hook-form": "7.53.0",
-    "@hookform/resolvers": "3.9.0"
+    "@hookform/resolvers": "3.9.0",
+    "@radix-ui/react-toast": "1.2.2"
   },
   "exports": {
     "./globals.css": "./src/globals.css",
@@ -50,6 +51,6 @@
     "./theme/*": "./src/theme/*.tsx",
     "./icons": "./src/icons.ts",
     "./custom": "./src/components/custom/index.ts",
-    "./forms": "./src/components/forms/index.ts"
+    "./form-fields": "./src/components/form-fields/index.ts"
   }
 }

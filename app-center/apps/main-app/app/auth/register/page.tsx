@@ -1,5 +1,5 @@
-import { RegisterForm } from "@repo/ui/forms";
 import React from "react";
+import { RegisterForm } from "./_form";
 
 export default async function Page() {
   return (

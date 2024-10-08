@@ -3,6 +3,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { httpBatchLink } from "@trpc/client";
 import React, { useState } from "react";
 import { trpc } from "./client";
+import { isNil } from "lodash";
 
 export function Provider({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(() => new QueryClient({}));
@@ -11,6 +12,16 @@ export function Provider({ children }: { children: React.ReactNode }) {
       links: [
         httpBatchLink({
           url: "http://localhost:3000/api/trpc",
+          headers: () => {
+            console.log("getting token");
+            const token = localStorage.getItem("token");
+            if (!isNil(token)) {
+              return {
+                Authorization: `${token}`,
+              };
+            }
+            return {};
+          },
         }),
       ],
     }),

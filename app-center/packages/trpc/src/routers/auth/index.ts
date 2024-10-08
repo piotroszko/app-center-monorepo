@@ -5,6 +5,7 @@ import { isNil, omit } from "lodash";
 import { publicProcedure, router } from "../../server/trpc";
 import { createToken } from "../../libs/jwt";
 import { getPrivateKey } from "../../libs/env";
+import { TRPCError } from "@trpc/server";
 
 const secretHash = "$2a$10$fJnYjccrjmw47juTG7680u";
 
@@ -49,12 +50,14 @@ export const authRouter = router({
       });
       const isPasswordCorrect = await compare(opts.input.password, secretHash);
       const secret = getPrivateKey();
-      console.log(secret, data, isPasswordCorrect);
 
       if (data && isPasswordCorrect && secret) {
         return createToken(data, secret);
       }
-      return null;
+      throw new TRPCError({
+        code: "UNAUTHORIZED",
+        message: "Invalid login or password",
+      });
     }),
   register: publicProcedure
     .input(

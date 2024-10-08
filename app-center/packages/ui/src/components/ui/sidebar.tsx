@@ -15,10 +15,11 @@ interface SidebarContextProps {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   animate: boolean;
+  active: string;
 }
 
 const SidebarContext = createContext<SidebarContextProps | undefined>(
-  undefined
+  undefined,
 );
 
 export const useSidebar = () => {
@@ -34,11 +35,13 @@ export const SidebarProvider = ({
   open: openProp,
   setOpen: setOpenProp,
   animate = true,
+  active = "",
 }: {
   children: React.ReactNode;
   open?: boolean;
   setOpen?: React.Dispatch<React.SetStateAction<boolean>>;
   animate?: boolean;
+  active?: string;
 }) => {
   const [openState, setOpenState] = useState(false);
 
@@ -46,7 +49,9 @@ export const SidebarProvider = ({
   const setOpen = setOpenProp !== undefined ? setOpenProp : setOpenState;
 
   return (
-    <SidebarContext.Provider value={{ open, setOpen, animate: animate }}>
+    <SidebarContext.Provider
+      value={{ open, setOpen, animate: animate, active }}
+    >
       {children}
     </SidebarContext.Provider>
   );
@@ -57,14 +62,21 @@ export const Sidebar = ({
   open,
   setOpen,
   animate,
+  active,
 }: {
   children: React.ReactNode;
   open?: boolean;
   setOpen?: React.Dispatch<React.SetStateAction<boolean>>;
   animate?: boolean;
+  active?: string;
 }) => {
   return (
-    <SidebarProvider open={open} setOpen={setOpen} animate={animate}>
+    <SidebarProvider
+      open={open}
+      setOpen={setOpen}
+      animate={animate}
+      active={active}
+    >
       {children}
     </SidebarProvider>
   );
@@ -90,7 +102,7 @@ export const DesktopSidebar = ({
       <motion.div
         className={cn(
           "h-full px-4 py-4 hidden  md:flex md:flex-col bg-neutral-100 dark:bg-neutral-800 w-[300px] flex-shrink-0",
-          className
+          className,
         )}
         animate={{
           width: animate ? (open ? "300px" : "60px") : "300px",
@@ -115,7 +127,7 @@ export const MobileSidebar = ({
     <>
       <div
         className={cn(
-          "h-10 px-4 py-4 flex flex-row md:hidden  items-center justify-between bg-neutral-100 dark:bg-neutral-800 w-full"
+          "h-10 px-4 py-4 flex flex-row md:hidden  items-center justify-between bg-neutral-100 dark:bg-neutral-800 w-full",
         )}
         {...props}
       >
@@ -137,7 +149,7 @@ export const MobileSidebar = ({
               }}
               className={cn(
                 "fixed h-full w-full inset-0 bg-white dark:bg-neutral-900 p-10 z-[100] flex flex-col justify-between",
-                className
+                className,
               )}
             >
               <div
@@ -164,13 +176,15 @@ export const SidebarLink = ({
   className?: string;
   props?: LinkProps;
 }) => {
-  const { open, animate } = useSidebar();
+  const { open, animate, active } = useSidebar();
+  const isActive = active === link.href;
   return (
     <Link
       href={link.href}
       className={cn(
-        "flex items-center justify-start gap-2  group/sidebar py-2",
-        className
+        "flex items-center justify-start gap-2  group/sidebar py-2 rounded-sm px-1",
+        isActive ? "bg-primary/5" : "",
+        className,
       )}
       {...props}
     >
@@ -181,7 +195,10 @@ export const SidebarLink = ({
           display: animate ? (open ? "inline-block" : "none") : "inline-block",
           opacity: animate ? (open ? 1 : 0) : 1,
         }}
-        className="text-neutral-700 dark:text-neutral-200 text-sm group-hover/sidebar:translate-x-1 transition duration-150 whitespace-pre inline-block !p-0 !m-0"
+        className={cn(
+          "text-neutral-700 dark:text-neutral-200 text-sm group-hover/sidebar:translate-x-1 transition duration-150 whitespace-pre inline-block !p-0 !m-0",
+          isActive ? "text-primary-500 dark:text-primary-400" : "",
+        )}
       >
         {link.label}
       </motion.span>

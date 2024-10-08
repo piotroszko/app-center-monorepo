@@ -4,7 +4,13 @@ import { isNil } from "lodash";
 import { checkToken } from "@repo/trpc/libs/jwt";
 import { getPublicKey } from "@repo/trpc/libs/env";
 
-const publicRoutes = ["/auth/login", "/auth/register", "/"];
+const publicRoutes = [
+  "/auth/login",
+  "/auth/register",
+  "/",
+  "/main/dashboard",
+  "/main/chat",
+];
 
 export default async function middleware(req: NextRequest) {
   const path = req.nextUrl.pathname;

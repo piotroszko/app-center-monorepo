@@ -1,4 +1,5 @@
 import { Provider } from "@repo/trpc/providers/provider";
+import { Toaster } from "@repo/ui/components/ui/toaster";
 import "@repo/ui/globals.css";
 import { ThemeProvider } from "@repo/ui/theme/ThemeProvider";
 import type { Metadata } from "next";
@@ -30,6 +31,7 @@ export default function RootLayout({
             disableTransitionOnChange
           >
             {children}
+            <Toaster />
           </ThemeProvider>
         </body>
       </Provider>
