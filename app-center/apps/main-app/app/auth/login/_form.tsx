@@ -11,6 +11,7 @@ import { FormInput } from "@repo/ui/form-fields";
 import Link from "next/link";
 import { isNil } from "lodash";
 import { useRouter } from "next/navigation";
+import { useCookies } from "react-cookie";
 
 const loginSchema = z.object({
   login: z.string().min(5, {
@@ -22,6 +23,7 @@ const loginSchema = z.object({
 });
 
 export function LoginForm() {
+  const [, setCookie] = useCookies(["Authorization", "RefreshToken"]);
   const { toast } = useToast();
   const { push } = useRouter();
 
@@ -43,14 +45,18 @@ export function LoginForm() {
         return;
       }
       localStorage.setItem("token", data);
+      setCookie("Authorization", data, {
+        expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+        domain: "localhost",
+        path: "/",
+      });
       toast({
         title: "Success",
         description: "Successfully logged in. Redirecting...",
         variant: "default",
       });
-      setTimeout(() => {
-        push("/dashboard");
-      }, 1000);
+
+      push("/main/dashboard");
     },
   });
   const form = useForm<z.infer<typeof loginSchema>>({

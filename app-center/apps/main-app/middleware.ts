@@ -2,15 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { isNil } from "lodash";
 import { checkToken } from "@repo/trpc/libs/jwt";
-import { getPublicKey } from "@repo/trpc/libs/env";
+import { getJwtSecret } from "@repo/trpc/libs/env";
 
-const publicRoutes = [
-  "/auth/login",
-  "/auth/register",
-  "/",
-  "/main/dashboard",
-  "/main/chat",
-];
+const publicRoutes = ["/auth/login", "/auth/register", "/"];
 
 export default async function middleware(req: NextRequest) {
   const path = req.nextUrl.pathname;
@@ -24,7 +18,7 @@ export default async function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL("/auth/login", req.nextUrl));
   }
 
-  const token = getPublicKey();
+  const token = getJwtSecret();
   if (isNil(token)) {
     return NextResponse.redirect(new URL("/auth/login", req.nextUrl));
   }
@@ -37,7 +31,6 @@ export default async function middleware(req: NextRequest) {
   if (!isPublicRoute && !parsedToken?.id) {
     return NextResponse.redirect(new URL("/", req.nextUrl));
   }
-
   return NextResponse.next();
 }
 

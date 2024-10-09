@@ -1,7 +1,4 @@
-export const getPublicKey = () => {
-  return process.env.JWT_PUBLIC;
-};
-
-export const getPrivateKey = () => {
-  return process.env.JWT_PRIVATE;
+export const getJwtSecret = () => {
+  console.log(process.env.JWT_SECRET);
+  return process.env.JWT_SECRET;
 };

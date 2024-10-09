@@ -1,10 +1,10 @@
 import { prisma } from "@repo/db";
 import { z } from "zod";
-import { hash, compare } from "bcryptjs";
+import { hash } from "bcryptjs";
 import { isNil, omit } from "lodash";
 import { publicProcedure, router } from "../../server/trpc";
 import { createToken } from "../../libs/jwt";
-import { getPrivateKey } from "../../libs/env";
+import { getJwtSecret } from "../../libs/env";
 import { TRPCError } from "@trpc/server";
 
 const secretHash = "$2a$10$fJnYjccrjmw47juTG7680u";
@@ -48,8 +48,9 @@ export const authRouter = router({
           ],
         },
       });
-      const isPasswordCorrect = await compare(opts.input.password, secretHash);
-      const secret = getPrivateKey();
+      const hashPassword = await hash(opts.input.password, secretHash);
+      const isPasswordCorrect = hashPassword === data?.password;
+      const secret = getJwtSecret();
 
       if (data && isPasswordCorrect && secret) {
         return createToken(data, secret);
@@ -112,7 +113,7 @@ export const authRouter = router({
           password: hashedPassword,
         },
       });
-      const secret = getPrivateKey();
+      const secret = getJwtSecret();
 
       if (isNil(secret)) {
         return { ...omit(user, "password") };
