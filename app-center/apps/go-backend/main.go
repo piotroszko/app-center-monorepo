@@ -2,10 +2,11 @@ package main
 
 import (
 	"go-backend/auth"
-	db_chat "go-backend/chat/db"
-	"go-backend/chat/io"
+	io_chat "go-backend/chat/io"
 	redis_chat "go-backend/chat/redis"
 	"go-backend/config"
+	app_db "go-backend/db"
+	io_file "go-backend/file/io"
 	"go-backend/logs"
 	"log"
 
@@ -16,9 +17,11 @@ import (
 
 func main() {
 	config.Init()
-	app := fiber.New()
+	app := fiber.New(fiber.Config{
+		BodyLimit: 50 * 1024 * 1024,
+	})
 	redis_chat.InitRedis()
-	db_chat.InitDb()
+	app_db.InitDb()
 
 	app.Use(cors.New(cors.Config{
 		AllowOrigins: "*",
@@ -32,7 +35,12 @@ func main() {
 
 	// Secure websocket connection
 	app.Use("/ws", upgradeToWebSocket)
-	app.Get("/ws/chat", websocket.New(io.WebsocketHandler))
+	app.Get("/ws/chat", websocket.New(io_chat.WebsocketHandler))
+
+	api := app.Group("/api")
+	file := api.Group("/file", auth.HTTPMiddleware)
+	file.Post("/upload", io_file.UploadFile)
+	file.Get("/download/:filename", io_file.DownloadFile)
 
 	port := ":" + config.Config.ServerPort
 	log.Fatal(app.Listen(port))

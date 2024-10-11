@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"go-backend/chat/models"
+	app_db "go-backend/db"
 	"go-backend/prisma/db"
 	"time"
 
@@ -39,7 +40,7 @@ func (channelFuncs) createChannel(name string, creatorUserId string, channelType
 		}
 	}
 
-	channel, err := DbConnection.Channel.CreateOne(
+	channel, err := app_db.DbConnection.Channel.CreateOne(
 		db.Channel.ID.Set(uuid.New().String()),
 		db.Channel.Name.Set(name),
 		db.Channel.UpdatedAt.Set(time.Now()),
@@ -51,7 +52,7 @@ func (channelFuncs) createChannel(name string, creatorUserId string, channelType
 
 	switch channelType {
 	case string(models.PrivateType):
-		users := DbConnection.Channel.FindUnique(
+		users := app_db.DbConnection.Channel.FindUnique(
 			db.Channel.ID.Equals(channel.ID),
 		).Update(
 			db.Channel.User.Link(
@@ -59,7 +60,7 @@ func (channelFuncs) createChannel(name string, creatorUserId string, channelType
 				db.User.ID.Equals(usersIds[1]),
 			),
 		).Tx()
-		owners := DbConnection.Channel.FindUnique(
+		owners := app_db.DbConnection.Channel.FindUnique(
 			db.Channel.ID.Equals(channel.ID),
 		).Update(
 			db.Channel.UserOwners.Link(
@@ -67,13 +68,13 @@ func (channelFuncs) createChannel(name string, creatorUserId string, channelType
 				db.User.ID.Equals(usersIds[1]),
 			),
 		).Tx()
-		if err := DbConnection.Prisma.Transaction(users, owners).Exec(ctx); err != nil {
+		if err := app_db.DbConnection.Prisma.Transaction(users, owners).Exec(ctx); err != nil {
 			return &db.ChannelModel{}, err
 		}
 	case string(models.GroupType), string(models.RoomType):
 		var tx []transaction.Transaction
 
-		tx = append(tx, DbConnection.Channel.FindUnique(
+		tx = append(tx, app_db.DbConnection.Channel.FindUnique(
 			db.Channel.ID.Equals(channel.ID),
 		).Update(
 			db.Channel.UserOwners.Link(
@@ -81,7 +82,7 @@ func (channelFuncs) createChannel(name string, creatorUserId string, channelType
 			),
 		).Tx())
 
-		tx = append(tx, DbConnection.Channel.FindUnique(
+		tx = append(tx, app_db.DbConnection.Channel.FindUnique(
 			db.Channel.ID.Equals(channel.ID),
 		).Update(
 			db.Channel.User.Link(
@@ -90,7 +91,7 @@ func (channelFuncs) createChannel(name string, creatorUserId string, channelType
 		).Tx())
 
 		for _, userId := range usersIds {
-			tx = append(tx, DbConnection.Channel.FindUnique(
+			tx = append(tx, app_db.DbConnection.Channel.FindUnique(
 				db.Channel.ID.Equals(channel.ID),
 			).Update(
 				db.Channel.User.Link(
@@ -98,7 +99,7 @@ func (channelFuncs) createChannel(name string, creatorUserId string, channelType
 				),
 			).Tx())
 		}
-		if err := DbConnection.Prisma.Transaction(tx...).Exec(ctx); err != nil {
+		if err := app_db.DbConnection.Prisma.Transaction(tx...).Exec(ctx); err != nil {
 			return &db.ChannelModel{}, err
 		}
 	}
@@ -108,7 +109,7 @@ func (channelFuncs) createChannel(name string, creatorUserId string, channelType
 
 func (channelFuncs) DeleteChannel(channelId string) (*db.ChannelModel, error) {
 	ctx := context.Background()
-	channel, err := DbConnection.Channel.FindUnique(
+	channel, err := app_db.DbConnection.Channel.FindUnique(
 		db.Channel.ID.Equals(channelId),
 	).Delete().Exec(ctx)
 
@@ -120,7 +121,7 @@ func (channelFuncs) DeleteChannel(channelId string) (*db.ChannelModel, error) {
 
 func (channelFuncs) AddUserToChannel(channelId string, userId string) (*db.ChannelModel, error) {
 	ctx := context.Background()
-	channel, err := DbConnection.Channel.FindUnique(
+	channel, err := app_db.DbConnection.Channel.FindUnique(
 		db.Channel.ID.Equals(channelId),
 	).Update(
 		db.Channel.User.Link(
@@ -135,7 +136,7 @@ func (channelFuncs) AddUserToChannel(channelId string, userId string) (*db.Chann
 }
 func (channelFuncs) RemoveUserFromChannel(channelId string, userId string) (*db.ChannelModel, error) {
 	ctx := context.Background()
-	channel, err := DbConnection.Channel.FindUnique(
+	channel, err := app_db.DbConnection.Channel.FindUnique(
 		db.Channel.ID.Equals(channelId),
 	).Update(
 		db.Channel.User.Unlink(
@@ -151,7 +152,7 @@ func (channelFuncs) RemoveUserFromChannel(channelId string, userId string) (*db.
 
 func (channelFuncs) GetUsersForChannel(channelId string) ([]db.UserModel, error) {
 	ctx := context.Background()
-	users, err := DbConnection.User.FindMany(
+	users, err := app_db.DbConnection.User.FindMany(
 		db.User.Channel.Some(
 			db.Channel.ID.Equals(channelId),
 		),
@@ -165,7 +166,7 @@ func (channelFuncs) GetUsersForChannel(channelId string) ([]db.UserModel, error)
 
 func (channelFuncs) GetChannelsForUser(userId string) ([]db.ChannelModel, error) {
 	ctx := context.Background()
-	channels, err := DbConnection.Channel.FindMany(
+	channels, err := app_db.DbConnection.Channel.FindMany(
 		db.Channel.User.Some(
 			db.User.ID.Equals(userId),
 		),

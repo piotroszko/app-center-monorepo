@@ -3,6 +3,7 @@ package db_chat
 import (
 	"context"
 	"go-backend/chat/models"
+	app_db "go-backend/db"
 	"go-backend/prisma/db"
 )
 
@@ -14,7 +15,7 @@ func (messageFuncs) AddMessage(msg models.Message) (*db.MessageModel, error) {
 	ctx := context.Background()
 	var msgDb *db.MessageModel
 	var err error
-	msgDb, err = DbConnection.Message.CreateOne(
+	msgDb, err = app_db.DbConnection.Message.CreateOne(
 		db.Message.ID.Set(msg.ID),
 		db.Message.Content.Set(msg.Content),
 		db.Message.Channel.Link(
@@ -34,7 +35,7 @@ func (messageFuncs) AddMessage(msg models.Message) (*db.MessageModel, error) {
 
 func (messageFuncs) GetMessages(channelID string, amount int) ([]db.MessageModel, error) {
 	ctx := context.Background()
-	msgs, err := DbConnection.Message.FindMany(
+	msgs, err := app_db.DbConnection.Message.FindMany(
 		db.Message.ChannelID.Equals(channelID),
 	).OrderBy(
 		db.Message.CreatedAt.Order(db.SortOrderAsc),
@@ -50,14 +51,14 @@ func (messageFuncs) GetMessages(channelID string, amount int) ([]db.MessageModel
 func (messageFuncs) GetMessagesAfter(channelID string, messageID string, amount int) ([]db.MessageModel, error) {
 	ctx := context.Background()
 
-	messageWithId, err := DbConnection.Message.FindFirst(
+	messageWithId, err := app_db.DbConnection.Message.FindFirst(
 		db.Message.ID.Equals(messageID),
 	).Exec(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	msgs, err := DbConnection.Message.FindMany(
+	msgs, err := app_db.DbConnection.Message.FindMany(
 		db.Message.ChannelID.Equals(channelID),
 		db.Message.CreatedAt.Gt(messageWithId.CreatedAt),
 	).OrderBy(

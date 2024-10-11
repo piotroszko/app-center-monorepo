@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"go-backend/config"
 
+	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
 )
 
@@ -41,4 +42,19 @@ func VerifyToken(token string) (UserClaims, error) {
 		Name:  tokenDecoded.Claims.(jwt.MapClaims)["name"].(string),
 		Email: tokenDecoded.Claims.(jwt.MapClaims)["email"].(string),
 	}, nil
+}
+
+func HTTPMiddleware(context *fiber.Ctx) error {
+	token := string(context.Request().Header.Peek("Authorization"))
+	if token == "" {
+		return fiber.ErrUnauthorized
+	}
+	user, err := VerifyToken(token)
+	if err != nil || user.ID == "" || user.Name == "" || user.Email == "" {
+		return fiber.ErrUnauthorized
+	}
+	context.Locals("userId", user.ID)
+	context.Locals("userName", user.Name)
+	context.Locals("userEmail", user.Email)
+	return context.Next()
 }

@@ -1,4 +1,4 @@
-package io
+package io_chat
 
 import (
 	"context"

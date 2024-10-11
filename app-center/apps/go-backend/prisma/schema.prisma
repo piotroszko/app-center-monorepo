@@ -36,10 +36,11 @@ model Settings {
 model User {
   id             String    @id
   email          String    @unique
-  name           String
+  name           String    @unique
   password       String
   createdAt      DateTime  @default(now())
   updatedAt      DateTime
+  File           File[]
   Message        Message[]
   Channel        Channel[] @relation("ChannelToUser")
   Role           Role[]    @relation("RoleToUser")
@@ -74,4 +75,16 @@ model Log {
   category  String
   message   String
   createdAt DateTime @default(now())
+}
+
+model File {
+  id        String   @id
+  filename  String
+  mimetype  String
+  format    String
+  shareType String
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+  userId    String
+  User      User     @relation(fields: [userId], references: [id])
 }

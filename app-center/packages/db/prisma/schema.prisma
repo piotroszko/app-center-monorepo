@@ -24,6 +24,7 @@ model User {
   roles Role[]
   messages Message[]
   channels Channel[]
+  files File[]
 
   ownedChannels Channel[] @relation(name: "owners")
 }
@@ -86,4 +87,17 @@ model Log {
   category  String // auth, db, api, etc.
   message   String // log message
   createdAt DateTime @default(now())
+}
+
+model File {
+  id        String   @id @default(cuid())
+  filename  String
+  mimetype  String
+  format   String
+  shareType String // public, private, link ~ default is private
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  User User @relation(fields: [userId], references: [id])
+  userId String
 }

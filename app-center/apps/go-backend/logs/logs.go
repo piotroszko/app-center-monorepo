@@ -2,7 +2,7 @@ package logs
 
 import (
 	"fmt"
-	db_chat "go-backend/chat/db"
+	app_db "go-backend/db"
 	"go-backend/prisma/db"
 
 	"github.com/google/uuid"
@@ -20,7 +20,7 @@ func SendLog(message string, category string, level int) {
 	default:
 		lvl = "info"
 	}
-	db_chat.DbConnection.Log.CreateOne(
+	app_db.DbConnection.Log.CreateOne(
 		db.Log.ID.Set(uuid.New().String()),
 		db.Log.Server.Set("go-backend"),
 		db.Log.Level.Set(lvl),

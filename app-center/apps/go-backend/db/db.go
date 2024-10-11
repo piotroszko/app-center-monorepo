@@ -1,4 +1,4 @@
-package db_chat
+package app_db
 
 import "go-backend/prisma/db"
 
