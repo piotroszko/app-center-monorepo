@@ -5,6 +5,7 @@ import {
   IconBrandTabler,
   IconSettings,
   IconMessage,
+  IconFileStack,
 } from "@tabler/icons-react";
 import { cn } from "@repo/ui/lib/utils";
 import {
@@ -66,6 +67,13 @@ export function Sidebar({ children }: PropsWithChildren) {
       href: "/main/chat",
       icon: (
         <IconMessage className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
+      ),
+    },
+    {
+      label: "Files",
+      href: "/main/files-manager",
+      icon: (
+        <IconFileStack className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
       ),
     },
     {

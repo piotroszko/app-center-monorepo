@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import { Grid, List } from "lucide-react";
 import {

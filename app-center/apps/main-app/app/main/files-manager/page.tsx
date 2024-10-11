@@ -1,7 +1,8 @@
 import React from "react";
+import FilesComponent from "./_client";
 
 const FileManagerPage = () => {
-  return <div>Files manager page</div>;
+  return <FilesComponent />;
 };
 
 export default FileManagerPage;

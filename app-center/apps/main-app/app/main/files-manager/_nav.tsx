@@ -1,14 +1,29 @@
+"use client";
 import { Button } from "@repo/ui/components/ui/button";
 import React from "react";
-import { FileText, Image, Film, Music } from "lucide-react";
+import {
+  FileText,
+  FileArchive,
+  FileSearch,
+  MessageCircle,
+  FileJson,
+} from "lucide-react";
 
 export const FilesNavigation = () => {
   return (
     <nav className="space-y-2">
-      <NavItem icon={<FileText className="mr-2 h-4 w-4" />} title="My Files" />
-      <NavItem icon={<Image className="mr-2 h-4 w-4" />} title="Photos" />
-      <NavItem icon={<Film className="mr-2 h-4 w-4" />} title="Videos" />
-      <NavItem icon={<Music className="mr-2 h-4 w-4" />} title="Music" />
+      <NavItem icon={<FileText className="mr-2 h-4 w-4" />} title="My files" />
+      <NavItem
+        icon={<MessageCircle className="mr-2 h-4 w-4" />}
+        title="Chat files"
+      />
+      <NavItem
+        icon={<FileJson className="mr-2 h-4 w-4" />}
+        title="Wiki files"
+      />
+      <NavItem icon={<FileSearch className="mr-2 h-4 w-4" />} title="Shared" />
+
+      <NavItem icon={<FileArchive className="mr-2 h-4 w-4" />} title="Recent" />
     </nav>
   );
 };

@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import {
   FileText,
@@ -20,10 +21,11 @@ import {
   DropdownMenuTrigger,
 } from "@repo/ui/components/ui/dropdown";
 import { Button } from "@repo/ui/components/ui/button";
+import { FilesViewProps } from "./_models";
 
-export const FilesListView = () => {
+export const FilesListView = ({ directory }: FilesViewProps) => {
   return (
-    <div className="space-y-2">
+    <div className="space-y-2 gap-y-0.5 flex-col flex">
       {[...Array(8)].map((_, i) => (
         <ContextMenu key={i}>
           <ContextMenuTrigger>

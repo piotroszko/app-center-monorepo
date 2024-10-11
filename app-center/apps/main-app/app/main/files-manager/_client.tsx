@@ -1,14 +1,11 @@
+"use client";
 import { useState } from "react";
 import {
   Avatar,
   AvatarFallback,
   AvatarImage,
 } from "@repo/ui/components/ui/avatar";
-import { Upload, FolderPlus, Settings, LogOut, Grid, List } from "lucide-react";
-import {
-  ToggleGroup,
-  ToggleGroupItem,
-} from "@repo/ui/components/ui/toggle-group";
+import { Upload, FolderPlus, Settings, LogOut } from "lucide-react";
 import { Label } from "@repo/ui/components/ui/label";
 import { Button } from "@repo/ui/components/ui/button";
 import { Input } from "@repo/ui/components/ui/input";
@@ -35,13 +32,12 @@ import { FilesListView } from "./_view-list";
 import { FilesBreadcrumbs } from "./_breadcrumbs";
 import { FilesHeader } from "./_header";
 
-export default function Component() {
+export default function FilesComponent() {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
   return (
     <div className="flex h-screen bg-background">
       <aside className="w-64 bg-muted p-4 hidden md:block">
-        <h1 className="text-2xl font-bold mb-6">CloudStore</h1>
         <FilesNavigation />
       </aside>
 
