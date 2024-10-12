@@ -25,6 +25,7 @@ model User {
   messages Message[]
   channels Channel[]
   files File[]
+  directories Directory[]
 
   ownedChannels Channel[] @relation(name: "owners")
 }
@@ -98,6 +99,23 @@ model File {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   
+  User User @relation(fields: [userId], references: [id])
+  userId String
+  directory Directory @relation(fields: [directoryId], references: [id], onDelete: Cascade)
+  directoryId String
+}
+
+model Directory {
+  id        String   @id @default(cuid())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  shareType String // public, private, link ~ default is private
+
+  files File[]
+  directories Directory[] @relation("DirectoryToDirectory")
+  parent Directory? @relation("DirectoryToDirectory", fields: [parentId], references: [id], onDelete: Cascade)
+  parentId String?
   User User @relation(fields: [userId], references: [id])
   userId String
 }

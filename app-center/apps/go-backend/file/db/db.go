@@ -6,9 +6,62 @@ import (
 	app_db "go-backend/db"
 	"go-backend/prisma/db"
 	"time"
+
+	"github.com/google/uuid"
 )
 
-func UploadFile(id string, fullname string, mimetype string, format string, userId string) (*db.FileModel, error) {
+func IsDirectoryExists(userId string, id string) (bool, error) {
+	ctx := context.Background()
+	directory, err := app_db.DbConnection.Directory.FindUnique(
+		db.Directory.ID.Equals(id),
+	).Exec(ctx)
+	if err != nil {
+		return false, err
+	}
+	if directory.UserID != userId {
+		return false, nil
+	}
+	return true, nil
+}
+
+func CreateDirectory(userId string, name string, parentId string, shareType string) (*db.DirectoryModel, error) {
+	ctx := context.Background()
+	file, err := app_db.DbConnection.Directory.CreateOne(
+		db.Directory.ID.Set(uuid.New().String()),
+		db.Directory.Name.Set(name),
+		db.Directory.UpdatedAt.Set(time.Now()),
+		db.Directory.ShareType.Set(shareType),
+		db.Directory.User.Link(
+			db.User.ID.Equals(userId),
+		),
+		db.Directory.Directory.Link(
+			db.Directory.ID.Equals(parentId),
+		),
+	).Exec(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return file, nil
+}
+
+func CreateRootDirectory(userId string) (*db.DirectoryModel, error) {
+	ctx := context.Background()
+	file, err := app_db.DbConnection.Directory.CreateOne(
+		db.Directory.ID.Set(uuid.New().String()),
+		db.Directory.Name.Set("root"),
+		db.Directory.UpdatedAt.Set(time.Now()),
+		db.Directory.ShareType.Set("PRIVATE"),
+		db.Directory.User.Link(
+			db.User.ID.Equals(userId),
+		),
+	).Exec(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return file, nil
+}
+
+func UploadFile(id string, fullname string, mimetype string, format string, userId string, directoryId string) (*db.FileModel, error) {
 	ctx := context.Background()
 	file, err := app_db.DbConnection.File.CreateOne(
 		db.File.ID.Set(id),
@@ -17,6 +70,9 @@ func UploadFile(id string, fullname string, mimetype string, format string, user
 		db.File.Format.Set(format),
 		db.File.ShareType.Set("PRIVATE"),
 		db.File.UpdatedAt.Set(time.Now()),
+		db.File.Directory.Link(
+			db.Directory.ID.Equals(directoryId),
+		),
 		db.File.User.Link(
 			db.User.ID.Equals(id),
 		),
