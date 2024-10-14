@@ -22,6 +22,12 @@ const loginSchema = z.object({
   }),
 });
 
+export const useGetUser = () => {
+  const id = localStorage.getItem("userId");
+  const name = localStorage.getItem("userName");
+  return { id, name };
+};
+
 export function LoginForm() {
   const [, setCookie] = useCookies(["Authorization", "RefreshToken"]);
   const { toast } = useToast();
@@ -44,8 +50,10 @@ export function LoginForm() {
         });
         return;
       }
-      localStorage.setItem("token", data);
-      setCookie("Authorization", data, {
+      localStorage.setItem("token", data?.token);
+      localStorage.setItem("userId", data?.id);
+      localStorage.setItem("userName", data?.name);
+      setCookie("Authorization", data.token, {
         expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
         domain: "localhost",
         path: "/",

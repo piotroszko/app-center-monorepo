@@ -1,25 +1,36 @@
 "use client";
 
 import { ScrollArea } from "@repo/ui/components/ui/scroll-area";
-import React from "react";
-import { useRoom } from "./_room-context";
+import React, { useEffect, useRef } from "react";
+import { useChat } from "@repo/trpc/ws";
+import { useGetUser } from "../../auth/login/_form";
 
 export const MessagesList = () => {
-  const { messages } = useRoom();
+  const lastRef = useRef<HTMLDivElement>(null);
+  const { id, name } = useGetUser();
+  const { messages } = useChat();
+  useEffect(() => {
+    if (lastRef.current) {
+      lastRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages]);
   return (
     <ScrollArea className="flex-1 p-4">
-      {messages.map((message) => (
+      {messages.map((message, index) => (
         <div
           key={message.id}
-          className={`flex mb-4 ${message.sender === "You" ? "justify-end" : ""}`}
+          className={`flex mb-4 ${message?.userId === id ? "justify-end" : ""}`}
         >
+          {index === messages.length - 1 && <div ref={lastRef}></div>}
           <div
-            className={`max-w-[70%] ${message.sender === "You" ? "bg-primary text-primary-foreground" : "bg-muted"} rounded-lg p-3`}
+            className={`max-w-[70%] ${message.userId === id ? "bg-primary text-primary-foreground" : "bg-muted"} rounded-lg p-3`}
           >
-            <p className="font-semibold">{message.sender}</p>
+            <p className="font-semibold">
+              {message.userId === id ? name : message.user}
+            </p>
             <p>{message.content}</p>
             <p className="text-xs text-muted-foreground mt-1">
-              {message.timestamp}
+              {new Date(message.createdAt).toLocaleString()}
             </p>
           </div>
         </div>

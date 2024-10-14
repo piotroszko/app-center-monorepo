@@ -18,15 +18,6 @@ export default function Chat() {
 function ChatUI() {
   const { channels, setCurrentChannel } = useChat();
   const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
-  const [inputMessage, setInputMessage] = useState("");
-  const [messages, setMessages] = useState<Message[]>(mockMessages);
-
-  const handleSendMessage = (e) => {
-    e.preventDefault();
-    if (inputMessage.trim()) {
-      setInputMessage("");
-    }
-  };
 
   return (
     <RoomContext.Provider
@@ -38,7 +29,6 @@ function ChatUI() {
           setSelectedRoom(room);
           setCurrentChannel(channel);
         },
-        messages,
         rooms: channels?.map?.((channel) => ({
           id: channel.id,
           name: channel.name,
@@ -59,7 +49,7 @@ function ChatUI() {
             <>
               <RoomTitle />
               <MessagesList />
-              <ChatInputBox handleSendMessage={handleSendMessage} />
+              <ChatInputBox />
             </>
           ) : (
             <div className="flex items-center justify-center h-full text-muted-foreground">

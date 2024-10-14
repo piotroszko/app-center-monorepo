@@ -11,11 +11,11 @@ type storeMessage struct{}
 
 var Message storeMessage
 
-func (storeMessage) AddMessage(msg models.Message) ([]db.UserModel, error) {
+func (storeMessage) AddMessage(msg models.Message) ([]db.UserModel, *db.MessageModel, error) {
 	channelId := msg.ChannelID
 	users, err := db_chat.Channel.GetUsersForChannel(channelId)
 	if err != nil {
-		return nil, err
+		return nil, &db.MessageModel{}, err
 	}
 	userFound := false
 	for _, user := range users {
@@ -25,12 +25,15 @@ func (storeMessage) AddMessage(msg models.Message) ([]db.UserModel, error) {
 		}
 	}
 	if !userFound {
-		return nil, errors.New("user not in channel")
+		return nil, &db.MessageModel{}, errors.New("user not in channel")
 	}
 
-	db_chat.Message.AddMessage(msg)
+	msgDb, err := db_chat.Message.AddMessage(msg)
+	if err != nil {
+		return nil, &db.MessageModel{}, err
+	}
 
-	return users, nil
+	return users, msgDb, nil
 }
 
 func (storeMessage) GetMessages(channelID string, amount int) ([]db.MessageModel, error) {

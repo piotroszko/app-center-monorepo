@@ -53,7 +53,18 @@ export const authRouter = router({
       const secret = getJwtSecret();
 
       if (data && isPasswordCorrect && secret) {
-        return createToken(data, secret);
+        const token = await createToken(data, secret);
+        if (!token) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Error creating token",
+          });
+        }
+        return {
+          token: token,
+          id: data.id,
+          name: data.name,
+        };
       }
       throw new TRPCError({
         code: "UNAUTHORIZED",

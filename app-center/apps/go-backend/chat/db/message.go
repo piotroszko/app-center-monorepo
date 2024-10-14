@@ -38,7 +38,7 @@ func (messageFuncs) GetMessages(channelID string, amount int) ([]db.MessageModel
 	msgs, err := app_db.DbConnection.Message.FindMany(
 		db.Message.ChannelID.Equals(channelID),
 	).OrderBy(
-		db.Message.CreatedAt.Order(db.SortOrderAsc),
+		db.Message.CreatedAt.Order(db.SortOrderDesc),
 	).Take(amount).Exec(ctx)
 
 	if err != nil {
@@ -62,7 +62,7 @@ func (messageFuncs) GetMessagesAfter(channelID string, messageID string, amount 
 		db.Message.ChannelID.Equals(channelID),
 		db.Message.CreatedAt.Gt(messageWithId.CreatedAt),
 	).OrderBy(
-		db.Message.CreatedAt.Order(db.SortOrderAsc),
+		db.Message.CreatedAt.Order(db.SortOrderDesc),
 	).Take(amount).Exec(ctx)
 
 	if err != nil {

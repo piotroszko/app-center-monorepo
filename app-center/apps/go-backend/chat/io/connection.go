@@ -3,6 +3,7 @@ package io_chat
 import (
 	"context"
 	"errors"
+	"fmt"
 	redis_chat "go-backend/chat/redis"
 	"go-backend/logs"
 	"sync"
@@ -30,6 +31,7 @@ func (c *ConnectionsType) AddConnection(userID string, conn *websocket.Conn) {
 		defer close()
 		for {
 			msg, err := sub.ReceiveMessage(context.Background())
+			fmt.Println("Received message")
 			if err != nil {
 				logs.SendLogError("Error receiving message from redis", "go-redis")
 				continue
@@ -69,4 +71,14 @@ func (c *ConnectionsType) SendMessage(userID string, message interface{}) error 
 	err := c.UserConnections[userID].WriteJSON(message)
 	c.Mutex.RUnlock()
 	return err
+}
+
+func (c *ConnectionsType) SendMessageToUsers(message interface{}, usersIds ...string) {
+	c.Mutex.RLock()
+	for _, user := range usersIds {
+		if c.UserConnections[user] != nil {
+			c.UserConnections[user].WriteJSON(message)
+		}
+	}
+	c.Mutex.RUnlock()
 }

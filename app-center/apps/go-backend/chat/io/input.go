@@ -3,7 +3,6 @@ package io_chat
 import (
 	"fmt"
 	"go-backend/chat/models"
-	redis_chat "go-backend/chat/redis"
 	store_chat "go-backend/chat/store"
 	"go-backend/logs"
 	"log"
@@ -47,15 +46,9 @@ func WebsocketHandler(conn *websocket.Conn) {
 		switch models.MessageType(message.Type) {
 		case models.ChatMessageType:
 			{
-				users, err := store_chat.Message.AddMessage(message)
+				users, msg, err := store_chat.Message.AddMessage(message)
 				if err != nil {
 					logs.SendLogError(fmt.Sprintf("Error adding message to store: %v", err), "ws-connection")
-					continue
-				}
-				// message to string
-				messageStr, err := message.ToString()
-				if err != nil {
-					logs.SendLogError(fmt.Sprintf("Error converting message to string: %v", err), "ws-connection")
 					continue
 				}
 				var usersToSend []string
@@ -63,7 +56,7 @@ func WebsocketHandler(conn *websocket.Conn) {
 					usersToSend = append(usersToSend, user.ID)
 				}
 
-				redis_chat.PublishMessageToAllActiveUsers(messageStr, usersToSend...)
+				Connections.SendMessageToUsers(msg, usersToSend...)
 			}
 		case models.GetNewestType:
 			{

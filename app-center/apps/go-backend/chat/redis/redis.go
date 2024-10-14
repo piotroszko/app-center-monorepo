@@ -2,6 +2,7 @@ package redis_chat
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"os"
 
@@ -25,6 +26,7 @@ func InitRedis() {
 }
 
 func PublishMessageToAllActiveUsers(message string, usersIds ...string) {
+	fmt.Println("Publishing message to users: ", message, usersIds)
 	for _, user := range usersIds {
 		if UserChannels[user] != nil {
 			RedisClient.Publish(context.Background(), user, message)

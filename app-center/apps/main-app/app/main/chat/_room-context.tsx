@@ -36,13 +36,11 @@ interface IRoomContext {
   selectedRoom: Room | null;
   setSelectedRoom: (room: Room) => void;
   rooms: Room[];
-  messages: Message[];
 }
 export const RoomContext = createContext<IRoomContext>({
   selectedRoom: null,
   setSelectedRoom: () => {},
   rooms: [],
-  messages: mockMessages,
 });
 
 export const useRoom = () => {

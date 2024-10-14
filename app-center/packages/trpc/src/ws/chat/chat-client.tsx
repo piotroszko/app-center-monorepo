@@ -1,4 +1,4 @@
-import { extendWith, isArray } from "lodash";
+import { extendWith, isArray, isObject } from "lodash";
 import React, {
   createContext,
   PropsWithChildren,
@@ -19,6 +19,8 @@ interface Message {
   content: string;
   user: string;
   userId: string;
+  createdAt: string;
+  channelID: string;
 }
 
 export interface ChatContextType {
@@ -27,6 +29,7 @@ export interface ChatContextType {
   currentChannel: Channel | null;
   setCurrentChannel: (channel: Channel) => void;
   messages: Message[];
+  sendMessage: (content: string) => void;
 }
 
 export const ChatContext = createContext<ChatContextType | null>(null);
@@ -39,9 +42,18 @@ const SendCreateRoom = (ws: WebSocket, name: string) => {
   ws.send(JSON.stringify({ type: "create-room", content: name }));
 };
 
-const GetNewestMessages = (ws: WebSocket, channelId: string) => {
+const SendNewestMessages = (ws: WebSocket, channelId: string) => {
   ws.send(
     JSON.stringify({ type: "get-newest", channelID: channelId, amount: 10 }),
+  );
+};
+const SendNewMessage = (ws: WebSocket, channelId: string, content: string) => {
+  ws.send(
+    JSON.stringify({
+      type: "message",
+      channelID: channelId,
+      content: content,
+    }),
   );
 };
 
@@ -68,8 +80,30 @@ export const ChatContextProvider = ({
     };
     wsRef.current.onmessage = (event) => {
       const data = JSON.parse(event.data);
+
       if (isArray(data)) {
-        setChannels(data);
+        if (isArrayOfMessages(data)) {
+          setMessages((prev) => {
+            const newMessages = [...prev, ...data];
+            newMessages.sort((a, b) => {
+              return (
+                new Date(a.createdAt).getTime() -
+                new Date(b.createdAt).getTime()
+              );
+            });
+            return newMessages;
+          });
+          return;
+        } else {
+          setChannels(data);
+          return;
+        }
+      }
+      if (isObject(data)) {
+        if (isObjectAMessage(data)) {
+          setMessages((prev) => [...prev, data]);
+          return;
+        }
       }
     };
     return () => {};
@@ -83,9 +117,14 @@ export const ChatContextProvider = ({
         currentChannel,
         setCurrentChannel: (channel) => {
           setCurrentChannel(channel);
-          GetNewestMessages(wsRef.current!, channel.id);
+          SendNewestMessages(wsRef.current!, channel.id);
         },
         messages,
+        sendMessage: (content) => {
+          if (currentChannel) {
+            SendNewMessage(wsRef.current!, currentChannel.id, content);
+          }
+        },
       }}
     >
       {children}
@@ -100,4 +139,20 @@ export const useChat = () => {
   }
 
   return ctx;
+};
+
+const isArrayOfMessages = (data: any): data is Message[] => {
+  return (
+    isArray(data) &&
+    data.every(
+      (item) =>
+        item.id &&
+        item.content &&
+        (!(data as any)?.type || (data as any)?.type === "message"),
+    )
+  );
+};
+
+const isObjectAMessage = (data: any): data is Message => {
+  return data.id && data.content && (!data.type || data.type === "message");
 };

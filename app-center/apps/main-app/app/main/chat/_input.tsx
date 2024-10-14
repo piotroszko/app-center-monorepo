@@ -3,16 +3,18 @@ import { Button } from "@repo/ui/components/ui/button";
 import { Input } from "@repo/ui/components/ui/input";
 import React, { FormEvent, useState } from "react";
 import { Send } from "lucide-react";
+import { useChat } from "@repo/trpc/ws";
 
-interface ChatInputBoxProps {
-  handleSendMessage: (e: FormEvent<HTMLFormElement>) => void;
-}
-
-export const ChatInputBox = ({ handleSendMessage }: ChatInputBoxProps) => {
+export const ChatInputBox = () => {
+  const { sendMessage } = useChat();
   const [inputMessage, setInputMessage] = useState("");
   return (
     <form
-      onSubmit={handleSendMessage}
+      onSubmit={(e: FormEvent) => {
+        e.preventDefault();
+        sendMessage(inputMessage);
+        setInputMessage("");
+      }}
       className="p-4 border-t flex w-full gap-4"
     >
       <div className="w-full">
