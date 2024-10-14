@@ -9,7 +9,7 @@ type Message struct {
 	SenderID   string `json:"senderID"`
 	SenderName string `json:"senderName"`
 
-	ChannelID string `json:"receiverID"`
+	ChannelID string `json:"channelID"`
 
 	TargetMessageId string `json:"targetMessageId"`
 	Amount          int    `json:"amount"`

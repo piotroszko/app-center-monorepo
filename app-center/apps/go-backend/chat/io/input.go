@@ -1,7 +1,6 @@
 package io_chat
 
 import (
-	"encoding/json"
 	"fmt"
 	"go-backend/chat/models"
 	redis_chat "go-backend/chat/redis"
@@ -69,17 +68,12 @@ func WebsocketHandler(conn *websocket.Conn) {
 		case models.GetNewestType:
 			{
 				msgs, err := store_chat.Message.GetMessages(message.ChannelID, message.Amount)
+				fmt.Println(msgs, err)
 				if err != nil {
 					logs.SendLogError(fmt.Sprintf("Error getting messages from store: %v", err), "ws-connection")
 					continue
 				}
-				// send to player in one message
-				jsonData, err := json.Marshal(msgs)
-				if err != nil {
-					logs.SendLogError(fmt.Sprintf("Error marshalling messages: %v", err), "ws-connection")
-					continue
-				}
-				err = Connections.SendMessage(userID, jsonData)
+				err = Connections.SendMessage(userID, msgs)
 				if err != nil {
 					logs.SendLogError(fmt.Sprintf("Error writing messages to websocket: %v", err), "ws-connection")
 					break
@@ -95,12 +89,7 @@ func WebsocketHandler(conn *websocket.Conn) {
 					logs.SendLogError(fmt.Sprintf("Error getting messages from store: %v", err), "ws-connection")
 					continue
 				}
-				jsonData, err := json.Marshal(msgs)
-				if err != nil {
-					logs.SendLogError(fmt.Sprintf("Error marshalling messages: %v", err), "ws-connection")
-					continue
-				}
-				err = Connections.SendMessage(userID, jsonData)
+				err = Connections.SendMessage(userID, msgs)
 				if err != nil {
 					logs.SendLogError(fmt.Sprintf("Error writing messages to websocket: %v", err), "ws-connection")
 					break

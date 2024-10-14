@@ -11,9 +11,8 @@ type AppConfig struct {
 	RedisHost string
 	RedisPort string
 
-	ServerPort    string
-	JwtPrivateKey string
-	JwtPublicKey  string
+	ServerPort string
+	JwtSecret  string
 }
 
 var Config AppConfig
@@ -24,11 +23,10 @@ func Init() {
 		log.Fatal("Error loading .env file")
 	}
 	Config = AppConfig{
-		ServerPort:    os.Getenv("SERVER_PORT"),
-		RedisHost:     os.Getenv("REDIS_HOST"),
-		RedisPort:     os.Getenv("REDIS_PORT"),
-		JwtPrivateKey: os.Getenv("JWT_PRIVATE"),
-		JwtPublicKey:  os.Getenv("JWT_PUBLIC"),
+		ServerPort: os.Getenv("SERVER_PORT"),
+		RedisHost:  os.Getenv("REDIS_HOST"),
+		RedisPort:  os.Getenv("REDIS_PORT"),
+		JwtSecret:  os.Getenv("JWT_SECRET"),
 	}
 
 	if Config.RedisHost == "" {

@@ -52,7 +52,7 @@ func UploadFile(c *fiber.Ctx) error {
 		return c.SendString("File already exists")
 	}
 
-	_, err = db_file.UploadFile(id, newFileName, file.Header.Get("Content-Type"), fileFormat[1], userId)
+	_, err = db_file.UploadFile(id, newFileName, file.Header.Get("Content-Type"), fileFormat[1], userId, "")
 	if err != nil {
 		return err
 	}

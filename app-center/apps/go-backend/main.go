@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"go-backend/auth"
 	io_chat "go-backend/chat/io"
 	redis_chat "go-backend/chat/redis"
@@ -48,12 +49,15 @@ func main() {
 
 // Authorize and Upgrate to websocket
 func upgradeToWebSocket(context *fiber.Ctx) error {
+	fmt.Println("User connected to websocket:")
+
 	token := string(context.Request().Header.Peek("Authorization"))
-	if token == "" {
+	tokenFromQuery := context.Query("token")
+	if token == "" && tokenFromQuery == "" {
 		logs.SendLogWarning("No token provided, connection ip:"+context.IP(), "ws-upgrader")
 		return fiber.ErrUnauthorized
 	}
-	user, err := auth.VerifyToken(token)
+	user, err := auth.VerifyToken(token + tokenFromQuery)
 	if err != nil || user.ID == "" || user.Name == "" || user.Email == "" {
 		logs.SendLogWarning("Invalid token provided, connection ip:"+context.IP()+", token:"+token, "ws-upgrader")
 		return fiber.ErrUnauthorized

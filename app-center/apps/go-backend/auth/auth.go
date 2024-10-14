@@ -1,8 +1,6 @@
 package auth
 
 import (
-	"crypto/x509"
-	"encoding/pem"
 	"fmt"
 	"go-backend/config"
 
@@ -17,18 +15,13 @@ type UserClaims struct {
 }
 
 func VerifyToken(token string) (UserClaims, error) {
-	secret := config.Config.JwtPublicKey
+	secret := config.Config.JwtSecret
 	if secret == "" {
 		return UserClaims{}, fmt.Errorf("jwt public key not found")
 	}
 
-	block, _ := pem.Decode([]byte(secret))
 	tokenDecoded, err := jwt.Parse(token, func(token *jwt.Token) (interface{}, error) {
-		if _, ok := token.Method.(*jwt.SigningMethodRSA); !ok {
-			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
-		}
-
-		return x509.ParsePKIXPublicKey(block.Bytes)
+		return []byte(secret), nil
 	})
 	if err != nil {
 		return UserClaims{}, err

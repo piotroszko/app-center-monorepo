@@ -3,7 +3,7 @@
 import { createContext, useContext } from "react";
 
 export interface Room {
-  id: number;
+  id: string;
   name: string;
   avatar: string;
   type: "private" | "group" | "public";
@@ -15,45 +15,6 @@ export interface Message {
   content: string;
   timestamp: string;
 }
-
-export const mockRooms: Room[] = [
-  {
-    id: 1,
-    name: "Alice",
-    avatar: "/placeholder.svg?height=32&width=32",
-    type: "private",
-  },
-  {
-    id: 2,
-    name: "Bob",
-    avatar: "/placeholder.svg?height=32&width=32",
-    type: "private",
-  },
-  {
-    id: 3,
-    name: "Project A",
-    avatar: "/placeholder.svg?height=32&width=32",
-    type: "group",
-  },
-  {
-    id: 4,
-    name: "Team B",
-    avatar: "/placeholder.svg?height=32&width=32",
-    type: "group",
-  },
-  {
-    id: 5,
-    name: "General",
-    avatar: "/placeholder.svg?height=32&width=32",
-    type: "public",
-  },
-  {
-    id: 6,
-    name: "Random",
-    avatar: "/placeholder.svg?height=32&width=32",
-    type: "public",
-  },
-];
 
 export const mockMessages: Message[] = [
   { id: 1, sender: "Alice", content: "Hey there!", timestamp: "10:00 AM" },
@@ -80,7 +41,7 @@ interface IRoomContext {
 export const RoomContext = createContext<IRoomContext>({
   selectedRoom: null,
   setSelectedRoom: () => {},
-  rooms: mockRooms,
+  rooms: [],
   messages: mockMessages,
 });
 

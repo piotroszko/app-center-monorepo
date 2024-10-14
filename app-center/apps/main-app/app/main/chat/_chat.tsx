@@ -3,20 +3,23 @@ import { useState } from "react";
 import { RoomTabs } from "./_room-list";
 import { MessagesList } from "./_messages_list";
 import { RoomTitle } from "./_title";
-import {
-  Message,
-  mockMessages,
-  mockRooms,
-  Room,
-  RoomContext,
-} from "./_room-context";
+import { Message, mockMessages, Room, RoomContext } from "./_room-context";
 import { ChatInputBox } from "./_input";
+import { ChatContextProvider, useChat } from "@repo/trpc/ws";
 
-export default function ChatUI() {
+export default function Chat() {
+  return (
+    <ChatContextProvider address="127.0.0.1:4000">
+      <ChatUI />
+    </ChatContextProvider>
+  );
+}
+
+function ChatUI() {
+  const { channels, setCurrentChannel } = useChat();
   const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
   const [inputMessage, setInputMessage] = useState("");
   const [messages, setMessages] = useState<Message[]>(mockMessages);
-  const [rooms, setRooms] = useState<Room[]>(mockRooms);
 
   const handleSendMessage = (e) => {
     e.preventDefault();
@@ -27,7 +30,25 @@ export default function ChatUI() {
 
   return (
     <RoomContext.Provider
-      value={{ selectedRoom, setSelectedRoom, messages, rooms }}
+      value={{
+        selectedRoom,
+        setSelectedRoom: (room) => {
+          const channel = channels?.find((channel) => channel.id === room.id);
+          if (!channel) return;
+          setSelectedRoom(room);
+          setCurrentChannel(channel);
+        },
+        messages,
+        rooms: channels?.map?.((channel) => ({
+          id: channel.id,
+          name: channel.name,
+          avatar: "",
+          type:
+            channel?.type === "room"
+              ? "public"
+              : (channel?.type as Room["type"]),
+        })),
+      }}
     >
       <div className="flex h-full w-full bg-background">
         {/* Left sidebar */}

@@ -15,6 +15,8 @@ import {
 } from "@repo/ui/components/ui/tabs";
 import { MessageCircle, Users, Globe } from "lucide-react";
 import { Room, useRoom } from "./_room-context";
+import { useChat } from "@repo/trpc/ws";
+import { useMemo } from "react";
 
 export function RoomTabs() {
   const { rooms, setSelectedRoom } = useRoom();
@@ -22,9 +24,15 @@ export function RoomTabs() {
   const privateRooms = rooms?.filter((room) => room.type === "private") || [];
   const groupRooms = rooms?.filter((room) => room.type === "group") || [];
   const publicRooms = rooms?.filter((room) => room.type === "public") || [];
+
+  const defaultTab = useMemo(() => {
+    if (privateRooms.length > 0) return "private";
+    if (groupRooms.length > 0) return "groups";
+    return "public";
+  }, [rooms]);
   return (
     <div className="w-64 border-r">
-      <Tabs defaultValue="private" className="w-full">
+      <Tabs defaultValue={defaultTab} className="w-full">
         <TabsList className="grid w-full grid-cols-3 rounded-none">
           <TabsTrigger value="private">
             <MessageCircle className="h-5 w-5" />
