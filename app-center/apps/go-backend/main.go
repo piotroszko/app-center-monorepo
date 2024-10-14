@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"go-backend/auth"
 	io_chat "go-backend/chat/io"
-	redis_chat "go-backend/chat/redis"
 	"go-backend/config"
 	app_db "go-backend/db"
 	io_file "go-backend/file/io"
@@ -21,7 +20,6 @@ func main() {
 	app := fiber.New(fiber.Config{
 		BodyLimit: 50 * 1024 * 1024,
 	})
-	redis_chat.InitRedis()
 	app_db.InitDb()
 
 	app.Use(cors.New(cors.Config{

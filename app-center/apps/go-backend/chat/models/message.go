@@ -1,6 +1,8 @@
 package models
 
-import "encoding/json"
+import (
+	"encoding/json"
+)
 
 type Message struct {
 	ID   string      `json:"id"`
@@ -9,12 +11,12 @@ type Message struct {
 	SenderID   string `json:"senderID"`
 	SenderName string `json:"senderName"`
 
-	ChannelID string `json:"channelID"`
-
+	ChannelID       string `json:"channelID"`
+	TargetID        string `json:"targetID"`
 	TargetMessageId string `json:"targetMessageId"`
-	Amount          int    `json:"amount"`
-	Content         string `json:"content"`
-	Timestamp       int64  `json:"timestamp"`
+
+	Amount  int    `json:"amount"`
+	Content string `json:"content"`
 }
 
 func (m *Message) FromJSON(data []byte) error {
@@ -31,14 +33,19 @@ func (m *Message) ToString() (string, error) {
 type MessageType string
 
 const (
-	JoinRoomType       MessageType = "join"
-	LeaveRoomType      MessageType = "leave"
-	ChatMessageType    MessageType = "message"
-	GetNewestType      MessageType = "get-newest"
-	GetHistoryType     MessageType = "get-history"
-	GetChannelsType    MessageType = "get-channels"
-	DeleteMessageType  MessageType = "delete"
-	DeleteRoomType     MessageType = "delete-room"
+	JoinRoomType  MessageType = "join"
+	LeaveRoomType MessageType = "leave"
+	InviteType    MessageType = "invite"
+
+	ChatMessageType MessageType = "message"
+	GetNewestType   MessageType = "get-newest"
+	GetHistoryType  MessageType = "get-history"
+
+	GetChannelsType MessageType = "get-channels"
+
+	DeleteMessageType MessageType = "delete"
+	DeleteRoomType    MessageType = "delete-room"
+
 	CreateRoomType     MessageType = "create-room"
 	CreateGroupType    MessageType = "create-group"
 	PrivateMessageType MessageType = "create-private"
