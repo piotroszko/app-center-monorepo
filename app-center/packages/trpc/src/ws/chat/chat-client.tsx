@@ -1,4 +1,4 @@
-import { extendWith, isArray, isObject } from "lodash";
+import { isArray, isObject } from "lodash";
 import React, {
   createContext,
   PropsWithChildren,
@@ -8,10 +8,17 @@ import React, {
   useContext,
 } from "react";
 
+interface User {
+  id: string;
+  name: string;
+  email: string;
+}
+
 interface Channel {
   id: string;
   name: string;
   type: string;
+  users: User[];
 }
 
 interface Message {

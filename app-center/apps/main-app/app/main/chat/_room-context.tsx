@@ -2,11 +2,18 @@
 
 import { createContext, useContext } from "react";
 
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+}
+
 export interface Room {
   id: string;
   name: string;
   avatar: string;
   type: "private" | "group" | "public";
+  users: User[];
 }
 
 export interface Message {

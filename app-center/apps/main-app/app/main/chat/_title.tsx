@@ -5,7 +5,6 @@ import { useRoom } from "./_room-context";
 import { Button } from "@repo/ui/components/ui/button";
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogDescription,
   DialogHeader,
@@ -24,9 +23,7 @@ export const RoomTitle = () => {
       <div className="flex flex-row gap-4">
         <Dialog>
           <DialogTrigger asChild>
-            <Button className="mt-2 bg-primary text-primary-foreground">
-              Invite
-            </Button>
+            <Button className="mt-2">Invite</Button>
           </DialogTrigger>
           <DialogContent className="gap-6">
             <DialogHeader>
@@ -46,7 +43,7 @@ export const RoomTitle = () => {
 
         <Dialog>
           <DialogTrigger asChild>
-            <Button className="mt-2 bg-secondary text-secondary-foreground">
+            <Button className="mt-2" variant={"secondary"}>
               Leave Room
             </Button>
           </DialogTrigger>

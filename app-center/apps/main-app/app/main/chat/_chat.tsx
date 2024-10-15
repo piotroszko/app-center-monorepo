@@ -1,9 +1,9 @@
 "use client";
 import { useState } from "react";
-import { RoomTabs } from "./_room-list";
+import { RoomList } from "./_room-list";
 import { MessagesList } from "./_messages_list";
 import { RoomTitle } from "./_title";
-import { Message, mockMessages, Room, RoomContext } from "./_room-context";
+import { Room, RoomContext } from "./_room-context";
 import { ChatInputBox } from "./_input";
 import { ChatContextProvider, useChat } from "@repo/trpc/ws";
 
@@ -37,12 +37,17 @@ function ChatUI() {
             channel?.type === "room"
               ? "public"
               : (channel?.type as Room["type"]),
+          users: channel.users.map((user) => ({
+            id: user.id,
+            name: user.name,
+            email: user.email,
+          })),
         })),
       }}
     >
       <div className="flex h-full w-full bg-background">
         {/* Left sidebar */}
-        <RoomTabs />
+        <RoomList />
 
         <div className="flex flex-col flex-1">
           {selectedRoom ? (

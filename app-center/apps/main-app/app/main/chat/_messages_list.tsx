@@ -23,7 +23,7 @@ export const MessagesList = () => {
     return diff < 3600000;
   };
   return (
-    <ScrollArea className="flex-1 p-4">
+    <ScrollArea className="flex-1 p-0.5">
       {messages.map((message, index) => {
         const date = new Date(message.createdAt);
         const isLastHour = isMessageLastHour(date);

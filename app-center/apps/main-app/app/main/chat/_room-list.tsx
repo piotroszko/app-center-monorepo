@@ -7,79 +7,95 @@ import {
 } from "@repo/ui/components/ui/avatar";
 import { Button } from "@repo/ui/components/ui/button";
 import { ScrollArea } from "@repo/ui/components/ui/scroll-area";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@repo/ui/components/ui/tabs";
-import { MessageCircle, Users, Globe } from "lucide-react";
 import { Room, useRoom } from "./_room-context";
-import { useChat } from "@repo/trpc/ws";
-import { useMemo } from "react";
+import { useRef } from "react";
+import { AlertCircle } from "lucide-react";
 
-export function RoomTabs() {
+export function RoomList() {
   const { rooms, setSelectedRoom } = useRoom();
 
-  const privateRooms = rooms?.filter((room) => room.type === "private") || [];
-  const groupRooms = rooms?.filter((room) => room.type === "group") || [];
-  const publicRooms = rooms?.filter((room) => room.type === "public") || [];
-
-  const defaultTab = useMemo(() => {
-    if (privateRooms.length > 0) return "private";
-    if (groupRooms.length > 0) return "groups";
-    return "public";
-  }, [rooms]);
   return (
     <div className="w-64 border-r">
-      <Tabs defaultValue={defaultTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-3 rounded-none">
-          <TabsTrigger value="private">
-            <MessageCircle className="h-5 w-5" />
-          </TabsTrigger>
-          <TabsTrigger value="groups">
-            <Users className="h-5 w-5" />
-          </TabsTrigger>
-          <TabsTrigger value="public">
-            <Globe className="h-5 w-5" />
-          </TabsTrigger>
-        </TabsList>
-        <TabsContent value="private">
-          <RoomList rooms={privateRooms} onSelectRoom={setSelectedRoom} />
-        </TabsContent>
-        <TabsContent value="groups">
-          <RoomList rooms={groupRooms} onSelectRoom={setSelectedRoom} />
-        </TabsContent>
-        <TabsContent value="public">
-          <RoomList rooms={publicRooms} onSelectRoom={setSelectedRoom} />
-        </TabsContent>
-      </Tabs>
+      <div className="p-1.5 border-b flex flex-row items-center justify-between">
+        <Button onClick={() => null} variant={"secondary"}>
+          Create channel
+        </Button>
+        <Button onClick={() => null} variant={"ghost"} className="relative">
+          {/* blinking icon 1sec */}
+          <AlertCircle className="w-4 h-4 absolute top-0 right-0 text-destructive/90 animate-pulse duration-1000" />
+          Invites
+        </Button>
+      </div>
+      <ScrollArea className="h-[calc(100vh-40px)] py-1">
+        {rooms.map((room) => (
+          <RoomItem
+            key={room.id}
+            room={room}
+            setSelectedRoom={setSelectedRoom}
+          />
+        ))}
+      </ScrollArea>
     </div>
   );
 }
 
-interface RoomListProps {
-  rooms: Room[];
-  onSelectRoom: (room: Room) => void;
+interface RoomProps {
+  room: Room;
+  setSelectedRoom: (room: Room) => void;
 }
 
-function RoomList({ rooms, onSelectRoom }: RoomListProps) {
+const RoomItem = ({ room, setSelectedRoom }: RoomProps) => {
+  const userId = useRef(localStorage.getItem("userId") || "");
+  const isPrivate = room.type === "private" && room.users?.length === 2;
+  const isPublic = room.type === "public";
+  const isGroup = room.type === "group";
+
+  const currentUser = isPrivate
+    ? room.users?.find((user) => user.id === userId.current)
+    : null;
+  const otherUser = isPrivate
+    ? room.users?.find((user) => user.id !== userId.current)
+    : null;
+
   return (
-    <ScrollArea className="h-[calc(100vh-40px)]">
-      {rooms.map((room) => (
-        <Button
-          key={room.id}
-          variant="ghost"
-          className="w-full justify-start mb-1 ml-1"
-          onClick={() => onSelectRoom(room)}
-        >
-          <Avatar className="h-8 w-8 mr-2">
-            <AvatarImage src={room.avatar} alt={room.name} />
-            <AvatarFallback>{room.name[0]}</AvatarFallback>
+    <Button
+      key={room.id}
+      variant="ghost"
+      className="w-full justify-start mb-1 ml-1 gap-2"
+      onClick={() => setSelectedRoom(room)}
+    >
+      {isPrivate && (
+        <div className="flex flex-row mr-1 items-center">
+          <Avatar className="h-8 w-8">
+            <AvatarImage src={currentUser?.id} alt={currentUser?.name} />
+            <AvatarFallback>{currentUser?.name?.[0]}</AvatarFallback>
           </Avatar>
-          {room.name}
-        </Button>
-      ))}
-    </ScrollArea>
+          {"-"}
+          <Avatar className="h-8 w-8">
+            <AvatarImage src={otherUser?.id} alt={otherUser?.name} />
+            <AvatarFallback>{otherUser?.name?.[0]}</AvatarFallback>
+          </Avatar>
+        </div>
+      )}
+      {isGroup && (
+        <div className="grid grid-grid-flow-col grid-cols-3 border border-secondary p-1 rounded-lg">
+          {room.users?.slice(0, 6).map((user) => (
+            <Avatar key={user.id} className="h-4 w-4 text-[8px]">
+              <AvatarImage src={user.id} alt={user.name} />
+              <AvatarFallback>
+                {(user?.name?.[0] || "") + (user?.name?.[1] || "")}
+              </AvatarFallback>
+            </Avatar>
+          ))}
+        </div>
+      )}
+      {isPublic && (
+        <Avatar className="h-8 w-8 mr-1">
+          <AvatarImage src={room.avatar} alt={room.name} />
+          <AvatarFallback>{room?.name[0] || ""}</AvatarFallback>
+        </Avatar>
+      )}
+      {isPrivate ? otherUser?.name : room.name}
+    </Button>
   );
-}
+};
