@@ -9,7 +9,6 @@ import (
 	"log"
 
 	"github.com/gofiber/contrib/websocket"
-	"github.com/google/uuid"
 )
 
 func WebsocketHandler(conn *websocket.Conn) {
@@ -39,7 +38,6 @@ func WebsocketHandler(conn *websocket.Conn) {
 		log.Printf("Received message: %v\n", message)
 		message.SenderID = userID
 		message.SenderName = userName
-		message.ID = uuid.New().String()
 
 		if message.Amount == 0 {
 			message.Amount = 10
@@ -76,7 +74,7 @@ func WebsocketHandler(conn *websocket.Conn) {
 			}
 		case models.GetHistoryType:
 			{
-				if message.TargetMessageId == "" {
+				if message.TargetMessageId == -1 {
 					continue
 				}
 				msgs, err := store_chat.Message.GetMessagesAfter(message.ChannelID, message.TargetMessageId, message.Amount)

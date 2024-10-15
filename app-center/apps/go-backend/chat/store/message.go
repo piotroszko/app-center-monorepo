@@ -40,6 +40,6 @@ func (storeMessage) GetMessages(channelID string, amount int) ([]db.MessageModel
 	return db_chat.Message.GetMessages(channelID, amount)
 }
 
-func (storeMessage) GetMessagesAfter(channelID string, messageID string, amount int) ([]db.MessageModel, error) {
+func (storeMessage) GetMessagesAfter(channelID string, messageID int, amount int) ([]db.MessageModel, error) {
 	return db_chat.Message.GetMessagesAfter(channelID, messageID, amount)
 }

@@ -5,7 +5,7 @@ import (
 )
 
 type Message struct {
-	ID   string      `json:"id"`
+	ID   int         `json:"id"`
 	Type MessageType `json:"type"`
 
 	SenderID   string `json:"senderID"`
@@ -13,7 +13,7 @@ type Message struct {
 
 	ChannelID       string `json:"channelID"`
 	TargetID        string `json:"targetID"`
-	TargetMessageId string `json:"targetMessageId"`
+	TargetMessageId int    `json:"targetMessageId"`
 
 	Amount  int    `json:"amount"`
 	Content string `json:"content"`

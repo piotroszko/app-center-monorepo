@@ -59,7 +59,7 @@ export default function FilesComponent() {
                     Choose a file to upload to your cloud storage.
                   </DialogDescription>
                 </DialogHeader>
-                <div className="grid w-full max-w-sm items-center gap-1.5">
+                <div className="grid w-full items-center gap-1.5">
                   <Label htmlFor="file">File</Label>
                   <Input id="file" type="file" />
                 </div>
@@ -80,7 +80,7 @@ export default function FilesComponent() {
                     Enter a name for your new folder.
                   </DialogDescription>
                 </DialogHeader>
-                <div className="grid w-full max-w-sm items-center gap-1.5">
+                <div className="grid w-full items-center gap-1.5">
                   <Label htmlFor="folder-name">Folder Name</Label>
                   <Input id="folder-name" placeholder="My New Folder" />
                 </div>

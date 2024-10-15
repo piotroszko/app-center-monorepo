@@ -15,6 +15,7 @@ datasource db {
 
 model User {
   id        String   @id @default(cuid())
+  isDeleted Boolean  @default(false)
   email     String   @unique
   name      String   @unique
   password  String
@@ -32,6 +33,7 @@ model User {
 
 model Role {
   id        String   @id @default(cuid())
+  isDeleted Boolean  @default(false)
   name      String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -42,6 +44,7 @@ model Role {
 
 model Permission {
   id        String   @id @default(cuid())
+  isDeleted Boolean  @default(false)
   name      String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -59,6 +62,7 @@ model Settings {
 
 model Channel {
   id        String   @id @default(cuid())
+  isDeleted Boolean  @default(false)
   type      String  // group, room or private
   name      String
   createdAt DateTime @default(now())
@@ -70,7 +74,8 @@ model Channel {
 }
 
 model Message {
-  id        String   @id @default(cuid())
+  id        Int   @id @default(autoincrement())
+  isDeleted Boolean  @default(false)
   content   String
   createdAt DateTime @default(now())
 

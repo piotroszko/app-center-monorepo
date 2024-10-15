@@ -16,7 +16,6 @@ func (messageFuncs) AddMessage(msg models.Message) (*db.MessageModel, error) {
 	var msgDb *db.MessageModel
 	var err error
 	msgDb, err = app_db.DbConnection.Message.CreateOne(
-		db.Message.ID.Set(msg.ID),
 		db.Message.Content.Set(msg.Content),
 		db.Message.Channel.Link(
 			db.Channel.ID.Equals(msg.ChannelID),
@@ -48,7 +47,7 @@ func (messageFuncs) GetMessages(channelID string, amount int) ([]db.MessageModel
 	return msgs, nil
 }
 
-func (messageFuncs) GetMessagesAfter(channelID string, messageID string, amount int) ([]db.MessageModel, error) {
+func (messageFuncs) GetMessagesAfter(channelID string, messageID int, amount int) ([]db.MessageModel, error) {
 	ctx := context.Background()
 
 	messageWithId, err := app_db.DbConnection.Message.FindFirst(
