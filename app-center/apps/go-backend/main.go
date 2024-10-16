@@ -39,7 +39,9 @@ func main() {
 	api := app.Group("/api")
 	file := api.Group("/file", auth.HTTPMiddleware)
 	file.Post("/upload", io_file.UploadFile)
-	file.Get("/download/:filename", io_file.DownloadFile)
+	file.Get("/download/:filename", io_file.UploadFile)
+	file.Get("/directories/:path?", io_file.ListDirectories)
+	file.Post("/directories", io_file.CreateDirectory)
 
 	port := ":" + config.Config.ServerPort
 	log.Fatal(app.Listen(port))

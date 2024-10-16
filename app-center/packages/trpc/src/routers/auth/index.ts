@@ -8,6 +8,7 @@ import { getJwtSecret } from "../../libs/env";
 import { TRPCError } from "@trpc/server";
 
 const secretHash = "$2a$10$fJnYjccrjmw47juTG7680u";
+const defaultDirectories = ["Chat", "Notes", "Documents"];
 
 export const authRouter = router({
   isAnyUser: publicProcedure.query(async () => {
@@ -125,6 +126,19 @@ export const authRouter = router({
         },
       });
       const secret = getJwtSecret();
+
+      await prisma.file.createMany({
+        data: defaultDirectories.map((name) => ({
+          isDirectory: true,
+          filename: name,
+          format: "directory",
+          mimetype: "directory",
+          size: 0,
+          shareType: "private",
+          path: "/",
+          userId: user.id,
+        })),
+      });
 
       if (isNil(secret)) {
         return { ...omit(user, "password") };

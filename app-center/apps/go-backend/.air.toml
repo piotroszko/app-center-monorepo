@@ -1,6 +1,7 @@
 root = "."
 testdata_dir = "testdata"
 tmp_dir = "tmp"
+exclude_dir = ["uploads"]
 
 [build]
   args_bin = []

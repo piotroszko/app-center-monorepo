@@ -36,19 +36,18 @@ model Settings {
 }
 
 model User {
-  id             String      @id
-  email          String      @unique
-  name           String      @unique
+  id             String    @id
+  email          String    @unique
+  name           String    @unique
   password       String
-  createdAt      DateTime    @default(now())
+  createdAt      DateTime  @default(now())
   updatedAt      DateTime
-  isDeleted      Boolean     @default(false)
-  Directory      Directory[]
+  isDeleted      Boolean   @default(false)
   File           File[]
   Message        Message[]
-  Channel        Channel[]   @relation("ChannelToUser")
-  Role           Role[]      @relation("RoleToUser")
-  Channel_owners Channel[]   @relation("owners")
+  Channel        Channel[] @relation("ChannelToUser")
+  Role           Role[]    @relation("RoleToUser")
+  Channel_owners Channel[] @relation("owners")
 }
 
 model Channel {
@@ -84,29 +83,16 @@ model Log {
 }
 
 model File {
-  id          String    @id
+  id          String   @id
   filename    String
   mimetype    String
   format      String
   shareType   String
-  createdAt   DateTime  @default(now())
+  createdAt   DateTime @default(now())
   updatedAt   DateTime
   userId      String
-  directoryId String
-  Directory   Directory @relation(fields: [directoryId], references: [id], onDelete: Cascade)
-  User        User      @relation(fields: [userId], references: [id])
-}
-
-model Directory {
-  id              String      @id
-  name            String
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime
-  parentId        String?
-  userId          String
-  shareType       String
-  Directory       Directory?  @relation("DirectoryToDirectory", fields: [parentId], references: [id], onDelete: Cascade)
-  other_Directory Directory[] @relation("DirectoryToDirectory")
-  User            User        @relation(fields: [userId], references: [id])
-  File            File[]
+  path        String
+  size        Int
+  isDirectory Boolean  @default(false)
+  User        User     @relation(fields: [userId], references: [id])
 }
