@@ -10,7 +10,7 @@ import { cn } from "@repo/ui/lib/utils";
 export const MessagesList = () => {
   const lastRef = useRef<HTMLDivElement>(null);
   const { id, name } = useGetUser();
-  const { messages } = useChat();
+  const { messages, currentChannel } = useChat();
   useEffect(() => {
     if (lastRef.current) {
       lastRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -22,22 +22,26 @@ export const MessagesList = () => {
     const diff = now.getTime() - date.getTime();
     return diff < 3600000;
   };
+  const messagesCurrentChannel = messages?.[currentChannel?.id || ""] || [];
   return (
-    <ScrollArea className="flex-1 p-0.5">
-      {messages.map((message, index) => {
+    <ScrollArea className="flex-1 p-0.5 pr-3">
+      {messagesCurrentChannel.map((message, index) => {
         const date = new Date(message.createdAt);
         const isLastHour = isMessageLastHour(date);
+        const isCurrentUser = message?.User.id === id;
         return (
           <div
             key={message.id}
-            className={`flex mb-4 ${message?.userId === id ? "justify-end" : ""}`}
+            className={`flex mb-4 ${message?.User.id === id ? "justify-end" : ""}`}
           >
-            {index === messages.length - 1 && <div ref={lastRef}></div>}
+            {index === messagesCurrentChannel.length - 1 && (
+              <div ref={lastRef}></div>
+            )}
             <div
-              className={`min-w-52 max-w-[70%] ${message.userId === id ? "bg-primary text-primary-foreground" : "bg-muted"} rounded-lg p-3`}
+              className={`min-w-52 max-w-[70%] ${isCurrentUser ? "bg-primary text-primary-foreground" : "bg-muted"} rounded-lg p-3`}
             >
               <p className="font-semibold flex flex-row gap-4">
-                {message.userId === id ? name : message.user}
+                {isCurrentUser ? name : message.User.name}
                 <p
                   className={cn(
                     "text-xs flex-1 text-right mt-1",

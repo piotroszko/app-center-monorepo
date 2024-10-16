@@ -95,7 +95,7 @@ export function Sidebar({ children }: PropsWithChildren) {
   return (
     <div
       className={cn(
-        "rounded-md flex flex-col md:flex-row bg-gray-100 dark:bg-neutral-800 w-full flex-1 mx-auto border border-neutral-200 dark:border-neutral-700 overflow-hidden",
+        "rounded-md flex flex-col md:flex-row bg-gray-100 dark:bg-neutral-800 w-full flex-1 mx-auto dark:border-neutral-700 overflow-hidden",
         "h-screen",
       )}
     >
@@ -127,7 +127,7 @@ export function Sidebar({ children }: PropsWithChildren) {
         </SidebarBody>
       </SidebarComponent>
       <div className="flex flex-1">
-        <div className="rounded-tl-2xl border border-neutral-200 dark:border-neutral-700  w-full h-full bg-gray-100 dark:bg-neutral-800">
+        <div className="w-full h-full bg-gray-100 dark:bg-neutral-800">
           {children}
         </div>
       </div>

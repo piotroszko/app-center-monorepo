@@ -26,7 +26,7 @@ export function RoomList() {
           Invites
         </Button>
       </div>
-      <ScrollArea className="h-[calc(100vh-40px)] py-1">
+      <ScrollArea className="h-max py-1">
         {rooms.map((room) => (
           <RoomItem
             key={room.id}

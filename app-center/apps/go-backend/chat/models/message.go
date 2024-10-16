@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 )
 
-type Message struct {
+type MessageRaw struct {
 	ID   int         `json:"id"`
 	Type MessageType `json:"type"`
 
@@ -19,10 +19,10 @@ type Message struct {
 	Content string `json:"content"`
 }
 
-func (m *Message) FromJSON(data []byte) error {
+func (m *MessageRaw) FromJSON(data []byte) error {
 	return json.Unmarshal(data, m)
 }
-func (m *Message) ToString() (string, error) {
+func (m *MessageRaw) ToString() (string, error) {
 	data, err := json.Marshal(m)
 	if err != nil {
 		return "", err

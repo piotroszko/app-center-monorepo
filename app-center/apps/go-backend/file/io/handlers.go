@@ -103,4 +103,6 @@ func CreateDirectory(c *fiber.Ctx) error {
 		return c.SendString("invalid request")
 	}
 	// check if the directory already exists
+	// TODO: create the directory
+	return c.SendString("not implemented")
 }

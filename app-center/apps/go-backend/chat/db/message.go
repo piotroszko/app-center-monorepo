@@ -11,7 +11,7 @@ type messageFuncs struct{}
 
 var Message = messageFuncs{}
 
-func (messageFuncs) AddMessage(msg models.Message) (*db.MessageModel, error) {
+func (messageFuncs) AddMessage(msg models.MessageRaw) (*db.MessageModel, error) {
 	ctx := context.Background()
 	var msgDb *db.MessageModel
 	var err error
@@ -38,6 +38,9 @@ func (messageFuncs) GetMessages(channelID string, amount int) ([]db.MessageModel
 		db.Message.ChannelID.Equals(channelID),
 	).OrderBy(
 		db.Message.CreatedAt.Order(db.SortOrderDesc),
+	).With(
+		db.Message.User.Fetch(),
+		db.Message.Channel.Fetch(),
 	).Take(amount).Exec(ctx)
 
 	if err != nil {

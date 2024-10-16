@@ -20,14 +20,20 @@ interface Channel {
   type: string;
   users: User[];
 }
-
+interface MessagesForChannel {
+  channelId: string;
+  messages: Message[];
+}
 interface Message {
   id: string;
   content: string;
-  user: string;
-  userId: string;
+  User: {
+    id: string;
+    name: string;
+    email: string;
+  };
   createdAt: string;
-  channelID: string;
+  channelId: string;
 }
 
 export interface ChatContextType {
@@ -35,7 +41,7 @@ export interface ChatContextType {
   channels: Channel[];
   currentChannel: Channel | null;
   setCurrentChannel: (channel: Channel) => void;
-  messages: Message[];
+  messages: Record<string, Message[]>;
   sendMessage: (content: string) => void;
 }
 
@@ -71,7 +77,7 @@ export const ChatContextProvider = ({
   const wsRef = useRef<WebSocket | null>(null);
 
   const [currentChannel, setCurrentChannel] = useState<Channel | null>(null);
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<Record<string, Message[]>>({});
   const [channels, setChannels] = useState<Channel[]>([]);
 
   useEffect(() => {
@@ -89,26 +95,41 @@ export const ChatContextProvider = ({
       const data = JSON.parse(event.data);
 
       if (isArray(data)) {
-        if (isArrayOfMessages(data)) {
-          setMessages((prev) => {
-            const newMessages = [...prev, ...data];
-            newMessages.sort((a, b) => {
-              return (
-                new Date(a.createdAt).getTime() -
-                new Date(b.createdAt).getTime()
-              );
-            });
-            return newMessages;
-          });
-          return;
-        } else {
-          setChannels(data);
-          return;
-        }
+        setChannels(data);
+        return;
       }
       if (isObject(data)) {
+        if (isArrayOfMessages(data)) {
+          setMessages((prev) => {
+            if (!prev?.[data.channelId]) {
+              return { ...prev, [data.channelId]: data.messages };
+            } else {
+              const newMessages = [
+                ...(prev[data.channelId] || []),
+                ...data.messages,
+              ];
+              newMessages.sort((a, b) => {
+                return (
+                  new Date(a.createdAt).getTime() -
+                  new Date(b.createdAt).getTime()
+                );
+              });
+              return { ...prev, [data.channelId]: newMessages };
+            }
+          });
+          return;
+        }
         if (isObjectAMessage(data)) {
-          setMessages((prev) => [...prev, data]);
+          setMessages((prev) => {
+            if (!prev?.[data.channelId]) {
+              return { ...prev, [data.channelId]: [data] };
+            } else {
+              return {
+                ...prev,
+                [data.channelId]: [...(prev[data.channelId] || []), data],
+              };
+            }
+          });
           return;
         }
       }
@@ -148,16 +169,9 @@ export const useChat = () => {
   return ctx;
 };
 
-const isArrayOfMessages = (data: any): data is Message[] => {
-  return (
-    isArray(data) &&
-    data.every(
-      (item) =>
-        item.id &&
-        item.content &&
-        (!(data as any)?.type || (data as any)?.type === "message"),
-    )
-  );
+// should be object with channelId and messages
+const isArrayOfMessages = (data: any): data is MessagesForChannel => {
+  return !!data?.channelId && !!data?.messages;
 };
 
 const isObjectAMessage = (data: any): data is Message => {

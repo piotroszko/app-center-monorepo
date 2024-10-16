@@ -2,7 +2,6 @@ package io_chat
 
 import (
 	"fmt"
-	helpers_chat "go-backend/chat/helpers"
 	"go-backend/chat/models"
 	store_chat "go-backend/chat/store"
 	"go-backend/logs"
@@ -25,7 +24,7 @@ func WebsocketHandler(conn *websocket.Conn) {
 	Connections.AddConnection(userID, conn)
 
 	for {
-		var message models.Message
+		var message models.MessageRaw
 		if err := conn.ReadJSON(&message); err != nil {
 			if websocket.IsCloseError(err, websocket.CloseNormalClosure) {
 				logs.SendLogInfo(fmt.Sprintf("User disconnected: %v", user), "ws-connection")
@@ -65,7 +64,6 @@ func WebsocketHandler(conn *websocket.Conn) {
 					logs.SendLogError(fmt.Sprintf("Error getting messages from store: %v", err), "ws-connection")
 					continue
 				}
-				helpers_chat.SortMessages(msgs)
 				err = Connections.SendMessage(userID, msgs)
 				if err != nil {
 					logs.SendLogError(fmt.Sprintf("Error writing messages to websocket: %v", err), "ws-connection")
@@ -82,7 +80,6 @@ func WebsocketHandler(conn *websocket.Conn) {
 					logs.SendLogError(fmt.Sprintf("Error getting messages from store: %v", err), "ws-connection")
 					continue
 				}
-				helpers_chat.SortMessages(msgs)
 				err = Connections.SendMessage(userID, msgs)
 				if err != nil {
 					logs.SendLogError(fmt.Sprintf("Error writing messages to websocket: %v", err), "ws-connection")

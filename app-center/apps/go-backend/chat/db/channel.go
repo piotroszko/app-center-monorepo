@@ -3,7 +3,6 @@ package db_chat
 import (
 	"context"
 	"errors"
-	helpers_chat "go-backend/chat/helpers"
 	"go-backend/chat/models"
 	app_db "go-backend/db"
 	"go-backend/prisma/db"
@@ -165,7 +164,7 @@ func (channelFuncs) GetUsersForChannel(channelId string) ([]db.UserModel, error)
 	return users, nil
 }
 
-func (channelFuncs) GetChannelsForUser(userId string) ([]helpers_chat.ParsedChannel, error) {
+func (channelFuncs) GetChannelsForUser(userId string) ([]models.ParsedChannel, error) {
 	ctx := context.Background()
 	channels, err := app_db.DbConnection.Channel.FindMany(
 		db.Channel.User.Some(
@@ -176,9 +175,9 @@ func (channelFuncs) GetChannelsForUser(userId string) ([]helpers_chat.ParsedChan
 		db.Channel.UserOwners.Fetch(),
 	).Exec(ctx)
 	if err != nil {
-		return []helpers_chat.ParsedChannel{}, err
+		return []models.ParsedChannel{}, err
 	}
-	channelsParsed := helpers_chat.ParseDbChannels(channels)
+	channelsParsed := models.ParseDbChannels(channels)
 
 	return channelsParsed, nil
 }

@@ -5,7 +5,6 @@ import (
 	"errors"
 	app_db "go-backend/db"
 	"go-backend/prisma/db"
-	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -67,8 +66,9 @@ func CreateDirectory(userId, directoryName, path string) (*db.FileModel, error) 
 	if len(directory) > 0 {
 		return &db.FileModel{}, errors.New("directory already exists")
 	}
-	tmpPath := strings.TrimRight(path, "/")
-
+	//tmpPath := strings.TrimRight(path, "/")
+	return &db.FileModel{}, nil
+	// TODO: create the directory
 }
 
 func AddFile(userId, filename, mimetype, format, path string, size int) (*db.FileModel, error) {

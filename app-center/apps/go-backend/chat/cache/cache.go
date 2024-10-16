@@ -1,7 +1,7 @@
 package cache_chat
 
 import (
-	helpers_chat "go-backend/chat/helpers"
+	"go-backend/chat/models"
 	"go-backend/prisma/db"
 	"sync"
 )
@@ -37,6 +37,6 @@ func (c *Cache) AddMessageToChannel(room db.ChannelModel, message db.MessageMode
 func (c *Cache) AddOldMessages(roomID string, messages []string) {
 	c.messageMutex.Lock()
 	defer c.messageMutex.Unlock()
-	helpers_chat.SortMessages(c.messageCache[roomID])
+	models.SortMessages(c.messageCache[roomID])
 
 }

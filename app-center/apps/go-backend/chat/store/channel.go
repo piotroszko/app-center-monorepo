@@ -2,7 +2,7 @@ package store_chat
 
 import (
 	db_chat "go-backend/chat/db"
-	helpers_chat "go-backend/chat/helpers"
+	"go-backend/chat/models"
 	"go-backend/prisma/db"
 )
 
@@ -10,7 +10,7 @@ type storeChannel struct{}
 
 var Channel storeChannel
 
-func (storeChannel) GetChannels(userId string) ([]helpers_chat.ParsedChannel, error) {
+func (storeChannel) GetChannels(userId string) ([]models.ParsedChannel, error) {
 	channels, err := db_chat.Channel.GetChannelsForUser(userId)
 	if err != nil {
 		return nil, err

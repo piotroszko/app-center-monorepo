@@ -11,11 +11,11 @@ type storeMessage struct{}
 
 var Message storeMessage
 
-func (storeMessage) AddMessage(msg models.Message) ([]db.UserModel, *db.MessageModel, error) {
+func (storeMessage) AddMessage(msg models.MessageRaw) ([]db.UserModel, models.ParsedMessage, error) {
 	channelId := msg.ChannelID
 	users, err := db_chat.Channel.GetUsersForChannel(channelId)
 	if err != nil {
-		return nil, &db.MessageModel{}, err
+		return nil, models.ParsedMessage{}, err
 	}
 	userFound := false
 	for _, user := range users {
@@ -25,21 +25,29 @@ func (storeMessage) AddMessage(msg models.Message) ([]db.UserModel, *db.MessageM
 		}
 	}
 	if !userFound {
-		return nil, &db.MessageModel{}, errors.New("user not in channel")
+		return nil, models.ParsedMessage{}, errors.New("user not in channel")
 	}
 
 	msgDb, err := db_chat.Message.AddMessage(msg)
 	if err != nil {
-		return nil, &db.MessageModel{}, err
+		return nil, models.ParsedMessage{}, err
 	}
 
-	return users, msgDb, nil
+	return users, models.ParseMessage(msgDb), nil
 }
 
-func (storeMessage) GetMessages(channelID string, amount int) ([]db.MessageModel, error) {
-	return db_chat.Message.GetMessages(channelID, amount)
+func (storeMessage) GetMessages(channelID string, amount int) (models.ParsedMessages, error) {
+	msgs, err := db_chat.Message.GetMessages(channelID, amount)
+	if err != nil {
+		return models.ParsedMessages{}, err
+	}
+	return models.ParseMessages(channelID, msgs), nil
 }
 
-func (storeMessage) GetMessagesAfter(channelID string, messageID int, amount int) ([]db.MessageModel, error) {
-	return db_chat.Message.GetMessagesAfter(channelID, messageID, amount)
+func (storeMessage) GetMessagesAfter(channelID string, messageID int, amount int) (models.ParsedMessages, error) {
+	msgs, err := db_chat.Message.GetMessagesAfter(channelID, messageID, amount)
+	if err != nil {
+		return models.ParsedMessages{}, err
+	}
+	return models.ParseMessages(channelID, msgs), nil
 }
