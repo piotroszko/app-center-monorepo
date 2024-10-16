@@ -112,6 +112,38 @@ func WebsocketHandler(conn *websocket.Conn) {
 					break
 				}
 			}
+		case models.GetInvitesType:
+			{
+				invites, err := store_chat.Channel.GetInvites(userID)
+				if err != nil {
+					logs.SendLogError(fmt.Sprintf("Error getting invites: %v", err), "ws-connection")
+					continue
+				}
+				err = Connections.SendMessage(userID, invites)
+				if err != nil {
+					logs.SendLogError(fmt.Sprintf("Error writing invites to websocket: %v", err), "ws-connection")
+					break
+				}
+			}
+		case models.InviteType:
+			{
+				err := store_chat.Channel.SendInvite(message.ChannelID, message.TargetID, userID)
+				if err != nil {
+					logs.SendLogError(fmt.Sprintf("Error sending invite: %v", err), "ws-connection")
+					continue
+				}
+				// getting invites for the target user and sending them to him
+				invites, err := store_chat.Channel.GetInvites(message.TargetID)
+				if err != nil {
+					logs.SendLogError(fmt.Sprintf("Error getting invites: %v", err), "ws-connection")
+					continue
+				}
+				err = Connections.SendMessage(message.TargetID, invites)
+				if err != nil {
+					logs.SendLogError(fmt.Sprintf("Error writing invites to websocket: %v", err), "ws-connection")
+					break
+				}
+			}
 		}
 	}
 

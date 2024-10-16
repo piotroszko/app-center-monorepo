@@ -26,6 +26,22 @@ type ParsedMessages struct {
 	Messages  []ParsedMessage `json:"messages"`
 }
 
+type ParsedChannelInvite struct {
+	ChannelID   string `json:"channelId"`
+	ChannelName string `json:"channelName"`
+	InviterID   string `json:"inviterId"`
+	InviterName string `json:"inviterName"`
+}
+
+func ParseChannelInvite(invite db.ChannelInviteModel) ParsedChannelInvite {
+	return ParsedChannelInvite{
+		ChannelID:   invite.ChannelID,
+		ChannelName: invite.Channel().Name,
+		InviterID:   invite.InviterID,
+		InviterName: invite.UserChannelInviteInviterIdtoUser().Name,
+	}
+}
+
 func ParseMessage(message *db.MessageModel) ParsedMessage {
 	return ParsedMessage{
 		ID:        message.ID,

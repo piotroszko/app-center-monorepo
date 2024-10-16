@@ -13,7 +13,7 @@ type MessageRaw struct {
 
 	ChannelID       string `json:"channelID"`
 	TargetID        string `json:"targetID"`
-	TargetMessageId int    `json:"targetMessageId"`
+	TargetMessageId int    `json:"targetMessageID"`
 
 	Amount  int    `json:"amount"`
 	Content string `json:"content"`
@@ -33,9 +33,10 @@ func (m *MessageRaw) ToString() (string, error) {
 type MessageType string
 
 const (
-	JoinRoomType  MessageType = "join"
-	LeaveRoomType MessageType = "leave"
-	InviteType    MessageType = "invite"
+	JoinRoomType   MessageType = "join"
+	LeaveRoomType  MessageType = "leave"
+	InviteType     MessageType = "invite"
+	GetInvitesType MessageType = "get-invites"
 
 	ChatMessageType MessageType = "message"
 	GetNewestType   MessageType = "get-newest"

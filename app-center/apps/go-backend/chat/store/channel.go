@@ -25,3 +25,19 @@ func (storeChannel) CreateRoom(name string, userId string) (*db.ChannelModel, er
 	}
 	return channel, nil
 }
+
+func (storeChannel) GetInvites(userId string) ([]models.ParsedChannelInvite, error) {
+	channels, err := db_chat.Channel.GetInvitesForUser(userId)
+	if err != nil {
+		return nil, err
+	}
+	return channels, nil
+}
+
+func (storeChannel) SendInvite(channelId string, inviterId string, userId string) error {
+	_, err := db_chat.Channel.CreateInvite(channelId, inviterId, userId)
+	if err != nil {
+		return err
+	}
+	return nil
+}

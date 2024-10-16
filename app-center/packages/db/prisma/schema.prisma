@@ -26,6 +26,8 @@ model User {
   messages Message[]
   channels Channel[]
   files File[]
+  invites ChannelInvite[] @relation(name: "invites")
+  sendInvites ChannelInvite[] @relation(name: "sendInvites")
 
   ownedChannels Channel[] @relation(name: "owners")
 }
@@ -70,6 +72,19 @@ model Channel {
   messages Message[]
   users User[]
   owners User[] @relation(name: "owners")
+  invites ChannelInvite[]
+}
+
+model ChannelInvite {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  channel Channel @relation(fields: [channelId], references: [id])
+  channelId String
+  user User @relation(fields: [userId], references: [id], name: "invites")
+  userId String
+  inviter User @relation(fields: [inviterId], references: [id], name: "sendInvites")
+  inviterId String
 }
 
 model Message {

@@ -181,3 +181,54 @@ func (channelFuncs) GetChannelsForUser(userId string) ([]models.ParsedChannel, e
 
 	return channelsParsed, nil
 }
+
+func (channelFuncs) CreateInvite(channelId string, inviterId string, invitedId string) (*db.ChannelInviteModel, error) {
+	ctx := context.Background()
+	// find if the invite already exists
+	invite, err := app_db.DbConnection.ChannelInvite.FindFirst(
+		db.ChannelInvite.ChannelID.Equals(channelId),
+		db.ChannelInvite.InviterID.Equals(inviterId),
+		db.ChannelInvite.UserID.Equals(invitedId),
+	).Exec(ctx)
+	if err != nil {
+		return &db.ChannelInviteModel{}, err
+	}
+	if invite != nil {
+		return invite, nil
+	}
+	invite, err = app_db.DbConnection.ChannelInvite.CreateOne(
+		db.ChannelInvite.ID.Set(uuid.New().String()),
+		db.ChannelInvite.Channel.Link(
+			db.Channel.ID.Equals(channelId),
+		),
+		db.ChannelInvite.UserChannelInviteInviterIdtoUser.Link(
+			db.User.ID.Equals(invitedId),
+		),
+		db.ChannelInvite.UserChannelInviteUserIdtoUser.Link(
+			db.User.ID.Equals(inviterId),
+		),
+	).Exec(ctx)
+	if err != nil {
+		return &db.ChannelInviteModel{}, err
+	}
+	return invite, nil
+}
+
+func (channelFuncs) GetInvitesForUser(userId string) ([]models.ParsedChannelInvite, error) {
+	ctx := context.Background()
+	invites, err := app_db.DbConnection.ChannelInvite.FindMany(
+		db.ChannelInvite.UserID.Equals(userId),
+	).With(
+		db.ChannelInvite.Channel.Fetch(),
+		db.ChannelInvite.UserChannelInviteInviterIdtoUser.Fetch(),
+	).Exec(ctx)
+	if err != nil {
+		return []models.ParsedChannelInvite{}, err
+	}
+	var invitesParsed []models.ParsedChannelInvite
+	for _, invite := range invites {
+		invitesParsed = append(invitesParsed, models.ParseChannelInvite(invite))
+	}
+
+	return invitesParsed, nil
+}

@@ -36,30 +36,33 @@ model Settings {
 }
 
 model User {
-  id             String    @id
-  email          String    @unique
-  name           String    @unique
-  password       String
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime
-  isDeleted      Boolean   @default(false)
-  File           File[]
-  Message        Message[]
-  Channel        Channel[] @relation("ChannelToUser")
-  Role           Role[]    @relation("RoleToUser")
-  Channel_owners Channel[] @relation("owners")
+  id                                          String          @id
+  email                                       String          @unique
+  name                                        String          @unique
+  password                                    String
+  createdAt                                   DateTime        @default(now())
+  updatedAt                                   DateTime
+  isDeleted                                   Boolean         @default(false)
+  ChannelInvite_ChannelInvite_inviterIdToUser ChannelInvite[] @relation("ChannelInvite_inviterIdToUser")
+  ChannelInvite_ChannelInvite_userIdToUser    ChannelInvite[] @relation("ChannelInvite_userIdToUser")
+  File                                        File[]
+  Message                                     Message[]
+  Channel                                     Channel[]       @relation("ChannelToUser")
+  Role                                        Role[]          @relation("RoleToUser")
+  Channel_owners                              Channel[]       @relation("owners")
 }
 
 model Channel {
-  id          String    @id
-  name        String
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime
-  type        String
-  isDeleted   Boolean   @default(false)
-  Message     Message[]
-  User        User[]    @relation("ChannelToUser")
-  User_owners User[]    @relation("owners")
+  id            String          @id
+  name          String
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime
+  type          String
+  isDeleted     Boolean         @default(false)
+  ChannelInvite ChannelInvite[]
+  Message       Message[]
+  User          User[]          @relation("ChannelToUser")
+  User_owners   User[]          @relation("owners")
 }
 
 model Message {
@@ -95,4 +98,15 @@ model File {
   size        Int
   isDirectory Boolean  @default(false)
   User        User     @relation(fields: [userId], references: [id])
+}
+
+model ChannelInvite {
+  id                                 String   @id
+  createdAt                          DateTime @default(now())
+  channelId                          String
+  userId                             String
+  inviterId                          String
+  Channel                            Channel  @relation(fields: [channelId], references: [id])
+  User_ChannelInvite_inviterIdToUser User     @relation("ChannelInvite_inviterIdToUser", fields: [inviterId], references: [id])
+  User_ChannelInvite_userIdToUser    User     @relation("ChannelInvite_userIdToUser", fields: [userId], references: [id])
 }
