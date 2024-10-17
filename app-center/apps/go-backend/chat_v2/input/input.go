@@ -57,11 +57,11 @@ type ActionMessage struct {
 //
 // - Send: ChannelId is the id of the channel to send the invite to, UserId is the id of the user to send the invite to, Data is an optional message to the user.
 type InviteChannel struct {
-	Type      InvitesType `json:"type"`
-	InviteId  string      `json:"inviteId"`  // used for accepting and declining invites
-	ChannelId string      `json:"channelId"` // used for sending invites
-	UserId    string      `json:"userId"`    // used for sending invites
-	Data      string      `json:"data"`      // used for sending invites - optional message to the user that is invited
+	Type      InviteType `json:"type"`
+	InviteId  string     `json:"inviteId"`  // used for accepting and declining invites
+	ChannelId string     `json:"channelId"` // used for sending invites
+	UserId    string     `json:"userId"`    // used for sending invites
+	Data      string     `json:"data"`      // used for sending invites - optional message to the user that is invited
 
 }
 

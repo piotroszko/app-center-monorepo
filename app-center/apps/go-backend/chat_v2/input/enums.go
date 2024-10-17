@@ -36,13 +36,13 @@ const (
 )
 
 // Invites types for channels
-type InvitesType string
+type InviteType string
 
 const (
-	AcceptInvite  InvitesType = "accept"
-	DeclineInvite InvitesType = "decline"
-	SendInvite    InvitesType = "send"
-	GetInvites    InvitesType = "get"
+	AcceptInvite  InviteType = "accept"
+	DeclineInvite InviteType = "decline"
+	SendInvite    InviteType = "send"
+	GetInvites    InviteType = "get"
 )
 
 // Channels actions
@@ -50,12 +50,10 @@ const (
 type ChannelActionType string
 
 const (
-	CreatePrivateChannel ChannelActionType = "create-private"
-	CreateGroupChannel   ChannelActionType = "create-group"
-	CreatePublicChannel  ChannelActionType = "create-public"
-	DeleteChannel        ChannelActionType = "delete"
-	EditChannel          ChannelActionType = "edit"
-	LeaveChannel         ChannelActionType = "leave"
+	CreateChannel ChannelActionType = "create"
+	DeleteChannel ChannelActionType = "delete"
+	EditChannel   ChannelActionType = "edit"
+	LeaveChannel  ChannelActionType = "leave"
 )
 
 // Channel get types
@@ -63,6 +61,6 @@ const (
 type ChannelGetType string
 
 const (
-	GetChannelsForMe ChannelGetType = "get-channels-for-me"
+	GetChannelsForMe ChannelGetType = "get-for-me"
 	GetPublic        ChannelGetType = "get-public"
 )
