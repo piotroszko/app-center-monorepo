@@ -11,10 +11,15 @@ import (
 )
 
 func WSHandler(conn *websocket.Conn) {
+	id := conn.Locals("userID").(string)
+	name := conn.Locals("userName").(string)
 	user := &models.User{
-		ID:         conn.Locals("userID").(string),
-		Name:       conn.Locals("userName").(string),
+		ID:         id,
+		Name:       name,
 		Connection: conn,
+		SendJson: func(message interface{}) {
+			output.SendMessage(message, id)
+		},
 	}
 	output.AddConnection(*user, conn)
 	for {

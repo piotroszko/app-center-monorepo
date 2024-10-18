@@ -11,4 +11,5 @@ type User struct {
 	Name            string `json:"name"`
 	Connection      *websocket.Conn
 	ConnectionMutex *sync.Mutex
+	SendJson        (interface{})
 }

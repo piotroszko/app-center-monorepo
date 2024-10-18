@@ -8,6 +8,7 @@ import (
 
 func RawHandler(user *models.User, rawMessage input.RawPayload) error {
 	switch input.ParseRaw.ParseMessageType(rawMessage) {
+	// Messages
 	case input.GetMessagePayload:
 		{
 			switch input.ParseGetMessage.ParseGetMessageType(rawMessage) {
@@ -17,8 +18,7 @@ func RawHandler(user *models.User, rawMessage input.RawPayload) error {
 					if err != nil {
 						return err
 					}
-					// TODO: Implement
-					fmt.Println(parsedMessage)
+					return GetMessagesNewest(user, parsedMessage)
 				}
 			case input.OlderMessages:
 				{
@@ -26,8 +26,7 @@ func RawHandler(user *models.User, rawMessage input.RawPayload) error {
 					if err != nil {
 						return err
 					}
-					// TODO: Implement
-					fmt.Println(parsedMessage)
+					return GetMessagesHistory(user, parsedMessage)
 				}
 			default:
 				{
@@ -44,8 +43,7 @@ func RawHandler(user *models.User, rawMessage input.RawPayload) error {
 					if err != nil {
 						return err
 					}
-					// TODO: Implement
-					fmt.Println(parsedMessage)
+					return AddMessage(user, parsedMessage)
 				}
 			case input.AnswerMessage:
 				{
@@ -53,8 +51,7 @@ func RawHandler(user *models.User, rawMessage input.RawPayload) error {
 					if err != nil {
 						return err
 					}
-					// TODO: Implement
-					fmt.Println(parsedMessage)
+					return AnswerMessage(user, parsedMessage)
 				}
 			default:
 				{
@@ -71,8 +68,7 @@ func RawHandler(user *models.User, rawMessage input.RawPayload) error {
 					if err != nil {
 						return err
 					}
-					// TODO: Implement
-					fmt.Println(parsedMessage)
+					return EditMessage(user, parsedMessage)
 				}
 			case input.DeleteMessage:
 				{
@@ -80,8 +76,7 @@ func RawHandler(user *models.User, rawMessage input.RawPayload) error {
 					if err != nil {
 						return err
 					}
-					// TODO: Implement
-					fmt.Println(parsedMessage)
+					return DeleteMessage(user, parsedMessage)
 				}
 			default:
 				{
@@ -89,6 +84,7 @@ func RawHandler(user *models.User, rawMessage input.RawPayload) error {
 				}
 			}
 		}
+	// Invites
 	case input.InviteMessagePayload:
 		{
 			switch input.ParseInvite.ParseInviteType(rawMessage) {
@@ -98,8 +94,7 @@ func RawHandler(user *models.User, rawMessage input.RawPayload) error {
 					if err != nil {
 						return err
 					}
-					// TODO: Implement
-					fmt.Println(parsedMessage)
+					return AcceptInvite(user, parsedMessage)
 				}
 			case input.DeclineInvite:
 				{
@@ -107,8 +102,7 @@ func RawHandler(user *models.User, rawMessage input.RawPayload) error {
 					if err != nil {
 						return err
 					}
-					// TODO: Implement
-					fmt.Println(parsedMessage)
+					return DeclineInvite(user, parsedMessage)
 				}
 			case input.SendInvite:
 				{
@@ -116,12 +110,11 @@ func RawHandler(user *models.User, rawMessage input.RawPayload) error {
 					if err != nil {
 						return err
 					}
-					// TODO: Implement
-					fmt.Println(parsedMessage)
+					return InviteUser(user, parsedMessage)
 				}
 			case input.GetInvites:
 				{
-					// TODO: Send all invites for current user
+					return GetInvitesForUser(user)
 				}
 			default:
 				{
@@ -129,6 +122,7 @@ func RawHandler(user *models.User, rawMessage input.RawPayload) error {
 				}
 			}
 		}
+	// Channels
 	case input.ChannelActionPayload:
 		{
 			switch input.ParseActionChannel.ParseActionChannelType(rawMessage) {
@@ -138,8 +132,7 @@ func RawHandler(user *models.User, rawMessage input.RawPayload) error {
 					if err != nil {
 						return err
 					}
-					// TODO: Implement
-					fmt.Println(parsedMessage)
+					return CreateChannel(user, parsedMessage)
 				}
 			case input.DeleteChannel:
 				{
@@ -147,8 +140,7 @@ func RawHandler(user *models.User, rawMessage input.RawPayload) error {
 					if err != nil {
 						return err
 					}
-					// TODO: Implement
-					fmt.Println(parsedMessage)
+					return DeleteChannel(user, parsedMessage)
 				}
 			case input.EditChannel:
 				{
@@ -156,8 +148,7 @@ func RawHandler(user *models.User, rawMessage input.RawPayload) error {
 					if err != nil {
 						return err
 					}
-					// TODO: Implement
-					fmt.Println(parsedMessage)
+					return EditChannel(user, parsedMessage)
 				}
 			case input.LeaveChannel:
 				{
@@ -165,8 +156,7 @@ func RawHandler(user *models.User, rawMessage input.RawPayload) error {
 					if err != nil {
 						return err
 					}
-					// TODO: Implement
-					fmt.Println(parsedMessage)
+					return LeaveChannel(user, parsedMessage)
 				}
 			default:
 				{
@@ -179,11 +169,11 @@ func RawHandler(user *models.User, rawMessage input.RawPayload) error {
 			switch input.ParseGetChannel.ParseGetChannelType(rawMessage) {
 			case input.GetChannelsForMe:
 				{
-					// TODO: Send all channels for current user
+					return GetChannels(user)
 				}
 			case input.GetPublic:
 				{
-					// TODO: Send all public channels
+					return GetPublicChannels(user)
 				}
 			default:
 				{

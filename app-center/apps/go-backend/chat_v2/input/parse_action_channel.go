@@ -44,6 +44,9 @@ func (parseActionChannelType) ParseCreateChannel(raw RawPayload) (ParsedActionCr
 	if raw.ActionChannel.ChannelType == "" {
 		return ParsedActionCreateChannel{}, errors.New("channel type is required")
 	}
+	if models.ChannelTypes(raw.ActionChannel.ChannelType) == models.PrivateChannel && len(raw.ActionChannel.UsersIds) != 1 {
+		return ParsedActionCreateChannel{}, errors.New("private channel should have 2 users")
+	}
 	return ParsedActionCreateChannel{
 		Name:        raw.ActionChannel.Name,
 		Description: raw.ActionChannel.Description,
