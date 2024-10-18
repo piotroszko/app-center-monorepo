@@ -18,7 +18,7 @@ type ParsedAddMessage struct {
 type ParsedAnswerMessage struct {
 	ChannelId  string
 	Data       string
-	AnswerToId string
+	AnswerToId int
 }
 
 func (parseNewMessageType) ParseNewMessageChannelId(raw RawPayload) (ParsedAddMessage, error) {
@@ -41,7 +41,7 @@ func (parseNewMessageType) ParseAnswerMessage(raw RawPayload) (ParsedAnswerMessa
 	if raw.NewMessage.Data == "" {
 		return ParsedAnswerMessage{}, errors.New("data is empty")
 	}
-	if raw.NewMessage.AnswerToId == "" {
+	if raw.NewMessage.AnswerToId == 0 {
 		return ParsedAnswerMessage{}, errors.New("answer to id is empty")
 	}
 	return ParsedAnswerMessage{

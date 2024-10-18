@@ -11,17 +11,17 @@ func (parseActionMessageType) ParseActionMessageType(raw RawPayload) MessageActi
 }
 
 type ParsedActionEditMessage struct {
-	MessageID string `json:"messageId"`
+	MessageID int    `json:"messageId"`
 	Data      string `json:"data"`
 }
 
 type ParsedActionDeleteMessage struct {
-	MessageID   string   `json:"messageId"`
-	MessagesIds []string `json:"messagesIds"`
+	MessageID   int   `json:"messageId"`
+	MessagesIds []int `json:"messagesIds"`
 }
 
 func (parseActionMessageType) ParseEditMessage(raw RawPayload) (ParsedActionEditMessage, error) {
-	if raw.ActionMessage.MessageId == "" {
+	if raw.ActionMessage.MessageId == 0 {
 		return ParsedActionEditMessage{}, errors.New("message id is required")
 	}
 	if raw.ActionMessage.Data == "" {
@@ -34,7 +34,7 @@ func (parseActionMessageType) ParseEditMessage(raw RawPayload) (ParsedActionEdit
 }
 
 func (parseActionMessageType) ParseDeleteMessage(raw RawPayload) (ParsedActionDeleteMessage, error) {
-	if raw.ActionMessage.MessageId == "" && len(raw.ActionMessage.MessagesIds) == 0 {
+	if raw.ActionMessage.MessageId == 0 && len(raw.ActionMessage.MessagesIds) == 0 {
 		return ParsedActionDeleteMessage{}, errors.New("message id or messages ids are required")
 	}
 	return ParsedActionDeleteMessage{

@@ -17,7 +17,7 @@ type ParsedGetNewMessages struct {
 
 type ParsedGetOlderMessages struct {
 	ChannelId string `json:"channelId"`
-	MessageId string `json:"messageId"`
+	MessageId int    `json:"messageId"`
 	Amount    int    `json:"amount"`
 }
 
@@ -33,7 +33,7 @@ func (parseGetMessageType) ParseNewGetMessage(raw RawPayload) (ParsedGetNewMessa
 }
 
 func (parseGetMessageType) ParseOlderGetMessage(raw RawPayload) (ParsedGetOlderMessages, error) {
-	if raw.GetMessage.MessageId == "" {
+	if raw.GetMessage.MessageId == 0 {
 		return ParsedGetOlderMessages{}, errors.New("invalid message id")
 	}
 	if raw.GetMessage.Amount <= 0 {

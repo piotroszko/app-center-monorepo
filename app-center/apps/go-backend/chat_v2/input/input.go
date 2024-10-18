@@ -23,7 +23,7 @@ type RawPayload struct {
 type GetMessage struct {
 	Type      MessageHistoryType `json:"type"`
 	ChannelId string             `json:"channelId"`
-	MessageId string             `json:"messageId"`
+	MessageId int                `json:"messageId"`
 	Amount    int                `json:"amount"`
 }
 
@@ -34,7 +34,7 @@ type NewMessage struct {
 	Type       MessageNewType `json:"type"`
 	ChannelId  string         `json:"channelId"`
 	Data       string         `json:"data"`
-	AnswerToId string         `json:"answerToId"`
+	AnswerToId int            `json:"answerToId"`
 }
 
 // Struct for the payload of the request that sends an action to a message.
@@ -44,8 +44,8 @@ type NewMessage struct {
 // - Delete: MessageId is the id of the message to delete or ids of the messages to delete.
 type ActionMessage struct {
 	Type        MessageActionType `json:"actionType"`
-	MessageId   string            `json:"messageId"`
-	MessagesIds []string          `json:"messagesIds"`
+	MessageId   int               `json:"messageId"`
+	MessagesIds []int             `json:"messagesIds"`
 	Data        string            `json:"data"`
 }
 
