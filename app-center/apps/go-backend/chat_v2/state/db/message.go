@@ -13,7 +13,10 @@ func GetNewestMessages(channelId string, limit int) ([]db.MessageModel, error) {
 		db.Message.ChannelID.Equals(channelId),
 		db.Message.IsDeleted.Equals(false),
 		db.Message.ID.Order(db.ASC),
-	).Take(limit).Exec(ctx)
+	).Take(limit).With(
+		db.Message.User.Fetch(),
+		db.Message.Message.Fetch(),
+	).Exec(ctx)
 	if err != nil {
 		return []db.MessageModel{}, err
 	}
@@ -28,7 +31,10 @@ func GetOlderMessages(channelId string, messageId int, limit int) ([]db.MessageM
 		db.Message.IsDeleted.Equals(false),
 		db.Message.ID.Lt(messageId),
 		db.Message.ID.Order(db.DESC),
-	).Take(limit).Exec(ctx)
+	).Take(limit).With(
+		db.Message.User.Fetch(),
+		db.Message.Message.Fetch(),
+	).Exec(ctx)
 	if err != nil {
 		return []db.MessageModel{}, err
 	}
@@ -92,7 +98,7 @@ func EditMessage(messageId int, text string) (*db.MessageModel, error) {
 	return message, nil
 }
 
-func DeleteMessage(userId, messageId int) (*db.MessageModel, error) {
+func FlagDeleteMessage(userId string, messageId int) (*db.MessageModel, error) {
 	ctx := context.Background()
 	message, err := app_db.DbConnection.Message.FindUnique(
 		db.Message.ID.Equals(messageId),

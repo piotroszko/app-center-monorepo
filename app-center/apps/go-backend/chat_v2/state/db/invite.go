@@ -2,20 +2,29 @@ package db_chat
 
 import (
 	"context"
+	"errors"
 	app_db "go-backend/db"
 	"go-backend/prisma/db"
 
 	"github.com/google/uuid"
 )
 
-func DeleteInvite(inviteId string) error {
+func FlagDeleteInvite(inviteId string) (*db.ChannelInviteModel, error) {
 	ctx := context.Background()
-	_, err := app_db.DbConnection.ChannelInvite.FindUnique(
+	return app_db.DbConnection.ChannelInvite.FindUnique(
 		db.ChannelInvite.ID.Equals(inviteId),
 	).Update(
 		db.ChannelInvite.IsDeleted.Set(true),
 	).Exec(ctx)
-	return err
+}
+
+func FlagUnDeleteInvite(inviteId string) (*db.ChannelInviteModel, error) {
+	ctx := context.Background()
+	return app_db.DbConnection.ChannelInvite.FindUnique(
+		db.ChannelInvite.ID.Equals(inviteId),
+	).Update(
+		db.ChannelInvite.IsDeleted.Set(false),
+	).Exec(ctx)
 }
 
 func GetInvite(inviteId string) error {
@@ -24,6 +33,28 @@ func GetInvite(inviteId string) error {
 		db.ChannelInvite.ID.Equals(inviteId),
 	).Exec(ctx)
 	return err
+}
+
+func IsInviteAlreadySent(userId, inviterId, channelId string) (bool, db.ChannelInviteModel, error) {
+	ctx := context.Background()
+	invites, err := app_db.DbConnection.ChannelInvite.FindMany(
+		db.ChannelInvite.UserChannelInviteUserIdtoUser.Where(
+			db.User.ID.Equals(userId),
+		),
+		db.ChannelInvite.UserChannelInviteInviterIdtoUser.Where(
+			db.User.ID.Equals(inviterId),
+		),
+		db.ChannelInvite.Channel.Where(
+			db.Channel.ID.Equals(channelId),
+		),
+	).Exec(ctx)
+	if err != nil {
+		return false, db.ChannelInviteModel{}, err
+	}
+	if len(invites) == 0 {
+		return false, db.ChannelInviteModel{}, errors.New("invite not found")
+	}
+	return true, invites[0], nil
 }
 
 func GetInvitesForUser(userId string) ([]db.ChannelInviteModel, error) {

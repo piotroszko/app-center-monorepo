@@ -2,7 +2,6 @@ package db_chat
 
 import (
 	"context"
-	"errors"
 	"go-backend/chat_v2/models"
 	app_db "go-backend/db"
 	"go-backend/prisma/db"
@@ -11,6 +10,29 @@ import (
 	"github.com/google/uuid"
 	"github.com/steebchen/prisma-client-go/runtime/transaction"
 )
+
+func GetIfPrivateChannelExists(firstUserId string, secondUserId string) (bool, error) {
+	ctx := context.Background()
+	channel, err := app_db.DbConnection.Channel.FindFirst(
+		db.Channel.User.Some(
+			db.User.ID.Equals(firstUserId),
+			db.User.ID.Equals(secondUserId),
+		),
+		db.Channel.UserOwners.Some(
+			db.User.ID.Equals(firstUserId),
+			db.User.ID.Equals(secondUserId),
+		),
+		db.Channel.Type.Equals(string(models.PrivateChannel)),
+	).Exec(ctx)
+	if err != nil {
+		return false, err
+	}
+	if channel != nil {
+		return true, nil
+	}
+
+	return false, nil
+}
 
 func CreatePrivateChannel(name string, firstUserId string, secondUserId string) (*db.ChannelModel, error) {
 	ctx := context.Background()
@@ -75,6 +97,39 @@ func addAllUsersToChannel(channelId string, usersIds ...string) error {
 	return nil
 }
 
+func AddUserToChannel(channelId string, userId string) error {
+	ctx := context.Background()
+	_, err := app_db.DbConnection.Channel.FindUnique(
+		db.Channel.ID.Equals(channelId),
+	).Update(
+		db.Channel.User.Link(
+			db.User.ID.Equals(userId),
+		),
+	).Exec(ctx)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func AddUserToPublicChannel(channelId string, userId string) error {
+	ctx := context.Background()
+	_, err := app_db.DbConnection.Channel.FindMany(
+		db.Channel.ID.Equals(channelId),
+		db.Channel.Type.Equals(string(models.PublicChannel)),
+	).Update(
+		db.Channel.User.Link(
+			db.User.ID.Equals(userId),
+		),
+	).Exec(ctx)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func CreateGroupChannel(name string, creatorUserId string, usersIds ...string) (*db.ChannelModel, error) {
 	channel, err := createChannelWithOwner(name, creatorUserId, string(models.GroupChannel))
 	if err != nil {
@@ -101,10 +156,13 @@ func CreatePublicChannel(name string, creatorUserId string, usersIds ...string) 
 	return channel, nil
 }
 
-func DeleteChannel(channelId string) error {
+func DeleteChannel(channelId string, userId string) error {
 	ctx := context.Background()
-	_, err := app_db.DbConnection.Channel.FindUnique(
+	_, err := app_db.DbConnection.Channel.FindMany(
 		db.Channel.ID.Equals(channelId),
+		db.Channel.UserOwners.Some(
+			db.User.ID.Equals(userId),
+		),
 	).Delete().Exec(ctx)
 	if err != nil {
 		return err
@@ -113,30 +171,16 @@ func DeleteChannel(channelId string) error {
 	return nil
 }
 
-func EditChannel(channelId string, name string, description string) error {
+func EditChannel(channelId string, name string, description string, userId string) error {
 	ctx := context.Background()
-	channel, err := app_db.DbConnection.Channel.FindUnique(
+	_, err := app_db.DbConnection.Channel.FindMany(
 		db.Channel.ID.Equals(channelId),
-	).Exec(ctx)
-	if err != nil {
-		return err
-	}
-	if name == channel.Name && description == channel.Description {
-		return errors.New("nothing to update")
-	}
-
-	if name != "" {
-		channel.Name = name
-	}
-	if description != "" {
-		channel.Description = description
-	}
-
-	_, err = app_db.DbConnection.Channel.FindUnique(
-		db.Channel.ID.Equals(channel.ID),
+		db.Channel.UserOwners.Some(
+			db.User.ID.Equals(userId),
+		),
 	).Update(
-		db.Channel.Name.Set(channel.Name),
-		db.Channel.Description.Set(channel.Description),
+		db.Channel.Name.Set(name),
+		db.Channel.Description.Set(description),
 	).Exec(ctx)
 
 	if err != nil {
@@ -162,7 +206,7 @@ func LeaveChannel(channelId string, userId string) error {
 		return err
 	}
 	if len(channel.User()) == 0 && len(channel.UserOwners()) == 0 {
-		err = DeleteChannel(channelId)
+		err = DeleteChannel(channelId, userId)
 		if err != nil {
 			return err
 		}
@@ -177,6 +221,9 @@ func GetChannels(userId string) ([]db.ChannelModel, error) {
 		db.Channel.User.Some(
 			db.User.ID.Equals(userId),
 		),
+	).With(
+		db.Channel.User.Fetch(),
+		db.Channel.UserOwners.Fetch(),
 	).Exec(ctx)
 	if err != nil {
 		return []db.ChannelModel{}, err
@@ -195,6 +242,9 @@ func GetPublicChannels(userId string) ([]db.ChannelModel, error) {
 			db.User.ID.Equals(userId),
 		),
 		db.Channel.Type.Equals(string(models.PublicChannel)),
+	).With(
+		db.Channel.User.Fetch(),
+		db.Channel.UserOwners.Fetch(),
 	).Exec(ctx)
 	if err != nil {
 		return []db.ChannelModel{}, err
@@ -203,20 +253,20 @@ func GetPublicChannels(userId string) ([]db.ChannelModel, error) {
 	return channels, nil
 }
 
-func IsUserOwnerOfChannel(channelId string, userId string) (bool, error) {
+func IsUserOwnerOfChannel(channelId string, userId string) (bool, *db.ChannelModel, error) {
 	ctx := context.Background()
 	channel, err := app_db.DbConnection.Channel.FindUnique(
 		db.Channel.ID.Equals(channelId),
 	).Exec(ctx)
 	if err != nil {
-		return false, err
+		return false, &db.ChannelModel{}, err
 	}
 
 	for _, user := range channel.UserOwners() {
 		if user.ID == userId {
-			return true, nil
+			return true, channel, nil
 		}
 	}
 
-	return false, nil
+	return false, &db.ChannelModel{}, nil
 }

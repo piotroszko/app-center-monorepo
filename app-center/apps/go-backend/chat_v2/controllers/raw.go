@@ -158,6 +158,14 @@ func RawHandler(user *models.User, rawMessage input.RawPayload) error {
 					}
 					return LeaveChannel(user, parsedMessage)
 				}
+			case input.JoinPublicChannel:
+				{
+					parsedMessage, err := input.ParseActionChannel.ParseJoinPublicChannel(rawMessage)
+					if err != nil {
+						return err
+					}
+					return JoinPublicChannel(user, parsedMessage)
+				}
 			default:
 				{
 					fmt.Println("Unknown message type")

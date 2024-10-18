@@ -50,10 +50,11 @@ const (
 type ChannelActionType string
 
 const (
-	CreateChannel ChannelActionType = "create"
-	DeleteChannel ChannelActionType = "delete"
-	EditChannel   ChannelActionType = "edit"
-	LeaveChannel  ChannelActionType = "leave"
+	CreateChannel     ChannelActionType = "create"
+	DeleteChannel     ChannelActionType = "delete"
+	EditChannel       ChannelActionType = "edit"
+	LeaveChannel      ChannelActionType = "leave"
+	JoinPublicChannel ChannelActionType = "join-public"
 )
 
 // Channel get types

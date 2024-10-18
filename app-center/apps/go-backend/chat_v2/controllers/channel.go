@@ -34,3 +34,7 @@ func GetChannels(user *models.User) error {
 func GetPublicChannels(user *models.User) error {
 	return nil
 }
+
+func JoinPublicChannel(user *models.User, msg input.ParsedActionJoinPublicChannel) error {
+	return nil
+}

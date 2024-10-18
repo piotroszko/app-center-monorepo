@@ -34,6 +34,10 @@ type ParsedActionDeleteChannel struct {
 	ChannelId string `json:"channelId"`
 }
 
+type ParsedActionJoinPublicChannel struct {
+	ChannelId string `json:"channelId"`
+}
+
 func (parseActionChannelType) ParseCreateChannel(raw RawPayload) (ParsedActionCreateChannel, error) {
 	if raw.ActionChannel.Name == "" {
 		return ParsedActionCreateChannel{}, errors.New("name is required")
@@ -86,6 +90,15 @@ func (parseActionChannelType) ParseDeleteChannel(raw RawPayload) (ParsedActionDe
 		return ParsedActionDeleteChannel{}, errors.New("channel id is required")
 	}
 	return ParsedActionDeleteChannel{
+		ChannelId: raw.ActionChannel.ChannelId,
+	}, nil
+}
+
+func (parseActionChannelType) ParseJoinPublicChannel(raw RawPayload) (ParsedActionJoinPublicChannel, error) {
+	if raw.ActionChannel.ChannelId == "" {
+		return ParsedActionJoinPublicChannel{}, errors.New("channel id is required")
+	}
+	return ParsedActionJoinPublicChannel{
 		ChannelId: raw.ActionChannel.ChannelId,
 	}, nil
 }
