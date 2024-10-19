@@ -12,67 +12,67 @@ var Channel = channelType{}
 
 // TODO: Add cache for checking against
 
-func (channelType) CreatePrivateChannel(name string, firstUserId string, secondUserId string) error {
+func (channelType) CreatePrivateChannel(name string, firstUserId string, secondUserId string) (*db.ChannelModel, error) {
 	exist, err := db_chat.GetIfPrivateChannelExists(firstUserId, secondUserId)
 	if err != nil {
-		return err
+		return &db.ChannelModel{}, err
 	}
 	if exist {
-		return errors.New("private channel already exists")
+		return &db.ChannelModel{}, errors.New("private channel already exists")
 	}
 
-	_, err = db_chat.CreatePrivateChannel(name, firstUserId, secondUserId)
+	channel, err := db_chat.CreatePrivateChannel(name, firstUserId, secondUserId)
 	if err != nil {
-		return err
+		return &db.ChannelModel{}, err
 	}
-	return nil
+	return channel, nil
 }
 
-func (channelType) CreateGroupChannel(name string, userId string, usersIds ...string) error {
-	_, err := db_chat.CreateGroupChannel(name, userId, usersIds...)
+func (channelType) CreateGroupChannel(name string, userId string, usersIds ...string) (*db.ChannelModel, error) {
+	channel, err := db_chat.CreateGroupChannel(name, userId, usersIds...)
 	if err != nil {
-		return err
+		return &db.ChannelModel{}, err
 	}
-	return nil
+	return channel, nil
 }
 
-func (channelType) CreatePublicChannel(name string, userId string, usersIds ...string) error {
-	_, err := db_chat.CreatePublicChannel(name, userId, usersIds...)
+func (channelType) CreatePublicChannel(name string, userId string, usersIds ...string) (*db.ChannelModel, error) {
+	channel, err := db_chat.CreatePublicChannel(name, userId, usersIds...)
 	if err != nil {
-		return err
+		return &db.ChannelModel{}, err
 	}
-	return nil
+	return channel, nil
 }
-func (channelType) JoinPublicChannel(channelId string, userId string) error {
-	err := db_chat.AddUserToChannel(channelId, userId)
+func (channelType) JoinPublicChannel(channelId string, userId string) (*db.ChannelModel, error) {
+	channel, err := db_chat.AddUserToChannel(channelId, userId)
 	if err != nil {
-		return err
+		return &db.ChannelModel{}, err
 	}
-	return nil
-}
-
-func (channelType) DeleteChannel(channelId string, userId string) error {
-	err := db_chat.DeleteChannel(channelId, userId)
-	if err != nil {
-		return err
-	}
-	return nil
+	return channel, nil
 }
 
-func (channelType) EditChannel(channelId string, name string, description string, userId string) error {
-	err := db_chat.EditChannel(channelId, name, description, userId)
+func (channelType) DeleteChannel(channelId string) (*db.ChannelModel, error) {
+	channel, err := db_chat.DeleteChannel(channelId)
 	if err != nil {
-		return err
+		return &db.ChannelModel{}, err
 	}
-	return nil
+	return channel, nil
 }
 
-func (channelType) LeaveChannel(channelId string, userId string) error {
-	err := db_chat.LeaveChannel(channelId, userId)
+func (channelType) EditChannel(channelId string, name string, description string, userId string) (*db.ChannelModel, error) {
+	channel, err := db_chat.EditChannel(channelId, name, description, userId)
 	if err != nil {
-		return err
+		return &db.ChannelModel{}, err
 	}
-	return nil
+	return channel, nil
+}
+
+func (channelType) LeaveChannel(channelId string, userId string) (*db.ChannelModel, error) {
+	channel, err := db_chat.LeaveChannel(channelId, userId)
+	if err != nil {
+		return &db.ChannelModel{}, err
+	}
+	return channel, nil
 }
 
 func (channelType) GetChannels(userId string) ([]db.ChannelModel, error) {
@@ -89,4 +89,12 @@ func (channelType) GetPublicChannels(userId string) ([]db.ChannelModel, error) {
 		return []db.ChannelModel{}, err
 	}
 	return channel, nil
+}
+
+func (channelType) IsUserOwnerOfChannel(channelId string, userId string) (bool, error) {
+	isOwner, _, err := db_chat.IsUserOwnerOfChannel(channelId, userId)
+	if err != nil {
+		return false, err
+	}
+	return isOwner, nil
 }

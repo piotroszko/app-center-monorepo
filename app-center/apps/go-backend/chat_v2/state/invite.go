@@ -45,7 +45,7 @@ func (inviteType) AcceptInvite(inviteId string) error {
 	if err != nil {
 		return err
 	}
-	err = db_chat.AddUserToChannel(invite.ChannelID, invite.UserID)
+	_, err = db_chat.AddUserToChannel(invite.ChannelID, invite.UserID)
 	if err != nil {
 		return err
 	}

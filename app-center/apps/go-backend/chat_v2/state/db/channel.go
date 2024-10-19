@@ -97,9 +97,9 @@ func addAllUsersToChannel(channelId string, usersIds ...string) error {
 	return nil
 }
 
-func AddUserToChannel(channelId string, userId string) error {
+func AddUserToChannel(channelId string, userId string) (*db.ChannelModel, error) {
 	ctx := context.Background()
-	_, err := app_db.DbConnection.Channel.FindUnique(
+	channel, err := app_db.DbConnection.Channel.FindUnique(
 		db.Channel.ID.Equals(channelId),
 	).Update(
 		db.Channel.User.Link(
@@ -107,10 +107,10 @@ func AddUserToChannel(channelId string, userId string) error {
 		),
 	).Exec(ctx)
 	if err != nil {
-		return err
+		return &db.ChannelModel{}, err
 	}
 
-	return nil
+	return channel, nil
 }
 
 func AddUserToPublicChannel(channelId string, userId string) error {
@@ -156,41 +156,35 @@ func CreatePublicChannel(name string, creatorUserId string, usersIds ...string) 
 	return channel, nil
 }
 
-func DeleteChannel(channelId string, userId string) error {
+func DeleteChannel(channelId string) (*db.ChannelModel, error) {
 	ctx := context.Background()
-	_, err := app_db.DbConnection.Channel.FindMany(
+	channel, err := app_db.DbConnection.Channel.FindUnique(
 		db.Channel.ID.Equals(channelId),
-		db.Channel.UserOwners.Some(
-			db.User.ID.Equals(userId),
-		),
 	).Delete().Exec(ctx)
 	if err != nil {
-		return err
+		return &db.ChannelModel{}, err
 	}
 
-	return nil
+	return channel, nil
 }
 
-func EditChannel(channelId string, name string, description string, userId string) error {
+func EditChannel(channelId string, name string, description string, userId string) (*db.ChannelModel, error) {
 	ctx := context.Background()
-	_, err := app_db.DbConnection.Channel.FindMany(
+	channel, err := app_db.DbConnection.Channel.FindUnique(
 		db.Channel.ID.Equals(channelId),
-		db.Channel.UserOwners.Some(
-			db.User.ID.Equals(userId),
-		),
 	).Update(
 		db.Channel.Name.Set(name),
 		db.Channel.Description.Set(description),
 	).Exec(ctx)
 
 	if err != nil {
-		return err
+		return &db.ChannelModel{}, err
 	}
 
-	return nil
+	return channel, nil
 }
 
-func LeaveChannel(channelId string, userId string) error {
+func LeaveChannel(channelId string, userId string) (*db.ChannelModel, error) {
 	ctx := context.Background()
 	channel, err := app_db.DbConnection.Channel.FindUnique(
 		db.Channel.ID.Equals(channelId),
@@ -203,16 +197,16 @@ func LeaveChannel(channelId string, userId string) error {
 		),
 	).Exec(ctx)
 	if err != nil {
-		return err
+		return &db.ChannelModel{}, err
 	}
 	if len(channel.User()) == 0 && len(channel.UserOwners()) == 0 {
-		err = DeleteChannel(channelId, userId)
+		_, err = DeleteChannel(channelId)
 		if err != nil {
-			return err
+			return &db.ChannelModel{}, err
 		}
 	}
 
-	return nil
+	return channel, nil
 }
 
 func GetChannels(userId string) ([]db.ChannelModel, error) {

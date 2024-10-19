@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"go-backend/auth"
-	io_chat "go-backend/chat/io"
+	"go-backend/chat_v2/handler"
 	"go-backend/config"
 	app_db "go-backend/db"
 	io_file "go-backend/file/io"
@@ -34,7 +34,7 @@ func main() {
 
 	// Secure websocket connection
 	app.Use("/ws", upgradeToWebSocket)
-	app.Get("/ws/chat", websocket.New(io_chat.WebsocketHandler))
+	app.Get("/ws/chat", websocket.New(handler.WSHandler))
 
 	api := app.Group("/api")
 	file := api.Group("/file", auth.HTTPMiddleware)
