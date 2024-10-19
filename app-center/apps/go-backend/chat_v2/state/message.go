@@ -43,18 +43,26 @@ func (messageType) GetOlderMessagesForChannel(channelId string, limit int, befor
 	return messages, nil
 }
 
-func (messageType) DeleteMessage(userId string, messageId int) error {
-	_, err := db_chat.FlagDeleteMessage(userId, messageId)
+func (messageType) DeleteMessage(messageId int) error {
+	_, err := db_chat.FlagDeleteMessage(messageId)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (messageType) EditMessage(messageId int, message string) error {
-	_, err := db_chat.EditMessage(messageId, message)
+func (messageType) EditMessage(messageId int, message string) (*db.MessageModel, error) {
+	messageEdited, err := db_chat.EditMessage(messageId, message)
 	if err != nil {
-		return err
+		return &db.MessageModel{}, err
 	}
-	return nil
+	return messageEdited, nil
+}
+
+func (messageType) IsUserOwnerOfMessage(userdId string, messageId int) (bool, error) {
+	isUserOwner, err := db_chat.IsUserOwnerOfMessage(userdId, messageId)
+	if err != nil {
+		return false, err
+	}
+	return isUserOwner, nil
 }

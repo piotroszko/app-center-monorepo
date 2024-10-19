@@ -98,7 +98,7 @@ func EditMessage(messageId int, text string) (*db.MessageModel, error) {
 	return message, nil
 }
 
-func FlagDeleteMessage(userId string, messageId int) (*db.MessageModel, error) {
+func FlagDeleteMessage(messageId int) (*db.MessageModel, error) {
 	ctx := context.Background()
 	message, err := app_db.DbConnection.Message.FindUnique(
 		db.Message.ID.Equals(messageId),

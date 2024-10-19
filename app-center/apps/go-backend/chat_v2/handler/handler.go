@@ -17,9 +17,6 @@ func WSHandler(conn *websocket.Conn) {
 		ID:         id,
 		Name:       name,
 		Connection: conn,
-		SendJson: func(message interface{}) {
-			output.SendMessage(message, id)
-		},
 	}
 	output.AddConnection(*user, conn)
 	for {

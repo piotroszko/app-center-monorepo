@@ -80,7 +80,7 @@ func SendNewChannel(channel *db.ChannelModel) {
 		Channels: []OutputChannel{outputChannel},
 	}
 
-	SendMessage(outputObject, getAllUsersToSendMessage(channel)...)
+	sendMessage(outputObject, getAllUsersToSendMessage(channel)...)
 }
 
 func SendDeletedChannel(channel *db.ChannelModel) {
@@ -92,7 +92,7 @@ func SendDeletedChannel(channel *db.ChannelModel) {
 		Channels: []OutputChannel{outputChannel},
 	}
 
-	SendMessage(outputObject, getAllUsersToSendMessage(channel)...)
+	sendMessage(outputObject, getAllUsersToSendMessage(channel)...)
 }
 
 func SendEditedChannel(channel *db.ChannelModel) {
@@ -109,7 +109,7 @@ func SendEditedChannel(channel *db.ChannelModel) {
 		Channels: []OutputChannel{outputChannel},
 	}
 
-	SendMessage(outputObject, getAllUsersToSendMessage(channel)...)
+	sendMessage(outputObject, getAllUsersToSendMessage(channel)...)
 }
 
 func SendLeftChannel(channel *db.ChannelModel, userId string) {
@@ -121,7 +121,7 @@ func SendLeftChannel(channel *db.ChannelModel, userId string) {
 		Channels: []OutputChannel{outputChannel},
 	}
 
-	SendMessage(outputObject, userId)
+	sendMessage(outputObject, userId)
 }
 
 func SendChannelsToUser(channels []db.ChannelModel, userId string, isPublics bool) {
@@ -168,7 +168,7 @@ func SendChannelsToUser(channels []db.ChannelModel, userId string, isPublics boo
 		}
 	}
 
-	SendMessage(outputObject, userId)
+	sendMessage(outputObject, userId)
 }
 
 func SendJoinChannel(channel *db.ChannelModel, userId string) {
@@ -204,5 +204,5 @@ func SendJoinChannel(channel *db.ChannelModel, userId string) {
 		Channels: []OutputChannel{outputChannel},
 	}
 
-	SendMessage(outputObject, userId)
+	sendMessage(outputObject, userId)
 }

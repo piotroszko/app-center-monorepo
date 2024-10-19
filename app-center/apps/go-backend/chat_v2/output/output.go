@@ -23,7 +23,7 @@ func AddConnection(user models.User, conn *websocket.Conn) {
 	connections.Mutex.Unlock()
 }
 
-func SendMessage(message interface{}, usersIds ...string) {
+func sendMessage(message interface{}, usersIds ...string) {
 	connections.Mutex.RLock()
 	for _, user := range usersIds {
 		if connections.UserConnections[user] != nil {

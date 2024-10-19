@@ -98,3 +98,11 @@ func (channelType) IsUserOwnerOfChannel(channelId string, userId string) (bool, 
 	}
 	return isOwner, nil
 }
+
+func (channelType) GetChannel(channelId string) (*db.ChannelModel, error) {
+	channel, err := db_chat.GetChannel(channelId)
+	if err != nil {
+		return &db.ChannelModel{}, err
+	}
+	return channel, nil
+}

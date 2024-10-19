@@ -248,10 +248,7 @@ func GetPublicChannels(userId string) ([]db.ChannelModel, error) {
 }
 
 func IsUserOwnerOfChannel(channelId string, userId string) (bool, *db.ChannelModel, error) {
-	ctx := context.Background()
-	channel, err := app_db.DbConnection.Channel.FindUnique(
-		db.Channel.ID.Equals(channelId),
-	).Exec(ctx)
+	channel, err := GetChannel(channelId)
 	if err != nil {
 		return false, &db.ChannelModel{}, err
 	}
@@ -263,4 +260,18 @@ func IsUserOwnerOfChannel(channelId string, userId string) (bool, *db.ChannelMod
 	}
 
 	return false, &db.ChannelModel{}, nil
+}
+
+func GetChannel(channelId string) (*db.ChannelModel, error) {
+	ctx := context.Background()
+	channel, err := app_db.DbConnection.Channel.FindUnique(
+		db.Channel.ID.Equals(channelId),
+	).With(
+		db.Channel.User.Fetch(),
+		db.Channel.UserOwners.Fetch(),
+	).Exec(ctx)
+	if err != nil {
+		return &db.ChannelModel{}, err
+	}
+	return channel, nil
 }
