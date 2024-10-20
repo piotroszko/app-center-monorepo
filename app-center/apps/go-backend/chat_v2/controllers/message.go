@@ -80,6 +80,14 @@ func DeleteMessage(user *models.User, msg input.ParsedActionDeleteMessage) error
 	if !isUserOwnerOfMessage {
 		return errors.New("user is not owner of message")
 	}
-	// TODO: delete message
+	err = state.Message.DeleteMessage(msg.MessageID)
+	if err != nil {
+		return err
+	}
+	channel, err := state.Channel.GetChannel(msg.ChannelId)
+	if err != nil {
+		return err
+	}
+	output.SendDeleteMessage(channel, msg.MessageID)
 	return nil
 }

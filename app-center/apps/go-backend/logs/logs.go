@@ -8,7 +8,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func SendLog(message string, category string, level int) {
+func sendLog(message string, category string, level int) {
 	var lvl string
 	switch level {
 	case 0:
@@ -19,6 +19,9 @@ func SendLog(message string, category string, level int) {
 		lvl = "error"
 	default:
 		lvl = "info"
+	}
+	if level == 0 {
+		return
 	}
 	app_db.DbConnection.Log.CreateOne(
 		db.Log.ID.Set(uuid.New().String()),
@@ -31,15 +34,15 @@ func SendLog(message string, category string, level int) {
 
 func SendLogInfo(message string, category string) {
 	fmt.Println("[INFO]:", message)
-	SendLog(message, category, 0)
+	sendLog(message, category, 0)
 }
 
 func SendLogWarning(message string, category string) {
 	fmt.Println("[WARNING]:", message)
-	SendLog(message, category, 1)
+	sendLog(message, category, 1)
 }
 
 func SendLogError(message string, category string) {
 	fmt.Println("[ERROR]:", message)
-	SendLog(message, category, 2)
+	sendLog(message, category, 2)
 }

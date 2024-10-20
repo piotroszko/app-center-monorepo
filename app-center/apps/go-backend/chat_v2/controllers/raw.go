@@ -4,13 +4,17 @@ import (
 	"fmt"
 	"go-backend/chat_v2/input"
 	"go-backend/chat_v2/models"
+	"go-backend/logs"
 )
 
 func RawHandler(user *models.User, rawMessage input.RawPayload) error {
+	logs.SendLogInfo(string(input.ParseRaw.ParseMessageType(rawMessage)), "RawHandler")
 	switch input.ParseRaw.ParseMessageType(rawMessage) {
 	// Messages
 	case input.GetMessagePayload:
 		{
+			logs.SendLogInfo("GetMessagePayload:"+fmt.Sprintf("%v", rawMessage), "RawHandler")
+
 			switch input.ParseGetMessage.ParseGetMessageType(rawMessage) {
 			case input.NewestMessages:
 				{
@@ -36,6 +40,8 @@ func RawHandler(user *models.User, rawMessage input.RawPayload) error {
 		}
 	case input.NewMessagePayload:
 		{
+			logs.SendLogInfo("NewMessagePayload:"+fmt.Sprintf("%v", rawMessage), "RawHandler")
+
 			switch input.ParseNewMessage.ParseNewMessageType(rawMessage) {
 			case input.AddMessage:
 				{
@@ -61,6 +67,8 @@ func RawHandler(user *models.User, rawMessage input.RawPayload) error {
 		}
 	case input.ActionMessagePayload:
 		{
+			logs.SendLogInfo("ActionMessagePayload:"+fmt.Sprintf("%v", rawMessage), "RawHandler")
+
 			switch input.ParseActionMessage.ParseActionMessageType(rawMessage) {
 			case input.EditMessage:
 				{
@@ -87,6 +95,8 @@ func RawHandler(user *models.User, rawMessage input.RawPayload) error {
 	// Invites
 	case input.InviteMessagePayload:
 		{
+			logs.SendLogInfo("InviteMessagePayload:"+fmt.Sprintf("%v", rawMessage), "RawHandler")
+
 			switch input.ParseInvite.ParseInviteType(rawMessage) {
 			case input.AcceptInvite:
 				{
@@ -125,6 +135,8 @@ func RawHandler(user *models.User, rawMessage input.RawPayload) error {
 	// Channels
 	case input.ChannelActionPayload:
 		{
+			logs.SendLogInfo("ChannelActionPayload:"+fmt.Sprintf("%v", rawMessage), "RawHandler")
+
 			switch input.ParseActionChannel.ParseActionChannelType(rawMessage) {
 			case input.CreateChannel:
 				{
@@ -174,13 +186,17 @@ func RawHandler(user *models.User, rawMessage input.RawPayload) error {
 		}
 	case input.ChannelGetPayload:
 		{
+			logs.SendLogInfo("ChannelGetPayload:"+fmt.Sprintf("%v", rawMessage), "RawHandler")
+
 			switch input.ParseGetChannel.ParseGetChannelType(rawMessage) {
 			case input.GetChannelsForMe:
 				{
+					fmt.Println("GetChannelsForMe")
 					return GetChannels(user)
 				}
 			case input.GetPublic:
 				{
+					fmt.Println("GetPublic")
 					return GetPublicChannels(user)
 				}
 			default:

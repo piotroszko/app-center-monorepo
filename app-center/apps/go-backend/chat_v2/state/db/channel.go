@@ -2,6 +2,7 @@ package db_chat
 
 import (
 	"context"
+	"fmt"
 	"go-backend/chat_v2/models"
 	app_db "go-backend/db"
 	"go-backend/prisma/db"
@@ -228,6 +229,7 @@ func GetChannels(userId string) ([]db.ChannelModel, error) {
 
 func GetPublicChannels(userId string) ([]db.ChannelModel, error) {
 	ctx := context.Background()
+	fmt.Println("userId", userId)
 	channels, err := app_db.DbConnection.Channel.FindMany(
 		db.Channel.User.None(
 			db.User.ID.Equals(userId),

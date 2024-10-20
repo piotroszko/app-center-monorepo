@@ -9,13 +9,13 @@ import (
 type ChannelAction string
 
 const (
-	ActionEditChannel    ChannelAction = "edit"
-	ActionGetChannel     ChannelAction = "get"
-	ActionNewChannel     ChannelAction = "new"
-	ActionDeleteChannel  ChannelAction = "delete"
-	ActionLeaveChannel   ChannelAction = "leave"
-	ActionJoinChannel    ChannelAction = "join"
-	ActionPublicsChannel ChannelAction = "publics"
+	ActionEditChannel    ChannelAction = "edit-channel"
+	ActionGetChannel     ChannelAction = "get-channels"
+	ActionNewChannel     ChannelAction = "new-channel"
+	ActionDeleteChannel  ChannelAction = "delete-channel"
+	ActionLeaveChannel   ChannelAction = "leave-channel"
+	ActionJoinChannel    ChannelAction = "join-channel"
+	ActionPublicsChannel ChannelAction = "publics-channel"
 )
 
 type OutputChannel struct {

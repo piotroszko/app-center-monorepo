@@ -116,3 +116,13 @@ func SendEditMessage(channel *db.ChannelModel, message *db.MessageModel) error {
 	}, usersToSend...)
 	return nil
 }
+
+func SendDeleteMessage(channel *db.ChannelModel, messageId int) error {
+	usersToSend := getAllUsersToSendMessage(channel)
+	sendMessage(OutputDeleteMessage{
+		Type:      ActionDeleteMessage,
+		ID:        messageId,
+		ChannelID: channel.ID,
+	}, usersToSend...)
+	return nil
+}

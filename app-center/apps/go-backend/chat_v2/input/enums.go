@@ -7,8 +7,8 @@ const (
 	NewMessagePayload    PayloadType = "newMessage"
 	ActionMessagePayload PayloadType = "actionMessage"
 	InviteMessagePayload PayloadType = "inviteMessage"
-	ChannelActionPayload PayloadType = "channelAction"
-	ChannelGetPayload    PayloadType = "channelGet"
+	ChannelActionPayload PayloadType = "actionChannel"
+	ChannelGetPayload    PayloadType = "getChannel"
 )
 
 // History types

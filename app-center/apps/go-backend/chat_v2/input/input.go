@@ -47,6 +47,7 @@ type ActionMessage struct {
 	MessageId   int               `json:"messageId"`
 	MessagesIds []int             `json:"messagesIds"`
 	Data        string            `json:"data"`
+	ChannelId   string            `json:"channelId"`
 }
 
 // Struct for the payload of the request that sends an invite to a channel.

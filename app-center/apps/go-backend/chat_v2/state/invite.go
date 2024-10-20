@@ -40,22 +40,10 @@ func (inviteType) GetInvitesForUser(userId string) ([]db.ChannelInviteModel, err
 	return invites, nil
 }
 
-func (inviteType) AcceptInvite(inviteId string) error {
+func (inviteType) FlagDeleteInvite(inviteId string) (*db.ChannelInviteModel, error) {
 	invite, err := db_chat.FlagDeleteInvite(inviteId)
 	if err != nil {
-		return err
+		return &db.ChannelInviteModel{}, err
 	}
-	_, err = db_chat.AddUserToChannel(invite.ChannelID, invite.UserID)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func (inviteType) DeclineInvite(inviteId string) error {
-	_, err := db_chat.FlagDeleteInvite(inviteId)
-	if err != nil {
-		return err
-	}
-	return nil
+	return invite, nil
 }
