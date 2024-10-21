@@ -59,6 +59,7 @@ model Channel {
   updatedAt     DateTime
   type          String
   isDeleted     Boolean         @default(false)
+  description   String          @default("")
   ChannelInvite ChannelInvite[]
   Message       Message[]
   User          User[]          @relation("ChannelToUser")
@@ -66,14 +67,18 @@ model Channel {
 }
 
 model Message {
-  content   String
-  createdAt DateTime @default(now())
-  userId    String
-  channelId String
-  id        Int      @id @default(autoincrement())
-  isDeleted Boolean  @default(false)
-  Channel   Channel  @relation(fields: [channelId], references: [id])
-  User      User     @relation(fields: [userId], references: [id])
+  content       String
+  createdAt     DateTime  @default(now())
+  userId        String
+  channelId     String
+  id            Int       @id @default(autoincrement())
+  isDeleted     Boolean   @default(false)
+  answerToId    Int?
+  updatedAt     DateTime
+  Message       Message?  @relation("MessageToMessage", fields: [answerToId], references: [id])
+  other_Message Message[] @relation("MessageToMessage")
+  Channel       Channel   @relation(fields: [channelId], references: [id])
+  User          User      @relation(fields: [userId], references: [id])
 }
 
 model Log {
@@ -106,6 +111,8 @@ model ChannelInvite {
   channelId                          String
   userId                             String
   inviterId                          String
+  isDeleted                          Boolean  @default(false)
+  message                            String?
   Channel                            Channel  @relation(fields: [channelId], references: [id])
   User_ChannelInvite_inviterIdToUser User     @relation("ChannelInvite_inviterIdToUser", fields: [inviterId], references: [id])
   User_ChannelInvite_userIdToUser    User     @relation("ChannelInvite_userIdToUser", fields: [userId], references: [id])

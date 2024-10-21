@@ -66,6 +66,7 @@ model Channel {
   isDeleted Boolean  @default(false)
   type      String  // group, room or private
   name      String
+  description String @default("")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -77,7 +78,9 @@ model Channel {
 
 model ChannelInvite {
   id        String   @id @default(cuid())
+  message  String?
   createdAt DateTime @default(now())
+  isDeleted Boolean  @default(false)
 
   channel Channel @relation(fields: [channelId], references: [id])
   channelId String
@@ -92,6 +95,11 @@ model Message {
   isDeleted Boolean  @default(false)
   content   String
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  answers Message[] @relation(name: "AnswerTo")
+  answerTo  Message? @relation(name: "AnswerTo", fields: [answerToId], references: [id])
+  answerToId Int?
 
   user User @relation(fields: [userId], references: [id])
   userId String
