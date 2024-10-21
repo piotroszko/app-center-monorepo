@@ -19,7 +19,7 @@ type OutputInvite struct {
 }
 
 type OutputInvites struct {
-	Action  InviteAction   `json:"action"`
+	Type    InviteAction   `json:"type"`
 	Invites []OutputInvite `json:"invites"`
 }
 
@@ -39,7 +39,7 @@ func parseInvite(invite db.ChannelInviteModel) OutputInvite {
 
 func SendInvitesGet(invites []db.ChannelInviteModel, userID string) {
 	outputObject := OutputInvites{
-		Action:  ActionGetInvite,
+		Type:    ActionGetInvite,
 		Invites: []OutputInvite{},
 	}
 	for _, invite := range invites {
@@ -50,7 +50,7 @@ func SendInvitesGet(invites []db.ChannelInviteModel, userID string) {
 
 func SendInviteNew(invite db.ChannelInviteModel, userID string) {
 	outputObject := OutputInvites{
-		Action:  ActionNewInvite,
+		Type:    ActionNewInvite,
 		Invites: []OutputInvite{parseInvite(invite)},
 	}
 	sendMessage(outputObject, userID)
@@ -58,7 +58,7 @@ func SendInviteNew(invite db.ChannelInviteModel, userID string) {
 
 func SendInviteDecline(invite db.ChannelInviteModel, userID string) {
 	outputObject := OutputInvites{
-		Action:  ActionDeclineInvite,
+		Type:    ActionDeclineInvite,
 		Invites: []OutputInvite{parseInvite(invite)},
 	}
 	sendMessage(outputObject, userID)
@@ -66,7 +66,7 @@ func SendInviteDecline(invite db.ChannelInviteModel, userID string) {
 
 func SendInviteAccept(invite db.ChannelInviteModel, userID string) {
 	outputObject := OutputInvites{
-		Action:  ActionAcceptInvite,
+		Type:    ActionAcceptInvite,
 		Invites: []OutputInvite{parseInvite(invite)},
 	}
 	sendMessage(outputObject, userID)

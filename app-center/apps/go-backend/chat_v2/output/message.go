@@ -21,7 +21,6 @@ type OutputAnswerParent struct {
 }
 
 type OutputMessage struct {
-	Type      MessageAction      `json:"type"`
 	ID        int                `json:"id"`
 	ChannelID string             `json:"channelId"`
 	Text      string             `json:"text"`
@@ -36,22 +35,9 @@ type OutputMessage struct {
 	FilesUrls  []string `json:"filesUrls"`
 }
 
-type OutputEditMessage struct {
-	Type      MessageAction `json:"type"`
-	ID        int           `json:"id"`
-	ChannelID string        `json:"channelId"`
-	Text      string        `json:"text"`
-	UpdateAt  string        `json:"updateAt"`
-}
-
-type OutputDeleteMessage struct {
-	Type      MessageAction `json:"type"`
-	ID        int           `json:"id"`
-	ChannelID string        `json:"channelId"`
-}
-
-type OutputMessagesHistory struct {
+type OutputMessages struct {
 	ChannelID string          `json:"channelId"`
+	Type      MessageAction   `json:"type"`
 	Messages  []OutputMessage `json:"messages"`
 }
 
@@ -60,7 +46,6 @@ func parseMessageToOutputMessage(message *db.MessageModel) OutputMessage {
 	var messageOutput OutputMessage
 	if ok {
 		messageOutput = OutputMessage{
-			Type:      ActionNewMessage,
 			ID:        message.ID,
 			ChannelID: message.ChannelID,
 			Text:      message.Content,
@@ -75,7 +60,6 @@ func parseMessageToOutputMessage(message *db.MessageModel) OutputMessage {
 		}
 	} else {
 		messageOutput = OutputMessage{
-			Type:      ActionNewMessage,
 			ID:        message.ID,
 			ChannelID: message.ChannelID,
 			Text:      message.Content,
@@ -92,10 +76,12 @@ func SendMessagesHistory(channelId string, messages []db.MessageModel, userId st
 	for _, message := range messages {
 		outputMessages = append(outputMessages, parseMessageToOutputMessage(&message))
 	}
-	sendMessage(OutputMessagesHistory{
+	outputObject := OutputMessages{
 		ChannelID: channelId,
+		Type:      ActionGetMessage,
 		Messages:  outputMessages,
-	}, userId)
+	}
+	sendMessage(outputObject, userId)
 	return nil
 }
 
@@ -107,22 +93,22 @@ func SendMessage(channel *db.ChannelModel, message *db.MessageModel) error {
 
 func SendEditMessage(channel *db.ChannelModel, message *db.MessageModel) error {
 	usersToSend := getAllUsersToSendMessage(channel)
-	sendMessage(OutputEditMessage{
+	outputObject := OutputMessages{
+		ChannelID: channel.ID,
 		Type:      ActionEditMessage,
-		ID:        message.ID,
-		ChannelID: message.ChannelID,
-		Text:      message.Content,
-		UpdateAt:  time.Time.String(message.UpdatedAt),
-	}, usersToSend...)
+		Messages:  []OutputMessage{parseMessageToOutputMessage(message)},
+	}
+	sendMessage(outputObject, usersToSend...)
 	return nil
 }
 
-func SendDeleteMessage(channel *db.ChannelModel, messageId int) error {
+func SendDeleteMessage(channel *db.ChannelModel, message *db.MessageModel) error {
 	usersToSend := getAllUsersToSendMessage(channel)
-	sendMessage(OutputDeleteMessage{
-		Type:      ActionDeleteMessage,
-		ID:        messageId,
+	outputObject := OutputMessages{
 		ChannelID: channel.ID,
-	}, usersToSend...)
+		Type:      ActionDeleteMessage,
+		Messages:  []OutputMessage{parseMessageToOutputMessage(message)},
+	}
+	sendMessage(outputObject, usersToSend...)
 	return nil
 }

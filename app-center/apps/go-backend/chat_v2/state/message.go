@@ -43,12 +43,12 @@ func (messageType) GetOlderMessagesForChannel(channelId string, limit int, befor
 	return messages, nil
 }
 
-func (messageType) DeleteMessage(messageId int) error {
-	_, err := db_chat.FlagDeleteMessage(messageId)
+func (messageType) DeleteMessage(messageId int) (*db.MessageModel, error) {
+	msg, err := db_chat.FlagDeleteMessage(messageId)
 	if err != nil {
-		return err
+		return &db.MessageModel{}, err
 	}
-	return nil
+	return msg, nil
 }
 
 func (messageType) EditMessage(messageId int, message string) (*db.MessageModel, error) {
