@@ -31,7 +31,7 @@ export class OutputMessage {
       newMessage: {
         type: "new",
         channelId,
-        text,
+        data: text,
       },
     };
     ws?.send(JSON.stringify(message));
@@ -46,7 +46,7 @@ export class OutputMessage {
         type: "answer",
         channelId,
         messageId,
-        text,
+        data: text,
       },
     };
     ws?.send(JSON.stringify(message));

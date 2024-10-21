@@ -139,14 +139,14 @@ type newMessage = NewMessage | AnswerMessage;
 interface NewMessage {
   type: "new";
   channelId: string;
-  text: string;
+  data: string;
 }
 
 interface AnswerMessage {
   type: "answer";
   channelId: string;
   messageId: number;
-  text: string;
+  data: string;
 }
 
 /////////////////////////////////

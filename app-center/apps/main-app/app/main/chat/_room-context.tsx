@@ -40,13 +40,9 @@ export const mockMessages: Message[] = [
 ];
 
 interface IRoomContext {
-  selectedRoom: Room | null;
-  setSelectedRoom: (room: Room) => void;
   rooms: Room[];
 }
 export const RoomContext = createContext<IRoomContext>({
-  selectedRoom: null,
-  setSelectedRoom: () => {},
   rooms: [],
 });
 

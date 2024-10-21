@@ -28,11 +28,11 @@ export const MessagesList = () => {
       {messagesCurrentChannel.map((message, index) => {
         const date = new Date(message.createdAt);
         const isLastHour = isMessageLastHour(date);
-        const isCurrentUser = message?.User.id === id;
+        const isCurrentUser = message?.user.id === id;
         return (
           <div
             key={message.id}
-            className={`flex mb-4 ${message?.User.id === id ? "justify-end" : ""}`}
+            className={`flex mb-4 ${message?.user.id === id ? "justify-end" : ""}`}
           >
             {index === messagesCurrentChannel.length - 1 && (
               <div ref={lastRef}></div>
@@ -41,7 +41,7 @@ export const MessagesList = () => {
               className={`min-w-52 max-w-[70%] ${isCurrentUser ? "bg-primary text-primary-foreground" : "bg-muted"} rounded-lg p-3`}
             >
               <p className="font-semibold flex flex-row gap-4">
-                {isCurrentUser ? name : message.User.name}
+                {isCurrentUser ? name : message.user.name}
                 <p
                   className={cn(
                     "text-xs flex-1 text-right mt-1",
@@ -53,7 +53,7 @@ export const MessagesList = () => {
                   <TimeAgoLabel date={date} />
                 </p>
               </p>
-              <p className="my-2">{message.content}</p>
+              <p className="my-2">{message.text}</p>
             </div>
           </div>
         );

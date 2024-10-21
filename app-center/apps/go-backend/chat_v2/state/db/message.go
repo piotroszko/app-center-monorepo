@@ -12,7 +12,8 @@ func GetNewestMessages(channelId string, limit int) ([]db.MessageModel, error) {
 	messages, err := app_db.DbConnection.Message.FindMany(
 		db.Message.ChannelID.Equals(channelId),
 		db.Message.IsDeleted.Equals(false),
-		db.Message.ID.Order(db.ASC),
+	).OrderBy(
+		db.Message.ID.Order(db.DESC),
 	).Take(limit).With(
 		db.Message.User.Fetch(),
 		db.Message.Message.Fetch(),

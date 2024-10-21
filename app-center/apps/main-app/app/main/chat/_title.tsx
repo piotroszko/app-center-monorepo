@@ -13,13 +13,14 @@ import {
 } from "@repo/ui/components/ui/dialog";
 import { Label } from "@repo/ui/components/ui/label";
 import { Input } from "@repo/ui/components/ui/input";
+import { useChat } from "@repo/trpc/ws";
 
 export const RoomTitle = () => {
-  const { selectedRoom } = useRoom();
+  const { currentChannel } = useChat();
 
   return (
     <div className="p-4 border-b flex flex-row items-center justify-between">
-      <h2 className="text-xl font-semibold">{selectedRoom?.name}</h2>
+      <h2 className="text-xl font-semibold">{currentChannel?.name}</h2>
       <div className="flex flex-row gap-4">
         <Dialog>
           <DialogTrigger asChild>

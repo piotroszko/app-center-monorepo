@@ -16,27 +16,20 @@ export default function Chat() {
 }
 
 function ChatUI() {
-  const { channels, setCurrentChannel } = useChat();
-  const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
+  const { channels, currentChannel } = useChat();
+  console.log(currentChannel);
 
   return (
     <RoomContext.Provider
       value={{
-        selectedRoom,
-        setSelectedRoom: (room) => {
-          const channel = channels?.find((channel) => channel.id === room.id);
-          if (!channel) return;
-          setSelectedRoom(room);
-          setCurrentChannel(channel);
-        },
         rooms: channels?.map?.((channel) => ({
           id: channel.id,
           name: channel.name,
           avatar: "",
           type:
-            channel?.type === "room"
+            channel?.channelType === "public"
               ? "public"
-              : (channel?.type as Room["type"]),
+              : (channel?.channelType as Room["type"]),
           users: channel.users.map((user) => ({
             id: user.id,
             name: user.name,
@@ -50,7 +43,7 @@ function ChatUI() {
         <RoomList />
 
         <div className="flex flex-col flex-1">
-          {selectedRoom ? (
+          {currentChannel ? (
             <>
               <RoomTitle />
               <MessagesList />

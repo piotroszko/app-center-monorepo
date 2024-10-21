@@ -24,12 +24,26 @@ interface State {
 }
 
 interface ChatContextType {
-  sendNewMessage?: (message: string) => void;
-  answerMessage?: (message: string, id: number) => void;
-  deleteMessage?: (id: number) => void;
-  getChannels?: () => void;
-  getChannelMessages?: (channelId: number) => void;
-  getOlderChannelMessages?: (channelId: number, id: number) => void;
+  messagesFunctions: {
+    sendNewMessage?: (message: string, channelId: string) => void;
+    answerMessage?: (message: string, id: number) => void;
+    deleteMessage?: (id: number) => void;
+    getChannelMessages?: (channelId: string) => void;
+    getOlderChannelMessages?: (channelId: number, id: number) => void;
+  };
+  channelsFunctions: {
+    getChannels?: () => void;
+    getPublicChannels?: () => void;
+    createChannel?: (name: string) => void;
+    joinChannel?: (id: number) => void;
+    leaveChannel?: (id: number) => void;
+  };
+  invitesFunctions: {
+    getInvites?: () => void;
+    acceptInvite?: (id: number) => void;
+    declineInvite?: (id: number) => void;
+    sendInvite?: (channelId: number, userId: number) => void;
+  };
 
   channels: IInputChannel[];
   publicChannels: IInputChannel[];
@@ -37,6 +51,8 @@ interface ChatContextType {
   messages: Record<string, InputMessage[]>;
 
   state: State;
+  currentChannel?: IInputChannel | null;
+  setCurrentChannel?: (channel: IInputChannel) => void;
 }
 export const ChatContext = createContext<ChatContextType>({
   channels: [],
@@ -44,6 +60,11 @@ export const ChatContext = createContext<ChatContextType>({
   invites: [],
   messages: {},
   state: { isConnected: false, isConnecting: true, isErrored: false },
+  messagesFunctions: {},
+  channelsFunctions: {},
+  invitesFunctions: {},
+  currentChannel: null,
+  setCurrentChannel: () => {},
 });
 
 export const ChatContextProvider = ({
@@ -56,6 +77,9 @@ export const ChatContextProvider = ({
     isConnecting: true,
     isErrored: false,
   });
+  const [currentChannel, setCurrentChannel] = useState<IInputChannel | null>(
+    null,
+  );
 
   const [channels, setChannels] = useState<IInputChannel[]>([]);
   const [publicChannels, setPublicChannels] = useState<IInputChannel[]>([]);
@@ -82,6 +106,7 @@ export const ChatContextProvider = ({
     wsRef.current.onopen = () => {
       setState({ isConnected: true, isConnecting: false, isErrored: false });
       outputRef.current = new OutputChatClass(wsRef.current!);
+      outputRef.current.getMeChannels();
     };
     wsRef.current.onerror = () => {
       setState({ isConnected: false, isConnecting: false, isErrored: true });
@@ -104,9 +129,49 @@ export const ChatContextProvider = ({
       messages: messages,
       invites: invites,
       state,
+      channelsFunctions: {
+        getChannels: outputRef?.current?.getMeChannels,
+      },
+      invitesFunctions: {},
+      messagesFunctions: {
+        getChannelMessages: (channelId: string) =>
+          outputRef?.current?.getNewMessages({ channelId }) || null,
+        sendNewMessage: (message: string, channelId: string) => {
+          outputRef?.current?.sendMessage({
+            channelId,
+            text: message,
+          });
+        },
+      },
     };
     return valuesMemo;
   }, [state, channels, publicChannels, messages, invites]);
 
-  return <ChatContext.Provider value={values}>{children}</ChatContext.Provider>;
+  return (
+    <ChatContext.Provider
+      value={{
+        ...values,
+        currentChannel,
+        setCurrentChannel: (channel: IInputChannel) => {
+          if (currentChannel?.id === channel.id) {
+            return;
+          }
+          if (messages[channel.id] === undefined) {
+            outputRef?.current?.getNewMessages({ channelId: channel.id });
+          }
+          setCurrentChannel(channel);
+        },
+      }}
+    >
+      {children}
+    </ChatContext.Provider>
+  );
+};
+
+export const useChat = () => {
+  const context = React.useContext(ChatContext);
+  if (context === undefined) {
+    throw new Error("useChat must be used within a ChatContextProvider");
+  }
+  return context;
 };

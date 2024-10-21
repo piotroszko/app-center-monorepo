@@ -6,13 +6,16 @@ import { Send } from "lucide-react";
 import { useChat } from "@repo/trpc/ws";
 
 export const ChatInputBox = () => {
-  const { sendMessage } = useChat();
+  const {
+    messagesFunctions: { sendNewMessage: sendMessage },
+    currentChannel,
+  } = useChat();
   const [inputMessage, setInputMessage] = useState("");
   return (
     <form
       onSubmit={(e: FormEvent) => {
         e.preventDefault();
-        sendMessage(inputMessage);
+        sendMessage?.(inputMessage, currentChannel?.id || "");
         setInputMessage("");
       }}
       className="p-4 border-t flex w-full gap-4"

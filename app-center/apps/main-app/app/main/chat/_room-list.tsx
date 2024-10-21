@@ -10,9 +10,10 @@ import { ScrollArea } from "@repo/ui/components/ui/scroll-area";
 import { Room, useRoom } from "./_room-context";
 import { useRef } from "react";
 import { AlertCircle } from "lucide-react";
+import { useChat } from "@repo/trpc/ws";
 
 export function RoomList() {
-  const { rooms, setSelectedRoom } = useRoom();
+  const { rooms } = useRoom();
 
   return (
     <div className="w-64 border-r">
@@ -28,11 +29,7 @@ export function RoomList() {
       </div>
       <ScrollArea className="h-max py-1">
         {rooms.map((room) => (
-          <RoomItem
-            key={room.id}
-            room={room}
-            setSelectedRoom={setSelectedRoom}
-          />
+          <RoomItem key={room.id} room={room} />
         ))}
       </ScrollArea>
     </div>
@@ -41,10 +38,10 @@ export function RoomList() {
 
 interface RoomProps {
   room: Room;
-  setSelectedRoom: (room: Room) => void;
 }
 
-const RoomItem = ({ room, setSelectedRoom }: RoomProps) => {
+const RoomItem = ({ room }: RoomProps) => {
+  const { setCurrentChannel, channels } = useChat();
   const userId = useRef(localStorage.getItem("userId") || "");
   const isPrivate = room.type === "private" && room.users?.length === 2;
   const isPublic = room.type === "public";
@@ -62,7 +59,14 @@ const RoomItem = ({ room, setSelectedRoom }: RoomProps) => {
       key={room.id}
       variant="ghost"
       className="w-full justify-start mb-1 ml-1 gap-2"
-      onClick={() => setSelectedRoom(room)}
+      onClick={() => {
+        const foundChannel = channels.find((channel) => channel.id === room.id);
+        if (foundChannel) {
+          setCurrentChannel?.(foundChannel);
+        } else {
+          console.error("Channel not found", room.id);
+        }
+      }}
     >
       {isPrivate && (
         <div className="flex flex-row mr-1 items-center">

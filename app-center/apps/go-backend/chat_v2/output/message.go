@@ -72,7 +72,7 @@ func parseMessageToOutputMessage(message *db.MessageModel) OutputMessage {
 }
 
 func SendMessagesHistory(channelId string, messages []db.MessageModel, userId string) error {
-	var outputMessages []OutputMessage
+	outputMessages := make([]OutputMessage, 0, len(messages))
 	for _, message := range messages {
 		outputMessages = append(outputMessages, parseMessageToOutputMessage(&message))
 	}
