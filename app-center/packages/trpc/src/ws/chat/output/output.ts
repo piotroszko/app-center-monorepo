@@ -25,7 +25,7 @@ import {
 
 export class OutputChatClass {
   ws: WebSocket | null = null;
-  OutputChat(ws: WebSocket) {
+  constructor(ws: WebSocket) {
     this.ws = ws;
   }
   // get messages

@@ -36,9 +36,9 @@ export interface PropsInviteRecieve {
 }
 
 export class InputChatClass {
-  channelHandlers: PropsChannelRecieve;
-  messageHandlers: PropsMessageRecieve;
-  inviteHandlers: any;
+  private channelHandlers: PropsChannelRecieve;
+  private messageHandlers: PropsMessageRecieve;
+  private inviteHandlers: any;
 
   constructor(
     channelHandlers: PropsChannelRecieve,

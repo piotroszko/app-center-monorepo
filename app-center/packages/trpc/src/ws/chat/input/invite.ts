@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import { IChannelMessage } from "./channel";
+import { IInputChannel } from "./channel";
 import { InputUser } from "./user";
 
 export const IsInviteMessage = (
@@ -17,12 +17,12 @@ export enum InviteMessageType {
 
 export interface BaseInputInviteMessage {
   type: InviteMessageType;
-  invites: OutputInvite[];
+  invites: InputInvite[];
 }
 
-export interface OutputInvite {
+export interface InputInvite {
   id: string;
-  channel: IChannelMessage;
+  channel: IInputChannel;
   user: InputUser;
   data?: string;
 }

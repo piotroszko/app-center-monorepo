@@ -17,7 +17,7 @@ export enum ChannelMessageType {
   GET_PUBLIC = "publics-channel",
 }
 
-export interface IChannelMessage {
+export interface IInputChannel {
   id: string;
   name: string;
   description: string;
@@ -30,5 +30,5 @@ export interface IChannelMessage {
 
 export interface BaseInputChannelMessage {
   type: ChannelMessageType;
-  channels: string[];
+  channels: IInputChannel[];
 }

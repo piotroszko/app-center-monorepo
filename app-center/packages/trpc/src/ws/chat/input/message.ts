@@ -21,13 +21,13 @@ export interface BaseInputMessages {
 }
 
 export interface InputAnswerParent {
-  id: string;
+  id: number;
   text: string;
   user: InputUser;
 }
 
 export interface InputMessage {
-  id: string;
+  id: number;
   channelId: string;
   text: string;
   user: InputUser;
