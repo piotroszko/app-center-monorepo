@@ -1,7 +1,7 @@
 "use client";
 
 import { ScrollArea } from "@repo/ui/components/ui/scroll-area";
-import React, { useEffect, useRef } from "react";
+import React, { RefObject, useEffect, useRef } from "react";
 import { useChat } from "@repo/trpc/ws";
 import { useGetUser } from "../../auth/login/_form";
 import TimeAgoLabel from "@repo/ui/components/ui/time-ago-label";
@@ -30,34 +30,41 @@ export const MessagesList = () => {
         const isLastHour = isMessageLastHour(date);
         const isCurrentUser = message?.user.id === id;
         return (
-          <div
-            key={message.id}
-            className={`flex mb-4 ${message?.user.id === id ? "justify-end" : ""}`}
-          >
-            {index === messagesCurrentChannel.length - 1 && (
-              <div ref={lastRef}></div>
-            )}
-            <div
-              className={`min-w-52 max-w-[70%] ${isCurrentUser ? "bg-primary text-primary-foreground" : "bg-muted"} rounded-lg p-3`}
-            >
-              <p className="font-semibold flex flex-row gap-4">
+          <div className="mb-5">
+            <div className="w-full flex flex-row justify-end mb-1 pr-0.5">
+              <p className="font-semibold text-sm">
                 {isCurrentUser ? name : message.user.name}
-                <p
-                  className={cn(
-                    "text-xs flex-1 text-right mt-1",
-                    isLastHour
-                      ? "text-primary-foreground"
-                      : "text-muted-foreground",
-                  )}
-                >
-                  <TimeAgoLabel date={date} />
-                </p>
               </p>
-              <p className="my-2">{message.text}</p>
+            </div>
+            <div
+              key={message.id}
+              className={`flex ${message?.user.id === id ? "justify-end" : ""}`}
+            >
+              {index === messagesCurrentChannel.length - 1 && (
+                <div ref={lastRef}></div>
+              )}
+              <div
+                className={`min-w-14 max-w-3xl ${isCurrentUser ? "bg-primary text-primary-foreground" : "bg-muted"} rounded-lg p-2`}
+              >
+                <TextMessage message={message.text} />
+              </div>
+            </div>
+            <div className="w-full flex flex-row justify-end pr-0.5 mt-0.5">
+              <TimeAgoLabel
+                date={date}
+                className={cn(
+                  "text-xs flex-1 text-right",
+                  isLastHour ? "text-primary" : "text-muted-foreground",
+                )}
+              />
             </div>
           </div>
         );
       })}
     </ScrollArea>
   );
+};
+
+const TextMessage = ({ message }: { message: string }) => {
+  return <p className="my-1 text-pretty break-words text-center">{message}</p>;
 };

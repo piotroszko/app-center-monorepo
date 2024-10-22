@@ -54,6 +54,8 @@ func AddMessage(channelId string, userId string, text string) (*db.MessageModel,
 		db.Message.User.Link(
 			db.User.ID.Equals(userId),
 		),
+	).With(
+		db.Message.User.Fetch(),
 	).Exec(ctx)
 	if err != nil {
 		return &db.MessageModel{}, err

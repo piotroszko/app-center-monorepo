@@ -1,10 +1,8 @@
-import { isArray } from "lodash";
+import { has } from "lodash";
 import { InputUser } from "./user";
 
 export const IsAnyOfMessageTypes = (input: any): input is BaseInputMessages => {
-  return (
-    input?.type === "messages" && isArray(input?.messages) && input?.channelId
-  );
+  return has(input, "channelId") && has(input, "messages");
 };
 
 export enum MessageType {

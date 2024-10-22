@@ -51,13 +51,21 @@ export class InputChatClass {
   }
 
   public recieveMessage = (input: any) => {
+    console.log(
+      input,
+      IsChannelMessage(input),
+      IsAnyOfMessageTypes(input),
+      IsInviteMessage(input),
+    );
     if (IsChannelMessage(input)) {
+      console.log("Channel message", input);
       switch (input.type as ChannelMessageType) {
         case ChannelMessageType.EDIT: {
           this.channelHandlers.onChannelEdit(input);
           break;
         }
         case ChannelMessageType.GET: {
+          console.log("GET", input);
           this.channelHandlers.onChannelGet(input);
           break;
         }
@@ -90,6 +98,7 @@ export class InputChatClass {
     if (IsAnyOfMessageTypes(input)) {
       switch (input.type) {
         case MessageType.GET: {
+          console.log("GET", input);
           this.messageHandlers.onMessageGet(input);
           break;
         }

@@ -87,7 +87,12 @@ func SendMessagesHistory(channelId string, messages []db.MessageModel, userId st
 
 func SendMessage(channel *db.ChannelModel, message *db.MessageModel) error {
 	usersToSend := getAllUsersToSendMessage(channel)
-	sendMessage(parseMessageToOutputMessage(message), usersToSend...)
+	outputObject := OutputMessages{
+		ChannelID: channel.ID,
+		Type:      ActionNewMessage,
+		Messages:  []OutputMessage{parseMessageToOutputMessage(message)},
+	}
+	sendMessage(outputObject, usersToSend...)
 	return nil
 }
 

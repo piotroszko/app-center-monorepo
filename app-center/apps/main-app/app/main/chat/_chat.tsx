@@ -17,7 +17,6 @@ export default function Chat() {
 
 function ChatUI() {
   const { channels, currentChannel } = useChat();
-  console.log(currentChannel);
 
   return (
     <RoomContext.Provider

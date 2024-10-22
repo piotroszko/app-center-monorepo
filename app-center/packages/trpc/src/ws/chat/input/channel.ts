@@ -1,10 +1,11 @@
 /* eslint-disable no-unused-vars */
+import { has } from "lodash";
 import { InputUser } from "./user";
 
 export const IsChannelMessage = (
   input: any,
 ): input is BaseInputChannelMessage => {
-  return typeof input.type === "string" && input.channels;
+  return typeof input?.type === "string" && has(input, "channels");
 };
 
 export enum ChannelMessageType {

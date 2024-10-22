@@ -80,7 +80,9 @@ export const getMessagesHandlers = (
       const oldMessages = prev[data.channelId] || [];
       return {
         ...prev,
-        [data.channelId]: [...oldMessages, ...data.messages],
+        [data.channelId]: [...oldMessages, ...data.messages].sort(
+          (a, b) => a.id - b.id,
+        ),
       };
     });
   },
