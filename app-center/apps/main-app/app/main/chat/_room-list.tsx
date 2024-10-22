@@ -11,16 +11,109 @@ import { Room, useRoom } from "./_room-context";
 import { useRef } from "react";
 import { AlertCircle } from "lucide-react";
 import { useChat } from "@repo/trpc/ws";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@repo/ui/components/ui/dialog";
+import { useForm } from "react-hook-form";
+import z from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Form } from "@repo/ui/components/ui/form";
+import { FormCombobox, FormInput } from "@repo/ui/form-fields";
+
+const createChannel = z.object({
+  name: z.string().min(5, {
+    message: "Name must be at least 5 characters long",
+  }),
+  description: z.string().nullish(),
+  type: z.enum(["public", "private", "group"]),
+  userIds: z.array(z.string()).nullish(),
+});
 
 export function RoomList() {
   const { rooms } = useRoom();
+  const form = useForm<z.infer<typeof createChannel>>({
+    resolver: zodResolver(createChannel),
+  });
+  function onSubmit(values: z.infer<typeof createChannel>) {
+    console.log("values", values);
+  }
 
   return (
     <div className="w-64 border-r">
       <div className="p-1.5 border-b flex flex-row items-center justify-between">
-        <Button onClick={() => null} variant={"secondary"}>
-          Create channel
-        </Button>
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button
+              onClick={() => {
+                form.reset();
+              }}
+              variant={"secondary"}
+            >
+              Create channel
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <Form {...form}>
+              <form
+                onSubmit={form.handleSubmit(onSubmit, console.log)}
+                className="gap-6 flex flex-col"
+              >
+                <DialogHeader>
+                  <DialogTitle>Create room</DialogTitle>
+                  <DialogDescription>
+                    Create a new room to chat with your friends
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="grid w-full items-center gap-1.5">
+                  <FormInput
+                    control={form.control}
+                    name="name"
+                    label="Name"
+                    className="mb-4"
+                    placeholder="My amazing room"
+                    type="text"
+                  />
+                  <FormInput
+                    control={form.control}
+                    name="description"
+                    label="Description"
+                    className="mb-4"
+                    placeholder="A room for amazing people"
+                    type="text"
+                  />
+                  <FormCombobox
+                    control={form.control}
+                    name="type"
+                    className="mb-4"
+                    defaultValue="public"
+                    notFoundText="No types found"
+                    options={[
+                      {
+                        value: "public",
+                        label: "Public",
+                      },
+                      {
+                        value: "private",
+                        label: "Private",
+                      },
+                      {
+                        value: "group",
+                        label: "Group",
+                      },
+                    ]}
+                  />
+                </div>
+                <Button type="submit">Create</Button>
+              </form>
+            </Form>
+          </DialogContent>
+        </Dialog>
+
         <Button onClick={() => null} variant={"ghost"} className="relative">
           {/* blinking icon 1sec */}
           <AlertCircle className="w-4 h-4 absolute top-0 right-0 text-destructive/90 animate-pulse duration-1000" />

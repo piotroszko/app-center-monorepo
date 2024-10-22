@@ -32,8 +32,7 @@ export const getChannelHandlers = (
   },
   onChannelJoin: (data) => {
     setChannels((prev) => {
-      const newChannels = [...prev, ...data.channels];
-      return newChannels;
+      return [...prev, ...data.channels];
     });
     setPublicChannels((prev) =>
       prev.filter((channel) => data.channels.some((c) => c.id !== channel.id)),
@@ -54,10 +53,9 @@ export const getMessagesHandlers = (
 ): PropsMessageRecieve => ({
   onMessageDelete: (data) => {
     setMessages((prev) => {
-      const oldMessages = prev[data.channelId] || [];
       return {
         ...prev,
-        [data.channelId]: oldMessages.filter((message) =>
+        [data.channelId]: (prev[data.channelId] || []).filter((message) =>
           data?.messages?.some((m) => m.id !== message.id),
         ),
       };
@@ -65,10 +63,9 @@ export const getMessagesHandlers = (
   },
   onMessageEdit: (data) => {
     setMessages((prev) => {
-      const oldMessages = prev[data.channelId] || [];
       return {
         ...prev,
-        [data.channelId]: oldMessages.map(
+        [data.channelId]: (prev[data.channelId] || []).map(
           (message) =>
             data.messages.find((m) => m.id === message.id) || message,
         ),
@@ -77,23 +74,23 @@ export const getMessagesHandlers = (
   },
   onMessageGet: (data) => {
     setMessages((prev) => {
-      const oldMessages = prev[data.channelId] || [];
       return {
         ...prev,
-        [data.channelId]: [...oldMessages, ...data.messages].sort(
-          (a, b) => a.id - b.id,
-        ),
+        [data.channelId]: [
+          ...(prev[data.channelId] || []),
+          ...data.messages,
+        ].sort((a, b) => a.id - b.id),
       };
     });
   },
   onMessageNew: (data) => {
     setMessages((prev) => {
-      const oldMessages = prev[data.channelId] || [];
       return {
         ...prev,
-        [data.channelId]: [...oldMessages, ...data.messages].sort(
-          (a, b) => a.id - b.id,
-        ),
+        [data.channelId]: [
+          ...(prev[data.channelId] || []),
+          ...data.messages,
+        ].sort((a, b) => a.id - b.id),
       };
     });
   },
