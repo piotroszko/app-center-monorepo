@@ -33,7 +33,7 @@ export const MessagesList = () => {
         return (
           <div className="mb-5">
             <div className="w-full flex flex-row justify-end mb-0.5 pr-0.5">
-              {isCurrentUser ? (
+              {!isCurrentUser ? (
                 <UserPopover userId={message?.user?.id}>
                   <p className="font-semibold text-sm">{name}</p>
                 </UserPopover>
@@ -51,7 +51,7 @@ export const MessagesList = () => {
               <div
                 className={`min-w-14 max-w-3xl ${isCurrentUser ? "bg-primary text-primary-foreground" : "bg-muted"} rounded-lg p-2`}
               >
-                <p className="my-1 text-pretty break-words text-center">
+                <p className="my-1 text-pretty break-words text-left">
                   {message.text}
                 </p>
               </div>

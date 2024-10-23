@@ -1,10 +1,5 @@
 "use client";
 import { useState } from "react";
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@repo/ui/components/ui/avatar";
 import { Upload, FolderPlus, Settings, LogOut } from "lucide-react";
 import { Label } from "@repo/ui/components/ui/label";
 import { Button } from "@repo/ui/components/ui/button";
@@ -31,6 +26,7 @@ import { FilesGridView } from "./_view-grid";
 import { FilesListView } from "./_view-list";
 import { FilesBreadcrumbs } from "./_breadcrumbs";
 import { FilesHeader } from "./_header";
+import { AvatarComponent } from "@repo/ui/custom";
 
 export default function FilesComponent() {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
@@ -89,10 +85,11 @@ export default function FilesComponent() {
             </Dialog>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Avatar>
-                  <AvatarImage src="/placeholder-user.jpg" alt="User" />
-                  <AvatarFallback>U</AvatarFallback>
-                </Avatar>
+                <AvatarComponent
+                  src="/placeholder-user.jpg"
+                  alt="User"
+                  fallback={"U"}
+                />
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <DropdownMenuLabel>My Account</DropdownMenuLabel>

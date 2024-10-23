@@ -13,6 +13,8 @@ import {
 import { Label } from "@repo/ui/components/ui/label";
 import { Input } from "@repo/ui/components/ui/input";
 import { useChat } from "@repo/trpc/ws";
+import { ChannelUsers } from "./_channel_users";
+import { Separator } from "@repo/ui/components/ui/separator";
 
 export const ChannelTitle = () => {
   const { currentChannel } = useChat();
@@ -20,10 +22,13 @@ export const ChannelTitle = () => {
   return (
     <div className="p-4 border-b flex flex-row items-center justify-between">
       <h2 className="text-xl font-semibold">{currentChannel?.name}</h2>
-      <div className="flex flex-row gap-4">
+
+      <div className="flex flex-row gap-4 justify-center items-center">
+        <ChannelUsers />
+        <Separator orientation="vertical" className="mx-5" />
         <Dialog>
           <DialogTrigger asChild>
-            <Button className="mt-2">Invite</Button>
+            <Button>Invite</Button>
           </DialogTrigger>
           <DialogContent className="gap-6">
             <DialogHeader>
@@ -43,9 +48,7 @@ export const ChannelTitle = () => {
 
         <Dialog>
           <DialogTrigger asChild>
-            <Button className="mt-2" variant={"secondary"}>
-              Leave channel
-            </Button>
+            <Button variant={"secondary"}>Leave channel</Button>
           </DialogTrigger>
           <DialogContent className="gap-6">
             <DialogHeader>

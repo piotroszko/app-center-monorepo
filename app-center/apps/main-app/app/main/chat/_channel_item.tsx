@@ -1,12 +1,8 @@
 "use client";
 
 import { IInputChannel, useChat } from "@repo/trpc/ws";
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@repo/ui/components/ui/avatar";
 import { Button } from "@repo/ui/components/ui/button";
+import { AvatarComponent } from "@repo/ui/custom";
 import { useRef } from "react";
 
 interface channelProps {
@@ -46,34 +42,43 @@ export const ChannelItem = ({ channel }: channelProps) => {
     >
       {isPrivate && (
         <div className="flex flex-row mr-1 items-center">
-          <Avatar className="h-8 w-8">
-            <AvatarImage src={currentUser?.id} alt={currentUser?.name} />
-            <AvatarFallback>{currentUser?.name?.[0]}</AvatarFallback>
-          </Avatar>
+          <AvatarComponent
+            className="h-8 w-8"
+            src={currentUser?.id}
+            alt={currentUser?.name}
+            fallback={currentUser?.name?.[0]}
+          />
           {"-"}
-          <Avatar className="h-8 w-8">
-            <AvatarImage src={otherUser?.id} alt={otherUser?.name} />
-            <AvatarFallback>{otherUser?.name?.[0]}</AvatarFallback>
-          </Avatar>
+          <AvatarComponent
+            className="h-8 w-8"
+            src={otherUser?.id}
+            alt={otherUser?.name}
+            fallback={otherUser?.name?.[0]}
+          />
         </div>
       )}
       {isGroup && (
         <div className="grid grid-grid-flow-col grid-cols-3 border border-secondary p-1 rounded-lg">
-          {channel.users?.slice(0, 6).map((user) => (
-            <Avatar key={user.id} className="h-4 w-4 text-[8px]">
-              <AvatarImage src={user.id} alt={user.name} />
-              <AvatarFallback>
-                {(user?.name?.[0] || "") + (user?.name?.[1] || "")}
-              </AvatarFallback>
-            </Avatar>
-          ))}
+          {channel.users
+            ?.slice(0, 6)
+            .map((user) => (
+              <AvatarComponent
+                key={user.id}
+                className="h-4 w-4 text-[8px]"
+                src={user.id}
+                alt={user.name}
+                fallback={(user?.name?.[0] || "") + (user?.name?.[1] || "")}
+              />
+            ))}
         </div>
       )}
       {isPublic && (
-        <Avatar className="h-8 w-8 mr-1">
-          <AvatarImage src={channel.id} alt={channel.name} />
-          <AvatarFallback>{channel?.name[0] || ""}</AvatarFallback>
-        </Avatar>
+        <AvatarComponent
+          className="h-8 w-8 mr-1"
+          src={channel.id}
+          alt={channel.name}
+          fallback={channel?.name[0] || ""}
+        />
       )}
       {isPrivate ? otherUser?.name : channel.name}
     </Button>

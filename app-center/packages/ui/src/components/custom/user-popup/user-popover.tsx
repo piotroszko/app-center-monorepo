@@ -1,4 +1,3 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@ui/components/ui/avatar";
 import {
   Popover,
   PopoverContent,
@@ -9,6 +8,7 @@ import { trpc } from "@repo/trpc/clients/client";
 import { Skeleton } from "@ui/components/ui/skeleton";
 import { Button } from "@ui/components/ui/button";
 import { MessageCircle } from "lucide-react";
+import { AvatarComponent } from "../avatar/Avatar";
 
 interface Props {
   userId: string;
@@ -40,16 +40,18 @@ export const UserPopover = ({ children, userId }: PropsWithChildren<Props>) => {
         ) : (
           <div className="flex flex-col gap-2 p-1">
             <div className="flex flex-row gap-2 items-center justify-around">
-              <Avatar className="h-8 w-8">
-                <AvatarImage src={data?.id} alt={data?.name} />
-                <AvatarFallback>{data?.name?.[0]}</AvatarFallback>
-              </Avatar>
+              <AvatarComponent
+                className="h-8 w-8"
+                src={data?.id}
+                alt={data?.name}
+                fallback={data?.name?.[0]}
+              />
               <Button variant={"secondary"} className="flex flex-row gap-2">
                 Send message
                 <MessageCircle />
               </Button>
             </div>
-            <div className="w-full bold">{data?.name}</div>
+            <div className="w-full font-bold">{data?.name}</div>
             <div className="w-full">{data?.email}</div>
             <div className="w-full italic text-secondary-foreground/50 text-xs">
               {" User since: " + new Date(data?.createdAt).toLocaleString()}
