@@ -2,6 +2,7 @@ import { z } from "zod";
 
 import { publicProcedure, router } from "./trpc";
 import { authRouter } from "../routers/auth";
+import { userRouter } from "../routers/user";
 
 export const appRouter = router({
   getTodos: publicProcedure.query(async () => {
@@ -23,6 +24,7 @@ export const appRouter = router({
       return true;
     }),
   auth: authRouter,
+  user: userRouter,
 });
 
 export type AppRouter = typeof appRouter;

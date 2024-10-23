@@ -88,10 +88,6 @@ export const CreateChannelButton = () => {
                     label: "Public",
                   },
                   {
-                    value: "private",
-                    label: "Private",
-                  },
-                  {
                     value: "group",
                     label: "Group",
                   },

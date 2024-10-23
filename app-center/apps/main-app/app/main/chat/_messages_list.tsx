@@ -6,6 +6,7 @@ import { useChat } from "@repo/trpc/ws";
 import { useGetUser } from "../../auth/login/_form";
 import TimeAgoLabel from "@repo/ui/components/ui/time-ago-label";
 import { cn } from "@repo/ui/lib/utils";
+import { UserPopover } from "@repo/ui/custom";
 
 export const MessagesList = () => {
   const lastRef = useRef<HTMLDivElement>(null);
@@ -31,10 +32,14 @@ export const MessagesList = () => {
         const isCurrentUser = message?.user.id === id;
         return (
           <div className="mb-5">
-            <div className="w-full flex flex-row justify-end mb-1 pr-0.5">
-              <p className="font-semibold text-sm">
-                {isCurrentUser ? name : message.user.name}
-              </p>
+            <div className="w-full flex flex-row justify-end mb-0.5 pr-0.5">
+              {isCurrentUser ? (
+                <UserPopover userId={message?.user?.id}>
+                  <p className="font-semibold text-sm">{name}</p>
+                </UserPopover>
+              ) : (
+                <p className="font-semibold text-sm">{message.user.name}</p>
+              )}
             </div>
             <div
               key={message.id}
