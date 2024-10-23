@@ -1,6 +1,8 @@
 "use client";
+
 import { Button } from "@repo/ui/components/ui/button";
 import { Input } from "@repo/ui/components/ui/input";
+
 import React, { FormEvent, useState } from "react";
 import { Send } from "lucide-react";
 import { useChat } from "@repo/trpc/ws";

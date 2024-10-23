@@ -6,8 +6,9 @@ import {
   FormMessage,
 } from "@ui/components/ui/form";
 import { Input } from "@ui/components/ui/input";
+import { FormFieldProps } from "@ui/models/form";
 import { isNil } from "lodash";
-import { Control, FieldValues, Path } from "react-hook-form";
+import { FieldValues } from "react-hook-form";
 
 export const FormInput = <T extends FieldValues>({
   control,
@@ -17,13 +18,10 @@ export const FormInput = <T extends FieldValues>({
   placeholder,
   type,
 }: {
-  control: Control<T>;
-  name: Path<T>;
-  label?: string;
   className?: string;
   placeholder?: string;
   type?: React.HTMLInputTypeAttribute;
-}) => {
+} & FormFieldProps<T>) => {
   return (
     <FormField
       control={control}

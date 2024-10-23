@@ -1,11 +1,10 @@
 "use client";
-import { useState } from "react";
-import { RoomList } from "./_room-list";
+
 import { MessagesList } from "./_messages_list";
-import { RoomTitle } from "./_title";
-import { Room, RoomContext } from "./_room-context";
+import { ChannelTitle } from "./_title";
 import { ChatInputBox } from "./_input";
 import { ChatContextProvider, useChat } from "@repo/trpc/ws";
+import { ChannelList } from "./_channel-list";
 
 export default function Chat() {
   return (
@@ -16,45 +15,26 @@ export default function Chat() {
 }
 
 function ChatUI() {
-  const { channels, currentChannel } = useChat();
+  const { currentChannel } = useChat();
 
   return (
-    <RoomContext.Provider
-      value={{
-        rooms: channels?.map?.((channel) => ({
-          id: channel.id,
-          name: channel.name,
-          avatar: "",
-          type:
-            channel?.channelType === "public"
-              ? "public"
-              : (channel?.channelType as Room["type"]),
-          users: channel.users.map((user) => ({
-            id: user.id,
-            name: user.name,
-            email: user.email,
-          })),
-        })),
-      }}
-    >
-      <div className="flex h-full w-full bg-background">
-        {/* Left sidebar */}
-        <RoomList />
+    <div className="flex h-full w-full bg-background">
+      {/* Left sidebar */}
+      <ChannelList />
 
-        <div className="flex flex-col flex-1">
-          {currentChannel ? (
-            <>
-              <RoomTitle />
-              <MessagesList />
-              <ChatInputBox />
-            </>
-          ) : (
-            <div className="flex items-center justify-center h-full text-muted-foreground">
-              Select a room to start chatting
-            </div>
-          )}
-        </div>
+      <div className="flex flex-col flex-1">
+        {currentChannel ? (
+          <>
+            <ChannelTitle />
+            <MessagesList />
+            <ChatInputBox />
+          </>
+        ) : (
+          <div className="flex items-center justify-center h-full text-muted-foreground">
+            Select a channel to start chatting
+          </div>
+        )}
       </div>
-    </RoomContext.Provider>
+    </div>
   );
 }

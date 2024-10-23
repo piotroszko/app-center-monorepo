@@ -17,7 +17,7 @@ module.exports = {
     node: true,
     browser: true,
   },
-  plugins: ["only-warn"],
+  plugins: ["only-warn", "simple-import-sort"],
   settings: {
     "import/resolver": {
       typescript: {

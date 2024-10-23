@@ -23,14 +23,9 @@ import {
   PopoverTrigger,
 } from "@ui/components/ui/popover";
 import { cn } from "@ui/lib/utils";
+import { FormFieldProps } from "@ui/models/form";
 import { useState } from "react";
-import {
-  Control,
-  FieldValues,
-  Path,
-  PathValue,
-  useFormContext,
-} from "react-hook-form";
+import { FieldValues, Path, PathValue, useFormContext } from "react-hook-form";
 
 export const FormCombobox = <T extends FieldValues>({
   options,
@@ -41,11 +36,8 @@ export const FormCombobox = <T extends FieldValues>({
   control,
   name,
   className,
-}: ComboboxProps & {
-  control: Control<T>;
-  name: Path<T>;
-  defaultValue?: PathValue<T, Path<T>>;
-}) => {
+  label,
+}: ComboboxProps & FormFieldProps<T>) => {
   const [open, setOpen] = useState(false);
 
   const { setValue } = useFormContext<T>();
@@ -56,7 +48,7 @@ export const FormCombobox = <T extends FieldValues>({
       defaultValue={defaultValue}
       render={({ field }) => (
         <FormItem className="flex flex-col">
-          <FormLabel>Language</FormLabel>
+          <FormLabel>{label}</FormLabel>
           <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
               <FormControl>

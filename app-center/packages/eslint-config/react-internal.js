@@ -15,7 +15,7 @@ const project = resolve(process.cwd(), "tsconfig.json");
 /** @type {import("eslint").Linter.Config} */
 module.exports = {
   extends: ["eslint:recommended", "eslint-config-turbo"],
-  plugins: ["only-warn"],
+  plugins: ["only-warn", "simple-import-sort"],
   globals: {
     React: true,
     JSX: true,
@@ -29,6 +29,9 @@ module.exports = {
         project,
       },
     },
+  },
+  rules: {
+    "no-unused-vars": ["off", {}],
   },
   ignorePatterns: [
     // Ignore dotfiles

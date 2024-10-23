@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import { useRoom } from "./_room-context";
 import { Button } from "@repo/ui/components/ui/button";
 import {
   Dialog,
@@ -15,7 +14,7 @@ import { Label } from "@repo/ui/components/ui/label";
 import { Input } from "@repo/ui/components/ui/input";
 import { useChat } from "@repo/trpc/ws";
 
-export const RoomTitle = () => {
+export const ChannelTitle = () => {
   const { currentChannel } = useChat();
 
   return (
@@ -28,10 +27,10 @@ export const RoomTitle = () => {
           </DialogTrigger>
           <DialogContent className="gap-6">
             <DialogHeader>
-              <DialogTitle>Invite user to room</DialogTitle>
+              <DialogTitle>Invite user to channel</DialogTitle>
               <DialogDescription>
                 Enter the email or login of the user you want to invite to this
-                room.
+                channel.
               </DialogDescription>
             </DialogHeader>
             <div className="grid w-full items-center gap-1.5">
@@ -45,14 +44,14 @@ export const RoomTitle = () => {
         <Dialog>
           <DialogTrigger asChild>
             <Button className="mt-2" variant={"secondary"}>
-              Leave Room
+              Leave channel
             </Button>
           </DialogTrigger>
           <DialogContent className="gap-6">
             <DialogHeader>
-              <DialogTitle>Leave room</DialogTitle>
+              <DialogTitle>Leave channel</DialogTitle>
               <DialogDescription>
-                Are you sure you want to leave this room?
+                Are you sure you want to leave this channel?
               </DialogDescription>
             </DialogHeader>
             <Button type="submit" variant={"destructive"}>

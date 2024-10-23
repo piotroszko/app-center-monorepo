@@ -1,7 +1,7 @@
 "use client";
 
 import { ScrollArea } from "@repo/ui/components/ui/scroll-area";
-import React, { RefObject, useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { useChat } from "@repo/trpc/ws";
 import { useGetUser } from "../../auth/login/_form";
 import TimeAgoLabel from "@repo/ui/components/ui/time-ago-label";
@@ -46,7 +46,9 @@ export const MessagesList = () => {
               <div
                 className={`min-w-14 max-w-3xl ${isCurrentUser ? "bg-primary text-primary-foreground" : "bg-muted"} rounded-lg p-2`}
               >
-                <TextMessage message={message.text} />
+                <p className="my-1 text-pretty break-words text-center">
+                  {message.text}
+                </p>
               </div>
             </div>
             <div className="w-full flex flex-row justify-end pr-0.5 mt-0.5">
@@ -63,8 +65,4 @@ export const MessagesList = () => {
       })}
     </ScrollArea>
   );
-};
-
-const TextMessage = ({ message }: { message: string }) => {
-  return <p className="my-1 text-pretty break-words text-center">{message}</p>;
 };
