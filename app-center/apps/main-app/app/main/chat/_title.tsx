@@ -23,7 +23,7 @@ export const ChannelTitle = () => {
     <div className="p-4 border-b flex flex-row items-center justify-between">
       <h2 className="text-xl font-semibold">{currentChannel?.name}</h2>
 
-      <div className="flex flex-row gap-4 justify-center items-center">
+      <div className="flex flex-row gap-4 justify-center items-center ml-4">
         <ChannelUsers />
         <Separator orientation="vertical" className="mx-5" />
         <Dialog>

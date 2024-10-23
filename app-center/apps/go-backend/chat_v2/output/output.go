@@ -36,7 +36,7 @@ func sendMessage(message interface{}, usersIds ...string) {
 func RemoveConnection(user models.User) {
 	connections.Mutex.Lock()
 
-	connections.UserConnections[user.ID].Close()
+	_ = connections.UserConnections[user.ID].Close()
 	delete(connections.UserConnections, user.ID)
 
 	connections.Mutex.Unlock()

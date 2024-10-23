@@ -49,7 +49,7 @@ export const MessagesList = () => {
                 <div ref={lastRef}></div>
               )}
               <div
-                className={`min-w-14 max-w-3xl ${isCurrentUser ? "bg-primary text-primary-foreground" : "bg-muted"} rounded-lg p-2`}
+                className={`min-w-5 xl:max-w-2xl lg:max-w-2xl md:max-w-md sm:max-w-90 max-w-xs ${isCurrentUser ? "bg-primary text-primary-foreground" : "bg-muted"} rounded-lg p-2`}
               >
                 <p className="my-1 text-pretty break-words text-left">
                   {message.text}
