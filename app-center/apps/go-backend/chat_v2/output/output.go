@@ -19,7 +19,12 @@ var connections = &connectionsType{
 
 func AddConnection(user models.User, conn *websocket.Conn) {
 	connections.Mutex.Lock()
-	connections.UserConnections[user.ID] = conn
+	if connections.UserConnections[user.ID] != nil {
+		_ = connections.UserConnections[user.ID].Close()
+		connections.UserConnections[user.ID] = conn
+	} else {
+		connections.UserConnections[user.ID] = conn
+	}
 	connections.Mutex.Unlock()
 }
 

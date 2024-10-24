@@ -33,12 +33,12 @@ export default function FilesComponent() {
 
   return (
     <div className="flex h-screen bg-background">
-      <aside className="w-64 bg-muted p-4 hidden md:block">
+      <aside className="w-64 bg-background p-4 hidden md:block border-r">
         <FilesNavigation />
       </aside>
 
       <main className="flex-1 flex flex-col">
-        <header className="bg-background border-b p-4 flex justify-between items-center">
+        <header className="border-b p-4 flex justify-between items-center border-r">
           <FilesSearchBar />
           <div className="flex items-center space-x-4">
             <Dialog>
