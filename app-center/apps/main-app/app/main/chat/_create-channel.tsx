@@ -10,12 +10,14 @@ import {
   DialogTrigger,
 } from "@repo/ui/components/ui/dialog";
 import { Form } from "@repo/ui/components/ui/form";
-import { FormCombobox, FormInput } from "@repo/ui/form-fields";
-import React from "react";
+import { FormInput, FormMultiSelector } from "@repo/ui/form-fields";
+import React, { useState } from "react";
 import z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FormSelect } from "@repo/ui/components/form-fields/input/FormSelect";
+import { trpc } from "@repo/trpc/clients/client";
+import { useGetUser } from "../../auth/login/_form";
 
 const createChannelSchema = z.object({
   name: z.string().min(5, {
@@ -23,16 +25,40 @@ const createChannelSchema = z.object({
   }),
   description: z.string().nullish(),
   type: z.enum(["public", "private", "group"]),
-  userIds: z.array(z.string()).nullish(),
+  userIds: z
+    .array(
+      z.object({
+        label: z.string(),
+        value: z.string(),
+      }),
+    )
+    .nullish(),
 });
 
 export const CreateChannelButton = () => {
+  const { id } = useGetUser();
+  const [isSelectOpen, setIsSelectOpen] = useState(false);
+  const [searchValue, setSearchValue] = useState("");
+  const [page, setPage] = useState(0);
+
+  const { data } = trpc.user.getUsers.useQuery({
+    page,
+    nameFragment: searchValue,
+  });
+
   const form = useForm<z.infer<typeof createChannelSchema>>({
     resolver: zodResolver(createChannelSchema),
   });
 
   function onSubmit(values: z.infer<typeof createChannelSchema>) {
     console.log("values", values);
+  }
+
+  function onGetMore() {
+    if (data?.length !== 50 * (page + 1)) {
+      return;
+    }
+    setPage((prev) => prev + 1);
   }
 
   return (
@@ -47,10 +73,14 @@ export const CreateChannelButton = () => {
           Create channel
         </Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent
+        onPointerDownOutside={(e) => {
+          if (isSelectOpen) e.preventDefault();
+        }}
+      >
         <Form {...form}>
           <form
-            onSubmit={form.handleSubmit(onSubmit, console.log)}
+            onSubmit={form.handleSubmit(onSubmit)}
             className="gap-6 flex flex-col"
           >
             <DialogHeader>
@@ -93,6 +123,38 @@ export const CreateChannelButton = () => {
                   },
                 ]}
               />
+              <FormMultiSelector
+                control={form.control}
+                className="mb-20"
+                name="userIds"
+                options={
+                  data
+                    ?.map((user) => ({
+                      value: user.id,
+                      label: user.name,
+                    }))
+                    .filter(
+                      (user) => user.value !== id && user.value !== "1",
+                    ) || []
+                }
+                onLastItemSeen={() => {
+                  onGetMore();
+                }}
+                onSearchSync={(search) => {
+                  setSearchValue(search);
+                  setPage(() => 0);
+                  return [];
+                }}
+                inputProps={{
+                  onFocus: () => {
+                    setIsSelectOpen(true);
+                  },
+                  onBlur: () => {
+                    setIsSelectOpen(false);
+                  },
+                }}
+              />
+              <div className="flex flex-col gap-2"></div>
             </div>
             <Button type="submit">Create</Button>
           </form>

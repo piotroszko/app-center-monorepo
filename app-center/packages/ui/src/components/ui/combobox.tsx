@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { UIEventHandler, useState } from "react";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "./popover";
 import { Button } from "./button";
@@ -14,35 +14,68 @@ import {
 } from "./command";
 import { cn } from "@ui/lib/utils";
 
-export interface Option {
+export interface SelectOption {
   label: string;
   value: string;
 }
 
-export interface ComboboxProps {
-  defaultValue?: string;
-  onChange?: (value: Option) => void;
-  options: Option[];
+interface ComboboxProps {
+  onChange?: (value: SelectOption, close?: () => void) => void;
+  options: SelectOption[];
   defaultText?: string;
   defaultSelectText?: string;
   notFoundText?: string;
   className?: string;
+  defaultValue?: SelectOption;
 }
 
-export function Combobox({
+export function Combobox(props: ComboboxProps) {
+  const [value, setValue] = useState<SelectOption | null>(
+    props.defaultValue || null,
+  );
+
+  return <ComboboxBase {...props} value={value} setValue={setValue} />;
+}
+
+interface ComboboxBaseProps {
+  value: SelectOption | null | undefined;
+  setValue: (value: SelectOption | null) => void;
+  modal?: boolean;
+  onScrolledToBottom?: () => void;
+}
+
+export function ComboboxBase({
   onChange,
-  defaultValue,
   options,
   defaultText,
   defaultSelectText,
   notFoundText,
   className,
-}: ComboboxProps) {
+  setValue,
+  value,
+  modal = false,
+  onScrolledToBottom,
+}: ComboboxProps & ComboboxBaseProps) {
+  const [lastItemScrolledTo, setLastItemScrolledTo] =
+    useState<SelectOption | null>(null);
   const [open, setOpen] = useState(false);
-  const [value, setValue] = useState(defaultValue);
 
+  const handleOnScroll: UIEventHandler<HTMLDivElement> = onScrolledToBottom
+    ? (e) => {
+        if (lastItemScrolledTo === options[options.length - 1]) {
+          return;
+        }
+        const target = e.target as HTMLDivElement;
+        const bottom =
+          target.scrollHeight - target.scrollTop === target.clientHeight;
+        if (bottom) {
+          onScrolledToBottom?.();
+          setLastItemScrolledTo(options[options.length - 1]!);
+        }
+      }
+    : () => {};
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={open} onOpenChange={setOpen} modal={modal}>
       <PopoverTrigger asChild>
         <Button
           variant="outline"
@@ -51,15 +84,15 @@ export function Combobox({
           className={cn("justify-between", className)}
         >
           {value
-            ? options.find((option) => option.value === value)?.label
+            ? options.find((option) => option.value === value.value)?.label
             : defaultText || ""}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[200px] p-0">
+      <PopoverContent className="min-w-[200px] p-0">
         <Command>
           <CommandInput placeholder={defaultSelectText || ""} />
-          <CommandList>
+          <CommandList onScroll={handleOnScroll}>
             <CommandEmpty>{notFoundText || ""}</CommandEmpty>
             <CommandGroup>
               {options.map((option) => (
@@ -67,15 +100,25 @@ export function Combobox({
                   key={option.value}
                   value={option.value}
                   onSelect={(currentValue) => {
-                    setValue(currentValue === value ? "" : currentValue);
+                    if (currentValue === value?.value) {
+                      setValue(null);
+                    }
+                    const findCurrentOption = options.find(
+                      (option) => option.value === currentValue,
+                    );
+                    if (findCurrentOption) {
+                      setValue(findCurrentOption);
+                    }
                     setOpen(false);
-                    onChange?.(option);
+                    onChange?.(option, () => setOpen(false));
                   }}
                 >
                   <Check
                     className={cn(
                       "mr-2 h-4 w-4",
-                      value === option.value ? "opacity-100" : "opacity-0",
+                      value?.value === option.value
+                        ? "opacity-100"
+                        : "opacity-0",
                     )}
                   />
                   {option.label}

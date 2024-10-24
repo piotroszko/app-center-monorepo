@@ -12,6 +12,7 @@ import Link from "next/link";
 import { isNil } from "lodash";
 import { useRouter } from "next/navigation";
 import { useCookies } from "react-cookie";
+import { useEffect, useState } from "react";
 
 const loginSchema = z.object({
   login: z.string().min(5, {
@@ -23,8 +24,12 @@ const loginSchema = z.object({
 });
 
 export const useGetUser = () => {
-  const id = localStorage.getItem("userId");
-  const name = localStorage.getItem("userName");
+  const [id, setId] = useState("");
+  const [name, setName] = useState("");
+  useEffect(() => {
+    setId(localStorage?.getItem?.("userId") || "");
+    setName(localStorage?.getItem?.("userName") || "");
+  }, []);
   return { id, name };
 };
 

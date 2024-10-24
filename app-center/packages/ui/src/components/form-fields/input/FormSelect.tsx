@@ -1,6 +1,6 @@
 "use client";
 
-import { Option } from "@ui/components/ui/combobox";
+import { SelectOption } from "@ui/components/ui/combobox";
 import {
   FormControl,
   FormField,
@@ -20,7 +20,7 @@ import { FormFieldProps } from "@ui/models/form";
 import { FieldValues } from "react-hook-form";
 
 interface FormSelectProps {
-  options: Option[];
+  options: SelectOption[];
   placeholder?: string;
   className?: string;
 }

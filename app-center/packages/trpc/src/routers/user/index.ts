@@ -32,8 +32,8 @@ export const userRouter = router({
             contains: opts.input.nameFragment,
           },
         },
-        take: 10,
-        skip: opts.input.page * 10,
+        take: 50,
+        skip: opts.input.page * 50,
       });
       // delete password, isDeleted, updatedAt, createdAt from response
       return data.map((user) =>
