@@ -2,6 +2,23 @@ import { createContext } from "react";
 import { IInputChannel } from "./input/channel";
 import { InputInvite } from "./input/invite";
 import { InputMessage } from "./input/message";
+import {
+  CreateChannelProps,
+  JoinChannelProps,
+  LeaveChannelProps,
+} from "./output/channel/channel";
+import {
+  InviteAcceptProps,
+  InviteDeclineProps,
+  InviteSendProps,
+} from "./output/invite/invite";
+import {
+  AnswerMessageProps,
+  DeleteMessageProps,
+  GetNewMessagesProps,
+  GetOldMessagesProps,
+  NewMessageProps,
+} from "./output/message/message";
 
 export interface ChatState {
   isConnected: boolean;
@@ -11,24 +28,24 @@ export interface ChatState {
 
 export interface ChatContextType {
   messagesFunctions: {
-    sendNewMessage?: (message: string, channelId: string) => void;
-    answerMessage?: (message: string, id: number) => void;
-    deleteMessage?: (id: number) => void;
-    getChannelMessages?: (channelId: string) => void;
-    getOlderChannelMessages?: (channelId: number, id: number) => void;
+    sendNewMessage?: (values: NewMessageProps) => void;
+    answerMessage?: (values: AnswerMessageProps) => void;
+    deleteMessage?: (values: DeleteMessageProps) => void;
+    getChannelMessages?: (values: GetNewMessagesProps) => void;
+    getOlderChannelMessages?: (values: GetOldMessagesProps) => void;
   };
   channelsFunctions: {
     getChannels?: () => void;
     getPublicChannels?: () => void;
-    createChannel?: (name: string) => void;
-    joinChannel?: (id: number) => void;
-    leaveChannel?: (id: number) => void;
+    createChannel?: (values: CreateChannelProps) => void;
+    joinChannel?: (values: JoinChannelProps) => void;
+    leaveChannel?: (values: LeaveChannelProps) => void;
   };
   invitesFunctions: {
     getInvites?: () => void;
-    acceptInvite?: (id: number) => void;
-    declineInvite?: (id: number) => void;
-    sendInvite?: (channelId: number, userId: number) => void;
+    acceptInvite?: (values: InviteAcceptProps) => void;
+    declineInvite?: (values: InviteDeclineProps) => void;
+    sendInvite?: (values: InviteSendProps) => void;
   };
 
   channels: IInputChannel[];

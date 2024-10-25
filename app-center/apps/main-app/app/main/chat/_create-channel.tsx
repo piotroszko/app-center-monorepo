@@ -55,7 +55,7 @@ export const CreateChannelButton = () => {
   }
 
   function onGetMore() {
-    if (data?.length !== 50 * (page + 1)) {
+    if (data?.isLastPage) {
       return;
     }
     setPage((prev) => prev + 1);
@@ -128,7 +128,7 @@ export const CreateChannelButton = () => {
                 className="mb-20"
                 name="userIds"
                 options={
-                  data
+                  data?.users
                     ?.map((user) => ({
                       value: user.id,
                       label: user.name,

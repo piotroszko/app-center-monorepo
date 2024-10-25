@@ -85,19 +85,23 @@ export const ChatContextProvider = ({
       state,
       channelsFunctions: {
         getChannels: outputRef?.current?.getMeChannels,
+        createChannel: outputRef?.current?.createChannel,
+        joinChannel: outputRef?.current?.joinChannel,
+        leaveChannel: outputRef?.current?.leaveChannel,
+        getPublicChannels: outputRef?.current?.getPublicChannels,
       },
       invitesFunctions: {
         getInvites: outputRef?.current?.getInvites,
+        acceptInvite: outputRef?.current?.acceptInvite,
+        declineInvite: outputRef?.current?.declineInvite,
+        sendInvite: outputRef?.current?.sendInvite,
       },
       messagesFunctions: {
-        getChannelMessages: (channelId: string) =>
-          outputRef?.current?.getNewMessages({ channelId }) || null,
-        sendNewMessage: (message: string, channelId: string) => {
-          outputRef?.current?.sendMessage({
-            channelId,
-            text: message,
-          });
-        },
+        getChannelMessages: outputRef?.current?.getNewMessages,
+        sendNewMessage: outputRef?.current?.sendMessage,
+        answerMessage: outputRef?.current?.answerMessage,
+        deleteMessage: outputRef?.current?.deleteMessage,
+        getOlderChannelMessages: outputRef?.current?.getOldMessages,
       },
       setAllInvitesSeen,
       isNewInvites,

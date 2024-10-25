@@ -32,12 +32,25 @@ export const userRouter = router({
             contains: opts.input.nameFragment,
           },
         },
-        take: 50,
+        take: 51, // 50 + 1 to check if there are more pages
         skip: opts.input.page * 50,
+        orderBy: {
+          name: "asc",
+        },
       });
-      // delete password, isDeleted, updatedAt, createdAt from response
-      return data.map((user) =>
+      const users = data.map((user) =>
         omit(user, ["password", "isDeleted", "updatedAt", "createdAt"]),
       );
+      if (users.length > 50) {
+        users.pop();
+        return {
+          users,
+          isLastPage: false,
+        };
+      }
+      return {
+        users,
+        isLastPage: true,
+      };
     }),
 });

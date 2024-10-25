@@ -17,7 +17,10 @@ export const ChatInputBox = () => {
     <form
       onSubmit={(e: FormEvent) => {
         e.preventDefault();
-        sendMessage?.(inputMessage, currentChannel?.id || "");
+        sendMessage?.({
+          channelId: currentChannel?.id || "",
+          text: inputMessage,
+        });
         setInputMessage("");
       }}
       className="p-4 border-t flex w-full gap-4"
