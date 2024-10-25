@@ -62,6 +62,9 @@ export class OutputChatClass {
   public declineInvite(props: InviteDeclineProps) {
     OutputInvite.declineInvite(this.ws || new WebSocket(""), props);
   }
+  public getInvites() {
+    OutputInvite.getInvites(this.ws || new WebSocket(""));
+  }
   // channel
   public getMeChannels() {
     OutputChannel.getChannels(this.ws || new WebSocket(""));

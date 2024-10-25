@@ -7,7 +7,7 @@ export class OutputInvite {
   ) {
     const message: IOutputMessage = {
       type: "inviteMessage",
-      inviteMessage: {
+      inviteChannel: {
         type: "send",
         channelId,
         userId,
@@ -18,7 +18,7 @@ export class OutputInvite {
   public static acceptInvite(ws: WebSocket, { inviteId }: InviteAcceptProps) {
     const message: IOutputMessage = {
       type: "inviteMessage",
-      inviteMessage: {
+      inviteChannel: {
         type: "accept",
         inviteId,
       },
@@ -28,11 +28,21 @@ export class OutputInvite {
   public static declineInvite(ws: WebSocket, { inviteId }: InviteDeclineProps) {
     const message: IOutputMessage = {
       type: "inviteMessage",
-      inviteMessage: {
+      inviteChannel: {
         type: "decline",
         inviteId,
       },
     };
+    ws?.send(JSON.stringify(message));
+  }
+  public static getInvites(ws: WebSocket) {
+    const message: IOutputMessage = {
+      type: "inviteMessage",
+      inviteChannel: {
+        type: "get",
+      },
+    };
+    console.log;
     ws?.send(JSON.stringify(message));
   }
 }

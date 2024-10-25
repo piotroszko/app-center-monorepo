@@ -22,7 +22,7 @@ interface baseActionMessage {
 }
 interface baseInviteMessage {
   type: "inviteMessage";
-  inviteMessage: inviteChannel;
+  inviteChannel: inviteChannel;
 }
 
 interface baseActionChannel {
@@ -88,7 +88,7 @@ interface ActionChannelJoin {
 
 /////////////////////////////////
 
-type inviteChannel = AcceptInvite | DeclineInvite | SendInvite;
+type inviteChannel = AcceptInvite | DeclineInvite | SendInvite | GetInvites;
 
 interface AcceptInvite {
   type: "accept";
@@ -98,6 +98,10 @@ interface AcceptInvite {
 interface DeclineInvite {
   type: "decline";
   inviteId: string;
+}
+
+interface GetInvites {
+  type: "get";
 }
 
 interface SendInvite {

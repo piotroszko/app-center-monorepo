@@ -1,6 +1,5 @@
 "use client";
 import React, {
-  createContext,
   PropsWithChildren,
   useEffect,
   useRef,
@@ -17,63 +16,15 @@ import {
   getMessagesHandlers,
 } from "./handlers";
 import { OutputChatClass } from "./output/output";
-
-interface State {
-  isConnected: boolean;
-  isConnecting: boolean;
-  isErrored: boolean;
-}
-
-interface ChatContextType {
-  messagesFunctions: {
-    sendNewMessage?: (message: string, channelId: string) => void;
-    answerMessage?: (message: string, id: number) => void;
-    deleteMessage?: (id: number) => void;
-    getChannelMessages?: (channelId: string) => void;
-    getOlderChannelMessages?: (channelId: number, id: number) => void;
-  };
-  channelsFunctions: {
-    getChannels?: () => void;
-    getPublicChannels?: () => void;
-    createChannel?: (name: string) => void;
-    joinChannel?: (id: number) => void;
-    leaveChannel?: (id: number) => void;
-  };
-  invitesFunctions: {
-    getInvites?: () => void;
-    acceptInvite?: (id: number) => void;
-    declineInvite?: (id: number) => void;
-    sendInvite?: (channelId: number, userId: number) => void;
-  };
-
-  channels: IInputChannel[];
-  publicChannels: IInputChannel[];
-  invites: InputInvite[];
-  messages: Record<string, InputMessage[]>;
-
-  state: State;
-  currentChannel?: IInputChannel | null;
-  setCurrentChannel?: (channel: IInputChannel) => void;
-}
-export const ChatContext = createContext<ChatContextType>({
-  channels: [],
-  publicChannels: [],
-  invites: [],
-  messages: {},
-  state: { isConnected: false, isConnecting: true, isErrored: false },
-  messagesFunctions: {},
-  channelsFunctions: {},
-  invitesFunctions: {},
-  currentChannel: null,
-  setCurrentChannel: () => {},
-});
+import { useInviteSeen } from "./useInviteSeen";
+import { ChatContext, ChatContextType, ChatState } from "./chat-context";
 
 export const ChatContextProvider = ({
   address,
   children,
 }: PropsWithChildren<{ address: string }>) => {
   const wsRef = useRef<WebSocket | null>(null);
-  const [state, setState] = useState<State>({
+  const [state, setState] = useState<ChatState>({
     isConnected: false,
     isConnecting: true,
     isErrored: false,
@@ -86,6 +37,7 @@ export const ChatContextProvider = ({
   const [publicChannels, setPublicChannels] = useState<IInputChannel[]>([]);
   const [messages, setMessages] = useState<Record<string, InputMessage[]>>({});
   const [invites, setInvites] = useState<InputInvite[]>([]);
+  const { isNewInvites, setAllInvitesSeen } = useInviteSeen(invites);
 
   const inputRef = useRef<InputChatClass | null>(
     new InputChatClass(
@@ -108,6 +60,7 @@ export const ChatContextProvider = ({
       setState({ isConnected: true, isConnecting: false, isErrored: false });
       outputRef.current = new OutputChatClass(wsRef.current!);
       outputRef.current.getMeChannels();
+      outputRef.current.getInvites();
     };
     wsRef.current.onerror = () => {
       setState({ isConnected: false, isConnecting: false, isErrored: true });
@@ -133,7 +86,9 @@ export const ChatContextProvider = ({
       channelsFunctions: {
         getChannels: outputRef?.current?.getMeChannels,
       },
-      invitesFunctions: {},
+      invitesFunctions: {
+        getInvites: outputRef?.current?.getInvites,
+      },
       messagesFunctions: {
         getChannelMessages: (channelId: string) =>
           outputRef?.current?.getNewMessages({ channelId }) || null,
@@ -144,29 +99,33 @@ export const ChatContextProvider = ({
           });
         },
       },
+      setAllInvitesSeen,
+      isNewInvites,
+      setCurrentChannel: (channel: IInputChannel) => {
+        if (currentChannel?.id === channel.id) {
+          return;
+        }
+        if (messages[channel.id] === undefined) {
+          outputRef?.current?.getNewMessages({ channelId: channel.id });
+        }
+        setCurrentChannel(channel);
+      },
+      currentChannel,
     };
     return valuesMemo;
-  }, [state, channels, publicChannels, messages, invites]);
+  }, [
+    state,
+    channels,
+    publicChannels,
+    messages,
+    invites,
+    setAllInvitesSeen,
+    isNewInvites,
+    currentChannel,
+    outputRef,
+  ]);
 
-  return (
-    <ChatContext.Provider
-      value={{
-        ...values,
-        currentChannel,
-        setCurrentChannel: (channel: IInputChannel) => {
-          if (currentChannel?.id === channel.id) {
-            return;
-          }
-          if (messages[channel.id] === undefined) {
-            outputRef?.current?.getNewMessages({ channelId: channel.id });
-          }
-          setCurrentChannel(channel);
-        },
-      }}
-    >
-      {children}
-    </ChatContext.Provider>
-  );
+  return <ChatContext.Provider value={values}>{children}</ChatContext.Provider>;
 };
 
 export const useChat = () => {

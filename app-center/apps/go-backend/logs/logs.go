@@ -1,6 +1,7 @@
 package logs
 
 import (
+	"encoding/json"
 	"fmt"
 	app_db "go-backend/db"
 	"go-backend/prisma/db"
@@ -45,4 +46,9 @@ func SendLogWarning(message string, category string) {
 func SendLogError(message string, category string) {
 	fmt.Println("[ERROR]:", message)
 	sendLog(message, category, 2)
+}
+
+func PrettyPrintStruct(s any) {
+	jrawMessage, _ := json.MarshalIndent(s, "", "\t")
+	fmt.Println(string(jrawMessage))
 }

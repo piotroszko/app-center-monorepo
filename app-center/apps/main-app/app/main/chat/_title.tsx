@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { PropsWithChildren } from "react";
 import { Button } from "@repo/ui/components/ui/button";
 import {
   Dialog,
@@ -26,43 +26,56 @@ export const ChannelTitle = () => {
       <div className="flex flex-row gap-4 justify-center items-center ml-4">
         <ChannelUsers />
         <Separator orientation="vertical" className="mx-5" />
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button>Invite</Button>
-          </DialogTrigger>
-          <DialogContent className="gap-6">
-            <DialogHeader>
-              <DialogTitle>Invite user to channel</DialogTitle>
-              <DialogDescription>
-                Enter the email or login of the user you want to invite to this
-                channel.
-              </DialogDescription>
-            </DialogHeader>
-            <div className="grid w-full items-center gap-1.5">
-              <Label htmlFor="file">User login or email</Label>
-              <Input id="login" type="text" className="w-full" />
-            </div>
-            <Button type="submit">Invite</Button>
-          </DialogContent>
-        </Dialog>
 
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button variant={"secondary"}>Leave channel</Button>
-          </DialogTrigger>
-          <DialogContent className="gap-6">
-            <DialogHeader>
-              <DialogTitle>Leave channel</DialogTitle>
-              <DialogDescription>
-                Are you sure you want to leave this channel?
-              </DialogDescription>
-            </DialogHeader>
-            <Button type="submit" variant={"destructive"}>
-              Leave
-            </Button>
-          </DialogContent>
-        </Dialog>
+        <InviteDialog>
+          <Button>Invite</Button>
+        </InviteDialog>
+
+        <LeaveDialog>
+          <Button variant={"secondary"}>Leave channel</Button>
+        </LeaveDialog>
       </div>
     </div>
+  );
+};
+
+const InviteDialog = ({ children }: PropsWithChildren) => {
+  return (
+    <Dialog>
+      <DialogTrigger asChild>{children}</DialogTrigger>
+      <DialogContent className="gap-6">
+        <DialogHeader>
+          <DialogTitle>Invite user to channel</DialogTitle>
+          <DialogDescription>
+            Enter the email or login of the user you want to invite to this
+            channel.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="grid w-full items-center gap-1.5">
+          <Label htmlFor="file">User login or email</Label>
+          <Input id="login" type="text" className="w-full" />
+        </div>
+        <Button type="submit">Invite</Button>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+const LeaveDialog = ({ children }: PropsWithChildren) => {
+  return (
+    <Dialog>
+      <DialogTrigger asChild>{children}</DialogTrigger>
+      <DialogContent className="gap-6">
+        <DialogHeader>
+          <DialogTitle>Leave channel</DialogTitle>
+          <DialogDescription>
+            Are you sure you want to leave this channel?
+          </DialogDescription>
+        </DialogHeader>
+        <Button type="submit" variant={"destructive"}>
+          Leave
+        </Button>
+      </DialogContent>
+    </Dialog>
   );
 };

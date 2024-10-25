@@ -107,6 +107,43 @@ const DialogDescription = React.forwardRef<
 ));
 DialogDescription.displayName = DialogPrimitive.Description.displayName;
 
+interface DialogWrapperProps {
+  triggerComponent: React.ReactNode;
+  header?: {
+    title?: string;
+    description?: string;
+  };
+  content?: React.ReactNode;
+  contentClassName?: string;
+  onPointerDownOutside?: (() => void) | undefined;
+}
+
+const DialogWrapper = ({
+  triggerComponent,
+  header,
+  content,
+  contentClassName,
+  onPointerDownOutside,
+}: DialogWrapperProps) => {
+  return (
+    <Dialog>
+      <DialogTrigger asChild>{triggerComponent}</DialogTrigger>
+      <DialogContent
+        className={contentClassName}
+        onPointerDownOutside={onPointerDownOutside}
+      >
+        {(header?.description || header?.title) && (
+          <DialogHeader>
+            {header?.title && <DialogTitle>{header?.title}</DialogTitle>}
+            {<DialogDescription>{header?.description}</DialogDescription>}
+          </DialogHeader>
+        )}
+        {content}
+      </DialogContent>
+    </Dialog>
+  );
+};
+
 export {
   Dialog,
   DialogPortal,
@@ -118,4 +155,5 @@ export {
   DialogFooter,
   DialogTitle,
   DialogDescription,
+  DialogWrapper,
 };

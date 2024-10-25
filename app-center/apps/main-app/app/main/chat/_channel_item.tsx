@@ -1,6 +1,6 @@
 "use client";
 
-import { IInputChannel, useChat } from "@repo/trpc/ws";
+import { IInputChannel, InputUser, useChat } from "@repo/trpc/ws";
 import { Button } from "@repo/ui/components/ui/button";
 import { AvatarComponent } from "@repo/ui/custom";
 import { useRef } from "react";
@@ -40,38 +40,8 @@ export const ChannelItem = ({ channel }: channelProps) => {
         }
       }}
     >
-      {isPrivate && (
-        <div className="flex flex-row mr-1 items-center">
-          <AvatarComponent
-            className="h-8 w-8"
-            src={currentUser?.id}
-            alt={currentUser?.name}
-            fallback={currentUser?.name?.[0]}
-          />
-          {"-"}
-          <AvatarComponent
-            className="h-8 w-8"
-            src={otherUser?.id}
-            alt={otherUser?.name}
-            fallback={otherUser?.name?.[0]}
-          />
-        </div>
-      )}
-      {isGroup && (
-        <div className="grid grid-grid-flow-col grid-cols-3 border border-secondary p-1 rounded-lg">
-          {channel.users
-            ?.slice(0, 6)
-            .map((user) => (
-              <AvatarComponent
-                key={user.id}
-                className="h-4 w-4 text-[8px]"
-                src={user.id}
-                alt={user.name}
-                fallback={(user?.name?.[0] || "") + (user?.name?.[1] || "")}
-              />
-            ))}
-        </div>
-      )}
+      {isPrivate && <PrivateAvatar user={currentUser} otherUser={otherUser} />}
+      {isGroup && <GroupAvatar users={channel?.users} />}
       {isPublic && (
         <AvatarComponent
           className="h-8 w-8 mr-1"
@@ -82,5 +52,49 @@ export const ChannelItem = ({ channel }: channelProps) => {
       )}
       {isPrivate ? otherUser?.name : channel.name}
     </Button>
+  );
+};
+
+const PrivateAvatar = ({
+  user,
+  otherUser,
+}: {
+  user?: InputUser | null;
+  otherUser?: InputUser | null;
+}) => {
+  return (
+    <div className="flex flex-row mr-1 items-center">
+      <AvatarComponent
+        className="h-8 w-8"
+        src={user?.id}
+        alt={user?.name}
+        fallback={user?.name?.[0]}
+      />
+      {"-"}
+      <AvatarComponent
+        className="h-8 w-8"
+        src={otherUser?.id}
+        alt={otherUser?.name}
+        fallback={otherUser?.name?.[0]}
+      />
+    </div>
+  );
+};
+
+const GroupAvatar = ({ users }: { users: InputUser[] }) => {
+  return (
+    <div className="grid grid-grid-flow-col grid-cols-3 border border-secondary p-1 rounded-lg">
+      {users
+        ?.slice(0, 6)
+        .map((user) => (
+          <AvatarComponent
+            key={user.id}
+            className="h-4 w-4 text-[8px]"
+            src={user.id}
+            alt={user.name}
+            fallback={(user?.name?.[0] || "") + (user?.name?.[1] || "")}
+          />
+        ))}
+    </div>
   );
 };

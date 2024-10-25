@@ -96,7 +96,6 @@ func RawHandler(user *models.User, rawMessage input.RawPayload) error {
 	case input.InviteMessagePayload:
 		{
 			logs.SendLogInfo("InviteMessagePayload:"+fmt.Sprintf("%v", rawMessage), "RawHandler")
-
 			switch input.ParseInvite.ParseInviteType(rawMessage) {
 			case input.AcceptInvite:
 				{
@@ -124,6 +123,7 @@ func RawHandler(user *models.User, rawMessage input.RawPayload) error {
 				}
 			case input.GetInvites:
 				{
+					fmt.Println("GetInvites")
 					return GetInvitesForUser(user)
 				}
 			default:
