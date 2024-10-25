@@ -24,6 +24,7 @@ export const MessagesList = () => {
     return diff < 3600000;
   };
   const messagesCurrentChannel = messages?.[currentChannel?.id || ""] || [];
+
   return (
     <ScrollArea className="flex-1 p-0.5 pr-3">
       {messagesCurrentChannel.map((message, index) => {

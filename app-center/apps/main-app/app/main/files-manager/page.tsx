@@ -1,8 +1,13 @@
 import React from "react";
 import FilesComponent from "./_files";
+import { ClientPageTransition } from "@repo/ui/components/ui/client-page-transition";
 
 const FileManagerPage = () => {
-  return <FilesComponent />;
+  return (
+    <ClientPageTransition>
+      <FilesComponent />
+    </ClientPageTransition>
+  );
 };
 
 export default FileManagerPage;

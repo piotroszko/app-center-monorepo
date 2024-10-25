@@ -1,6 +1,7 @@
 import "@repo/ui/globals.css";
 import type { Metadata } from "next";
 import { Sidebar } from "./_navigation";
+import { PageTransition } from "@repo/ui/components/ui/page-transition";
 
 export const metadata: Metadata = {
   title: "Apps",
@@ -12,5 +13,9 @@ export default function AppsLayout({
 }: {
   children: React.ReactNode;
 }): JSX.Element {
-  return <Sidebar>{children}</Sidebar>;
+  return (
+    <Sidebar>
+      <PageTransition>{children}</PageTransition>
+    </Sidebar>
+  );
 }

@@ -1,6 +1,7 @@
 package output
 
 import (
+	"fmt"
 	"go-backend/chat_v2/models"
 	"sync"
 
@@ -20,6 +21,7 @@ var connections = &connectionsType{
 func AddConnection(user models.User, conn *websocket.Conn) {
 	connections.Mutex.Lock()
 	if connections.UserConnections[user.ID] != nil {
+		fmt.Println("Closing connection for user", user.ID)
 		_ = connections.UserConnections[user.ID].Close()
 		connections.UserConnections[user.ID] = conn
 	} else {
