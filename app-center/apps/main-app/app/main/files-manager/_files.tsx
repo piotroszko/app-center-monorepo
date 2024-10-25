@@ -28,7 +28,11 @@ import { FilesBreadcrumbs } from "./_breadcrumbs";
 import { FilesHeader } from "./_header";
 import { AvatarComponent } from "@repo/ui/custom";
 
-export default function FilesComponent() {
+export default function Files() {
+  return <FilesComponent />;
+}
+
+function FilesComponent() {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
   return (

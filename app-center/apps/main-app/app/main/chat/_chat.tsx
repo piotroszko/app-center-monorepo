@@ -19,7 +19,6 @@ function ChatUI() {
 
   return (
     <div className="flex h-full w-full bg-background">
-      {/* Left sidebar */}
       <ChannelList />
 
       <div className="flex flex-col flex-1">
