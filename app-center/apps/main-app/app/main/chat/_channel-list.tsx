@@ -1,18 +1,16 @@
 "use client";
 
-import { Button } from "@repo/ui/components/ui/button";
 import { ScrollArea } from "@repo/ui/components/ui/scroll-area";
-import { AlertCircle } from "lucide-react";
 import { useChat } from "@repo/trpc/ws";
 import { CreateChannelButton } from "./_create-channel";
 import { ChannelItem } from "./_channel_item";
 import { Skeleton } from "@repo/ui/components/ui/skeleton";
+import { InvitesButton } from "./_invite_list";
 
 export function ChannelList() {
   const {
     channels,
     state: { isConnecting },
-    isNewInvites,
   } = useChat();
 
   return (
@@ -20,12 +18,7 @@ export function ChannelList() {
       <div className="p-1.5 border-b flex flex-row items-center justify-between">
         <CreateChannelButton />
 
-        <Button onClick={() => null} variant={"ghost"} className="relative">
-          {isNewInvites && (
-            <AlertCircle className="w-4 h-4 absolute top-0 right-0 text-destructive/90 animate-pulse duration-1000" />
-          )}
-          Invites
-        </Button>
+        <InvitesButton />
       </div>
       <ScrollArea className="h-max py-1">
         {isConnecting ? (
